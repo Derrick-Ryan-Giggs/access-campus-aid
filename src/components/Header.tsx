@@ -33,9 +33,13 @@ const Header = ({ activeSection, onNavigate }: HeaderProps) => {
             {/* Logo and Title */}
             <div className="flex items-center space-x-4">
               <div className="flex-shrink-0">
-                <h1 className="text-xl font-bold text-primary">
+                <button
+                  onClick={() => onNavigate('home')}
+                  className="text-xl font-bold text-primary hover:text-primary/80 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded transition-colors"
+                  aria-label="Go to home page"
+                >
                   Campus Aid
-                </h1>
+                </button>
               </div>
               <nav className="hidden md:flex space-x-6" role="navigation" aria-label="Main navigation">
                 {navItems.map(({ key, label, icon: Icon }) => (
