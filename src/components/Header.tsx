@@ -4,7 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Bell, User, Home, Search } from 'lucide-react';
 
-const Header = () => {
+interface HeaderProps {
+  activeSection: 'home' | 'groceries' | 'reminders' | 'tutors';
+  onNavigate: (section: 'home' | 'groceries' | 'reminders' | 'tutors') => void;
+}
+
+const Header = ({ activeSection, onNavigate }: HeaderProps) => {
   const [showEmergency, setShowEmergency] = useState(false);
 
   const handleEmergencyClick = () => {
@@ -12,6 +17,13 @@ const Header = () => {
     // In a real app, this would trigger emergency protocols
     setTimeout(() => setShowEmergency(false), 3000);
   };
+
+  const navItems = [
+    { key: 'home' as const, label: 'Home', icon: Home },
+    { key: 'groceries' as const, label: 'Groceries' },
+    { key: 'reminders' as const, label: 'Reminders' },
+    { key: 'tutors' as const, label: 'Tutors' },
+  ];
 
   return (
     <>
@@ -26,35 +38,21 @@ const Header = () => {
                 </h1>
               </div>
               <nav className="hidden md:flex space-x-6" role="navigation" aria-label="Main navigation">
-                <a
-                  href="#home"
-                  className="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-                  aria-label="Home"
-                >
-                  <Home className="inline w-4 h-4 mr-1" />
-                  Home
-                </a>
-                <a
-                  href="#groceries"
-                  className="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-                  aria-label="Grocery Shopping"
-                >
-                  Groceries
-                </a>
-                <a
-                  href="#reminders"
-                  className="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-                  aria-label="Reminders"
-                >
-                  Reminders
-                </a>
-                <a
-                  href="#tutors"
-                  className="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-                  aria-label="Find Tutors"
-                >
-                  Tutors
-                </a>
+                {navItems.map(({ key, label, icon: Icon }) => (
+                  <button
+                    key={key}
+                    onClick={() => onNavigate(key)}
+                    className={`px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors ${
+                      activeSection === key
+                        ? 'text-primary bg-blue-50'
+                        : 'text-gray-700 hover:text-primary'
+                    }`}
+                    aria-label={label}
+                  >
+                    {Icon && <Icon className="inline w-4 h-4 mr-1" />}
+                    {label}
+                  </button>
+                ))}
               </nav>
             </div>
 

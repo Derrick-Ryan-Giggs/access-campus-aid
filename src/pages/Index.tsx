@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import Header from '@/components/Header';
 import FeatureCard from '@/components/FeatureCard';
@@ -135,7 +134,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <Header activeSection={activeSection} onNavigate={setActiveSection} />
       
       {/* Navigation breadcrumb for non-home sections */}
       {activeSection !== 'home' && (
