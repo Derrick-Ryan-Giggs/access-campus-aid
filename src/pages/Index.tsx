@@ -1,13 +1,24 @@
+
 import { useState } from 'react';
 import Header from '@/components/Header';
 import FeatureCard from '@/components/FeatureCard';
 import GroceryShop from '@/components/GroceryShop';
 import Reminders from '@/components/Reminders';
 import Tutors from '@/components/Tutors';
+import Checkout from '@/components/Checkout';
 import { Card, CardContent } from '@/components/ui/card';
 
+interface GroceryItem {
+  id: number;
+  name: string;
+  category: string;
+  price: number;
+  description: string;
+}
+
 const Index = () => {
-  const [activeSection, setActiveSection] = useState<'home' | 'groceries' | 'reminders' | 'tutors'>('home');
+  const [activeSection, setActiveSection] = useState<'home' | 'groceries' | 'reminders' | 'tutors' | 'checkout'>('home');
+  const [cart, setCart] = useState<{ item: GroceryItem; quantity: number }[]>([]);
 
   const features = [
     {
@@ -40,14 +51,33 @@ const Index = () => {
     }
   ];
 
+  const handleCheckout = (cartItems: { item: GroceryItem; quantity: number }[]) => {
+    setCart(cartItems);
+    setActiveSection('checkout');
+  };
+
+  const handleOrderComplete = () => {
+    setCart([]);
+    setActiveSection('home');
+    // Could show a success message here
+  };
+
   const renderContent = () => {
     switch (activeSection) {
       case 'groceries':
-        return <GroceryShop />;
+        return <GroceryShop onCheckout={handleCheckout} />;
       case 'reminders':
         return <Reminders />;
       case 'tutors':
         return <Tutors />;
+      case 'checkout':
+        return (
+          <Checkout
+            cart={cart}
+            onBack={() => setActiveSection('groceries')}
+            onOrderComplete={handleOrderComplete}
+          />
+        );
       default:
         return (
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -134,7 +164,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header activeSection={activeSection} onNavigate={setActiveSection} />
+      <Header activeSection={activeSection === 'checkout' ? 'groceries' : activeSection} onNavigate={setActiveSection} />
       
       {/* Navigation breadcrumb for non-home sections */}
       {activeSection !== 'home' && (

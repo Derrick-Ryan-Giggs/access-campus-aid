@@ -13,6 +13,10 @@ interface GroceryItem {
   description: string;
 }
 
+interface GroceryShopProps {
+  onCheckout?: (cart: { item: GroceryItem; quantity: number }[]) => void;
+}
+
 const mockGroceries: GroceryItem[] = [
   { id: 1, name: "Fresh Apples", category: "Fruits", price: 3.99, description: "Crisp red apples, 2lb bag" },
   { id: 2, name: "Whole Milk", category: "Dairy", price: 4.29, description: "1 gallon whole milk" },
@@ -22,7 +26,7 @@ const mockGroceries: GroceryItem[] = [
   { id: 6, name: "Broccoli", category: "Vegetables", price: 2.49, description: "Fresh broccoli crowns" },
 ];
 
-const GroceryShop = () => {
+const GroceryShop = ({ onCheckout }: GroceryShopProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [cart, setCart] = useState<{ item: GroceryItem; quantity: number }[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -50,6 +54,12 @@ const GroceryShop = () => {
   };
 
   const cartTotal = cart.reduce((sum, cartItem) => sum + (cartItem.item.price * cartItem.quantity), 0);
+
+  const handleCheckout = () => {
+    if (onCheckout) {
+      onCheckout(cart);
+    }
+  };
 
   return (
     <div className="max-w-6xl mx-auto p-6">
@@ -90,7 +100,10 @@ const GroceryShop = () => {
                 <span className="font-medium">Cart: {cart.length} items</span>
                 <span className="font-bold text-lg">${cartTotal.toFixed(2)}</span>
               </div>
-              <Button className="mt-2 bg-secondary hover:bg-secondary/90">
+              <Button 
+                onClick={handleCheckout}
+                className="mt-2 bg-secondary hover:bg-secondary/90"
+              >
                 Proceed to Checkout
               </Button>
             </CardContent>
