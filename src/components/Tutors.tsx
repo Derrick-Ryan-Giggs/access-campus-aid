@@ -1,10 +1,10 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Search, User } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface Tutor {
   id: number;
@@ -61,6 +61,7 @@ const mockTutors: Tutor[] = [
 ];
 
 const Tutors = () => {
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSubject, setSelectedSubject] = useState('All');
   const [showRequestForm, setShowRequestForm] = useState(false);
@@ -93,10 +94,20 @@ const Tutors = () => {
   const submitRequest = () => {
     if (requestForm.subject && requestForm.message && selectedTutor) {
       // In a real app, this would send the request to the backend
-      alert(`Tutoring request sent to ${selectedTutor.name}!`);
+      toast({
+        title: "Help Request Sent",
+        description: `Your tutoring request has been sent to ${selectedTutor.name}. They will contact you soon!`,
+      });
+      
       setShowRequestForm(false);
       setSelectedTutor(null);
       setRequestForm({ subject: '', message: '', preferredTime: '' });
+    } else {
+      toast({
+        title: "Incomplete Request",
+        description: "Please fill in all required fields before sending your request.",
+        variant: "destructive",
+      });
     }
   };
 

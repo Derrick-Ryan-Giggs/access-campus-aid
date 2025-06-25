@@ -1,9 +1,9 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface GroceryItem {
   id: number;
@@ -27,6 +27,7 @@ const mockGroceries: GroceryItem[] = [
 ];
 
 const GroceryShop = ({ onCheckout }: GroceryShopProps) => {
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [cart, setCart] = useState<{ item: GroceryItem; quantity: number }[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -51,6 +52,11 @@ const GroceryShop = ({ onCheckout }: GroceryShopProps) => {
       }
       return [...prev, { item, quantity: 1 }];
     });
+
+    toast({
+      title: "Added to Cart",
+      description: `${item.name} has been added to your cart.`,
+    });
   };
 
   const cartTotal = cart.reduce((sum, cartItem) => sum + (cartItem.item.price * cartItem.quantity), 0);
@@ -58,6 +64,10 @@ const GroceryShop = ({ onCheckout }: GroceryShopProps) => {
   const handleCheckout = () => {
     if (onCheckout) {
       onCheckout(cart);
+      toast({
+        title: "Proceeding to Checkout",
+        description: "Your cart has been saved. Complete your order details.",
+      });
     }
   };
 

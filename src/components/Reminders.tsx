@@ -1,10 +1,10 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Bell, Calendar, Clock } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface Reminder {
   id: number;
@@ -17,6 +17,7 @@ interface Reminder {
 }
 
 const Reminders = () => {
+  const { toast } = useToast();
   const [reminders, setReminders] = useState<Reminder[]>([
     {
       id: 1,
@@ -63,10 +64,22 @@ const Reminders = () => {
         time: ''
       });
       setShowAddForm(false);
+
+      toast({
+        title: "Reminder Created",
+        description: `${reminder.title} has been added to your reminders.`,
+      });
+    } else {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required fields.",
+        variant: "destructive",
+      });
     }
   };
 
   const toggleCompleted = (id: number) => {
+    const reminder = reminders.find(r => r.id === id);
     setReminders(prev =>
       prev.map(reminder =>
         reminder.id === id
@@ -74,10 +87,27 @@ const Reminders = () => {
           : reminder
       )
     );
+
+    if (reminder) {
+      toast({
+        title: reminder.completed ? "Reminder Reactivated" : "Reminder Completed",
+        description: reminder.completed ? 
+          `${reminder.title} has been marked as pending.` : 
+          `${reminder.title} has been completed!`,
+      });
+    }
   };
 
   const deleteReminder = (id: number) => {
+    const reminder = reminders.find(r => r.id === id);
     setReminders(prev => prev.filter(reminder => reminder.id !== id));
+
+    if (reminder) {
+      toast({
+        title: "Reminder Deleted",
+        description: `${reminder.title} has been removed from your reminders.`,
+      });
+    }
   };
 
   const upcomingReminders = reminders.filter(r => !r.completed);

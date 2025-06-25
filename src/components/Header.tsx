@@ -1,8 +1,8 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Bell, User, Home, Search } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface HeaderProps {
   activeSection: 'home' | 'groceries' | 'reminders' | 'tutors';
@@ -10,12 +10,20 @@ interface HeaderProps {
 }
 
 const Header = ({ activeSection, onNavigate }: HeaderProps) => {
-  const [showEmergency, setShowEmergency] = useState(false);
+  const { toast } = useToast();
+  const [isEmergencyMode, setIsEmergencyMode] = useState(false);
 
   const handleEmergencyClick = () => {
-    setShowEmergency(true);
-    // In a real app, this would trigger emergency protocols
-    setTimeout(() => setShowEmergency(false), 3000);
+    setIsEmergencyMode(true);
+    toast({
+      title: "Emergency Alert Sent",
+      description: "Emergency services have been notified. Help is on the way. Stay calm and safe.",
+    });
+    
+    // Reset emergency mode after 5 seconds
+    setTimeout(() => {
+      setIsEmergencyMode(false);
+    }, 5000);
   };
 
   const navItems = [
@@ -96,7 +104,7 @@ const Header = ({ activeSection, onNavigate }: HeaderProps) => {
       </header>
 
       {/* Emergency Modal */}
-      {showEmergency && (
+      {isEmergencyMode && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" role="dialog" aria-modal="true" aria-labelledby="emergency-title">
           <Card className="bg-white p-6 rounded-lg shadow-xl max-w-md mx-4">
             <div className="text-center">
@@ -114,7 +122,7 @@ const Header = ({ activeSection, onNavigate }: HeaderProps) => {
                 <p>Crisis Hotline: 988</p>
               </div>
               <Button
-                onClick={() => setShowEmergency(false)}
+                onClick={() => setIsEmergencyMode(false)}
                 className="mt-4 bg-primary hover:bg-primary/90"
               >
                 Close
