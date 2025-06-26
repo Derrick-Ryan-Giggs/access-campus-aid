@@ -131,6 +131,9 @@ const Header = ({ activeSection, onNavigate }: HeaderProps) => {
               <MobileMenu
                 activeSection={activeSection}
                 onNavigate={onNavigate}
+                onAuthClick={() => setIsAuthModalOpen(true)}
+                onNotificationClick={() => setIsNotificationPanelOpen(true)}
+                onProfileClick={() => setIsUserProfileOpen(true)}
               />
             </div>
           </div>

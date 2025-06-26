@@ -2,14 +2,17 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Home, Menu, X, ShoppingCart, Clock, GraduationCap } from 'lucide-react';
+import { Home, Menu, X, ShoppingCart, Clock, GraduationCap, LogIn, Bell, User } from 'lucide-react';
 
 interface MobileMenuProps {
   activeSection: 'home' | 'groceries' | 'reminders' | 'tutors';
   onNavigate: (section: 'home' | 'groceries' | 'reminders' | 'tutors') => void;
+  onAuthClick?: () => void;
+  onNotificationClick?: () => void;
+  onProfileClick?: () => void;
 }
 
-const MobileMenu = ({ activeSection, onNavigate }: MobileMenuProps) => {
+const MobileMenu = ({ activeSection, onNavigate, onAuthClick, onNotificationClick, onProfileClick }: MobileMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const menuItems = [
@@ -21,6 +24,21 @@ const MobileMenu = ({ activeSection, onNavigate }: MobileMenuProps) => {
 
   const handleNavigate = (section: 'home' | 'groceries' | 'reminders' | 'tutors') => {
     onNavigate(section);
+    setIsOpen(false);
+  };
+
+  const handleAuthClick = () => {
+    if (onAuthClick) onAuthClick();
+    setIsOpen(false);
+  };
+
+  const handleNotificationClick = () => {
+    if (onNotificationClick) onNotificationClick();
+    setIsOpen(false);
+  };
+
+  const handleProfileClick = () => {
+    if (onProfileClick) onProfileClick();
     setIsOpen(false);
   };
 
@@ -54,7 +72,8 @@ const MobileMenu = ({ activeSection, onNavigate }: MobileMenuProps) => {
             </div>
             
             <nav className="p-4">
-              <div className="space-y-2">
+              {/* Navigation Items */}
+              <div className="space-y-2 mb-6">
                 {menuItems.map(({ key, label, icon: Icon }) => (
                   <Button
                     key={key}
@@ -71,8 +90,45 @@ const MobileMenu = ({ activeSection, onNavigate }: MobileMenuProps) => {
                   </Button>
                 ))}
               </div>
+
+              {/* User Actions Section */}
+              <div className="border-t pt-4 mb-6">
+                <h3 className="text-sm font-semibold text-gray-500 mb-3 px-2">Account & Notifications</h3>
+                <div className="space-y-2">
+                  <Button
+                    variant="ghost"
+                    onClick={handleAuthClick}
+                    className="w-full justify-start text-left p-4 h-auto hover:bg-gray-100 text-gray-700"
+                  >
+                    <LogIn className="h-5 w-5 mr-3" />
+                    <span className="font-medium">Sign In</span>
+                  </Button>
+                  
+                  <Button
+                    variant="ghost"
+                    onClick={handleNotificationClick}
+                    className="w-full justify-start text-left p-4 h-auto hover:bg-gray-100 text-gray-700 relative"
+                  >
+                    <Bell className="h-5 w-5 mr-3" />
+                    <span className="font-medium">Notifications</span>
+                    <span className="absolute right-4 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                      2
+                    </span>
+                  </Button>
+                  
+                  <Button
+                    variant="ghost"
+                    onClick={handleProfileClick}
+                    className="w-full justify-start text-left p-4 h-auto hover:bg-gray-100 text-gray-700"
+                  >
+                    <User className="h-5 w-5 mr-3" />
+                    <span className="font-medium">Profile</span>
+                  </Button>
+                </div>
+              </div>
               
-              <div className="mt-8 p-4 bg-blue-50 rounded-lg">
+              {/* Emergency Section */}
+              <div className="p-4 bg-blue-50 rounded-lg">
                 <h3 className="font-semibold text-primary mb-2">Need Help?</h3>
                 <p className="text-sm text-gray-600 mb-3">
                   24/7 emergency support is always available
