@@ -27,15 +27,15 @@ const mockGroceries: GroceryItem[] = [
   { id: 4, name: "Bananas", category: "Fruits", price: 1.99, description: "Fresh bananas, 2lb", image: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&h=300&fit=crop" },
   { id: 5, name: "Chicken Breast", category: "Meat", price: 8.99, description: "Boneless chicken breast, 1lb", image: "https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=400&h=300&fit=crop" },
   { id: 6, name: "Broccoli", category: "Vegetables", price: 2.49, description: "Fresh broccoli crowns", image: "https://images.unsplash.com/photo-1628773822503-930a7eaecf80?w=400&h=300&fit=crop" },
-  { id: 7, name: "Greek Yogurt", category: "Dairy", price: 5.99, description: "Plain Greek yogurt, 32oz", image: "https://images.unsplash.com/photo-1571212515416-cd882deb8d32?w=400&h=300&fit=crop" },
-  { id: 8, name: "Salmon Fillet", category: "Fish", price: 12.99, description: "Atlantic salmon, 1lb", image: "https://images.unsplash.com/photo-1574781330855-d0db0021a58a?w=400&h=300&fit=crop" },
+  { id: 7, name: "Greek Yogurt", category: "Dairy", price: 5.99, description: "Plain Greek yogurt, 32oz", image: "https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400&h=300&fit=crop" },
+  { id: 8, name: "Salmon Fillet", category: "Fish", price: 12.99, description: "Atlantic salmon, 1lb", image: "https://images.unsplash.com/photo-1559847844-d721426d6edc?w=400&h=300&fit=crop" },
   { id: 9, name: "Avocados", category: "Fruits", price: 4.49, description: "Ripe avocados, pack of 4", image: "https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=400&h=300&fit=crop" },
   { id: 10, name: "Spinach", category: "Vegetables", price: 3.29, description: "Fresh baby spinach, 5oz", image: "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=400&h=300&fit=crop" },
-  { id: 11, name: "Brown Rice", category: "Grains", price: 3.99, description: "Long grain brown rice, 2lb", image: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&h=300&fit=crop" },
+  { id: 11, name: "Brown Rice", category: "Grains", price: 3.99, description: "Long grain brown rice, 2lb", image: "https://images.unsplash.com/photo-1536304993881-ff6e9eefa2a6?w=400&h=300&fit=crop" },
   { id: 12, name: "Blueberries", category: "Fruits", price: 4.99, description: "Fresh blueberries, 1 pint", image: "https://images.unsplash.com/photo-1498557850523-fd3d118b962e?w=400&h=300&fit=crop" },
   { id: 13, name: "Cheddar Cheese", category: "Dairy", price: 6.49, description: "Sharp cheddar cheese, 8oz", image: "https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?w=400&h=300&fit=crop" },
-  { id: 14, name: "Sweet Potatoes", category: "Vegetables", price: 2.79, description: "Organic sweet potatoes, 2lb", image: "https://images.unsplash.com/photo-1605522724187-0cdf537a16ab?w=400&h=300&fit=crop" },
-  { id: 15, name: "Quinoa", category: "Grains", price: 7.99, description: "Organic quinoa, 1lb", image: "https://images.unsplash.com/photo-1571680104217-14dd2a0c7fd9?w=400&h=300&fit=crop" },
+  { id: 14, name: "Sweet Potatoes", category: "Vegetables", price: 2.79, description: "Organic sweet potatoes, 2lb", image: "https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=400&h=300&fit=crop" },
+  { id: 15, name: "Quinoa", category: "Grains", price: 7.99, description: "Organic quinoa, 1lb", image: "https://images.unsplash.com/photo-1585032226651-759b368d7246?w=400&h=300&fit=crop" },
 ];
 
 const GroceryShop = ({ onCheckout }: GroceryShopProps) => {

@@ -8,7 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 
 interface Reminder {
   id: number;
-  type: 'medication' | 'appointment';
+  type: 'medication' | 'appointment' | 'academic' | 'exam' | 'meeting';
   title: string;
   description: string;
   date: string;
@@ -36,12 +36,48 @@ const Reminders = () => {
       date: '2024-06-26',
       time: '14:30',
       completed: false
+    },
+    {
+      id: 3,
+      type: 'academic',
+      title: 'Group Discussion - Psychology',
+      description: 'Discuss Chapter 7: Cognitive Behavioral Therapy',
+      date: '2024-06-27',
+      time: '10:00',
+      completed: false
+    },
+    {
+      id: 4,
+      type: 'meeting',
+      title: 'Meeting with Prof. Johnson',
+      description: 'Discuss thesis proposal and next steps',
+      date: '2024-06-28',
+      time: '15:00',
+      completed: false
+    },
+    {
+      id: 5,
+      type: 'exam',
+      title: 'Mathematics CAT Exam',
+      description: 'Calculus II - Room 204',
+      date: '2024-06-30',
+      time: '09:00',
+      completed: false
+    },
+    {
+      id: 6,
+      type: 'exam',
+      title: 'Final Exam - Biology',
+      description: 'Comprehensive final exam covering all chapters',
+      date: '2024-07-05',
+      time: '13:00',
+      completed: false
     }
   ]);
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [newReminder, setNewReminder] = useState({
-    type: 'medication' as 'medication' | 'appointment',
+    type: 'medication' as 'medication' | 'appointment' | 'academic' | 'exam' | 'meeting',
     title: '',
     description: '',
     date: '',
@@ -110,6 +146,39 @@ const Reminders = () => {
     }
   };
 
+  const getTypeIcon = (type: string) => {
+    switch (type) {
+      case 'medication': return '💊';
+      case 'appointment': return '🏥';
+      case 'academic': return '📚';
+      case 'exam': return '📝';
+      case 'meeting': return '👨‍🏫';
+      default: return '📅';
+    }
+  };
+
+  const getTypeLabel = (type: string) => {
+    switch (type) {
+      case 'medication': return 'Medication';
+      case 'appointment': return 'Appointment';
+      case 'academic': return 'Academic';
+      case 'exam': return 'Exam/CAT';
+      case 'meeting': return 'Meeting';
+      default: return 'Reminder';
+    }
+  };
+
+  const getTypeColor = (type: string) => {
+    switch (type) {
+      case 'medication': return 'bg-blue-100 text-blue-800';
+      case 'appointment': return 'bg-green-100 text-green-800';
+      case 'academic': return 'bg-purple-100 text-purple-800';
+      case 'exam': return 'bg-red-100 text-red-800';
+      case 'meeting': return 'bg-yellow-100 text-yellow-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
   const upcomingReminders = reminders.filter(r => !r.completed);
   const completedReminders = reminders.filter(r => r.completed);
 
@@ -138,12 +207,15 @@ const Reminders = () => {
                 value={newReminder.type}
                 onChange={(e) => setNewReminder(prev => ({
                   ...prev,
-                  type: e.target.value as 'medication' | 'appointment'
+                  type: e.target.value as 'medication' | 'appointment' | 'academic' | 'exam' | 'meeting'
                 }))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
               >
                 <option value="medication">Medication</option>
-                <option value="appointment">Appointment</option>
+                <option value="appointment">Medical Appointment</option>
+                <option value="academic">Academic/Study Group</option>
+                <option value="exam">Exam/CAT</option>
+                <option value="meeting">Meeting with Lecturer</option>
               </select>
             </div>
 
@@ -216,12 +288,8 @@ const Reminders = () => {
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        reminder.type === 'medication' 
-                          ? 'bg-blue-100 text-blue-800' 
-                          : 'bg-green-100 text-green-800'
-                      }`}>
-                        {reminder.type === 'medication' ? '💊 Medication' : '📅 Appointment'}
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getTypeColor(reminder.type)}`}>
+                        {getTypeIcon(reminder.type)} {getTypeLabel(reminder.type)}
                       </span>
                     </div>
                     <h4 className="font-semibold text-lg">{reminder.title}</h4>

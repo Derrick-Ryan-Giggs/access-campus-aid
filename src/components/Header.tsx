@@ -6,6 +6,8 @@ import { Bell, User, Home, LogIn } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import MobileMenu from './MobileMenu';
 import AuthModal from './auth/AuthModal';
+import NotificationPanel from './NotificationPanel';
+import UserProfile from './UserProfile';
 
 interface HeaderProps {
   activeSection: 'home' | 'groceries' | 'reminders' | 'tutors';
@@ -16,6 +18,8 @@ const Header = ({ activeSection, onNavigate }: HeaderProps) => {
   const { toast } = useToast();
   const [isEmergencyMode, setIsEmergencyMode] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isNotificationPanelOpen, setIsNotificationPanelOpen] = useState(false);
+  const [isUserProfileOpen, setIsUserProfileOpen] = useState(false);
 
   const handleEmergencyClick = () => {
     setIsEmergencyMode(true);
@@ -74,11 +78,11 @@ const Header = ({ activeSection, onNavigate }: HeaderProps) => {
             </div>
 
             {/* Right side buttons */}
-            <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-4">
+            <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-3">
               {/* Emergency Button - Responsive sizing */}
               <Button
                 onClick={handleEmergencyClick}
-                className="emergency-pulse bg-destructive hover:bg-destructive/90 text-white font-semibold px-2 sm:px-4 lg:px-6 py-1.5 sm:py-2 text-xs sm:text-sm lg:text-base whitespace-nowrap"
+                className="emergency-pulse bg-destructive hover:bg-destructive/90 text-white font-semibold px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 text-xs sm:text-sm lg:text-base whitespace-nowrap flex-shrink-0"
                 aria-label="Emergency assistance"
                 size="sm"
               >
@@ -87,12 +91,12 @@ const Header = ({ activeSection, onNavigate }: HeaderProps) => {
               </Button>
 
               {/* Desktop Auth and User actions */}
-              <div className="hidden sm:flex items-center space-x-2">
+              <div className="hidden sm:flex items-center space-x-1 lg:space-x-2">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setIsAuthModalOpen(true)}
-                  className="text-gray-700 hover:text-primary"
+                  className="text-gray-700 hover:text-primary px-2 lg:px-3"
                   aria-label="Sign in"
                 >
                   <LogIn className="h-4 w-4 mr-1" />
@@ -102,16 +106,21 @@ const Header = ({ activeSection, onNavigate }: HeaderProps) => {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-gray-700 hover:text-primary"
+                  onClick={() => setIsNotificationPanelOpen(true)}
+                  className="text-gray-700 hover:text-primary relative px-2 lg:px-3"
                   aria-label="Notifications"
                 >
                   <Bell className="h-4 w-4" />
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    2
+                  </span>
                 </Button>
                 
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-gray-700 hover:text-primary"
+                  onClick={() => setIsUserProfileOpen(true)}
+                  className="text-gray-700 hover:text-primary px-2 lg:px-3"
                   aria-label="User profile"
                 >
                   <User className="h-4 w-4" />
@@ -162,6 +171,18 @@ const Header = ({ activeSection, onNavigate }: HeaderProps) => {
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
         initialMode="login"
+      />
+
+      {/* Notification Panel */}
+      <NotificationPanel
+        isOpen={isNotificationPanelOpen}
+        onClose={() => setIsNotificationPanelOpen(false)}
+      />
+
+      {/* User Profile */}
+      <UserProfile
+        isOpen={isUserProfileOpen}
+        onClose={() => setIsUserProfileOpen(false)}
       />
     </>
   );
