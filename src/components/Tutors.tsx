@@ -30,7 +30,7 @@ const mockTutors: Tutor[] = [
     availability: "Mon-Wed 2-6 PM",
     rating: 4.8,
     bio: "PhD in Mathematics with 5 years of tutoring experience.",
-    image: "https://images.unsplash.com/photo-1494790108755-2616b612b647?w=400&h=400&fit=crop&crop=face"
+    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face"
   },
   {
     id: 2,
@@ -52,7 +52,7 @@ const mockTutors: Tutor[] = [
     availability: "Mon-Fri 1-5 PM",
     rating: 4.7,
     bio: "Biology professor with expertise in biochemistry and molecular biology.",
-    image: "https://images.unsplash.com/photo-1559839734-2b71ea197c2f?w=400&h=400&fit=crop&crop=face"
+    image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&h=400&fit=crop&crop=face"
   },
   {
     id: 4,
@@ -85,7 +85,7 @@ const mockTutors: Tutor[] = [
     availability: "Tue-Fri 9-1 PM",
     rating: 4.5,
     bio: "MBA graduate specializing in microeconomics, financial analysis, and business strategy.",
-    image: "https://images.unsplash.com/photo-1566492031773-4f4e44671d66?w=400&h=400&fit=crop&crop=face"
+    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=face"
   },
   {
     id: 7,
