@@ -11,7 +11,7 @@ import UserProfile from './UserProfile';
 
 interface HeaderProps {
   activeSection: 'home' | 'groceries' | 'reminders' | 'tutors';
-  onNavigate: (section: 'home' | 'groceries' | 'reminders' | 'tutors') => void;
+  onNavigate: (section: any) => void;
 }
 
 const Header = ({ activeSection, onNavigate }: HeaderProps) => {
