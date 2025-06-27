@@ -16,6 +16,27 @@ interface DashboardProps {
 const Dashboard = ({ onNavigate }: DashboardProps) => {
   const features = [
     {
+      title: "Smart Personal Assistant",
+      description: "AI-powered task prioritization, voice commands, and personalized recommendations designed for accessibility needs.",
+      icon: "🧠",
+      buttonText: "Open Assistant",
+      onClick: () => onNavigate('smart-assistant')
+    },
+    {
+      title: "Emergency & Safety",
+      description: "Comprehensive safety features including emergency contacts, buddy system, and campus navigation assistance.",
+      icon: "🚨",
+      buttonText: "Safety Features",
+      onClick: () => onNavigate('emergency-support')
+    },
+    {
+      title: "Academic Integration Hub",
+      description: "Assignment tracking, study groups, shared notes, and exam accommodations all in one accessible platform.",
+      icon: "📚",
+      buttonText: "Academic Hub",
+      onClick: () => onNavigate('academic-hub')
+    },
+    {
       title: "Grocery Shopping",
       description: "Order groceries online with easy-to-use interface designed for accessibility. Browse categories, search items, and get essentials delivered.",
       icon: "🛒",

@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import Header from '@/components/Header';
 import Dashboard from '@/components/Dashboard';
@@ -12,6 +11,9 @@ import VirtualHangouts from '@/components/VirtualHangouts';
 import Mentorship from '@/components/Mentorship';
 import HealthWellness from '@/components/HealthWellness';
 import AdvocacyLegal from '@/components/AdvocacyLegal';
+import SmartAssistant from '@/components/SmartAssistant';
+import EmergencySupport from '@/components/EmergencySupport';
+import AcademicHub from '@/components/AcademicHub';
 
 interface GroceryItem {
   id: number;
@@ -21,7 +23,7 @@ interface GroceryItem {
   description: string;
 }
 
-type ActiveSection = 'home' | 'groceries' | 'reminders' | 'tutors' | 'checkout' | 'live-support' | 'personal-care' | 'virtual-hangouts' | 'mentorship' | 'health-wellness' | 'advocacy-legal';
+type ActiveSection = 'home' | 'groceries' | 'reminders' | 'tutors' | 'checkout' | 'live-support' | 'personal-care' | 'virtual-hangouts' | 'mentorship' | 'health-wellness' | 'advocacy-legal' | 'smart-assistant' | 'emergency-support' | 'academic-hub';
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState<ActiveSection>('home');
@@ -57,6 +59,12 @@ const Index = () => {
         return <HealthWellness />;
       case 'advocacy-legal':
         return <AdvocacyLegal />;
+      case 'smart-assistant':
+        return <SmartAssistant />;
+      case 'emergency-support':
+        return <EmergencySupport />;
+      case 'academic-hub':
+        return <AcademicHub />;
       case 'checkout':
         return (
           <Checkout
