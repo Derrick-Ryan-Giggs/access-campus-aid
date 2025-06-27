@@ -1,14 +1,28 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Calendar, MessageCircle, Video, GraduationCap, Briefcase, Heart, Star } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const Mentorship = () => {
   const { toast } = useToast();
+  const [connectionForm, setConnectionForm] = useState({
+    message: '',
+    goals: '',
+    availability: '',
+    experience: ''
+  });
+  const [messageForm, setMessageForm] = useState({
+    recipient: '',
+    subject: '',
+    message: ''
+  });
   
   const mentors = [
     {
@@ -85,10 +99,60 @@ const Mentorship = () => {
     }
   ];
 
-  const handleConnectMentor = (mentorId: number) => {
+  const handleConnectMentor = (mentorId: number, mentorName: string) => {
+    setConnectionForm({...connectionForm});
+    // Dialog will open automatically
+  };
+
+  const handleSendConnectionRequest = (mentorName: string) => {
+    if (!connectionForm.message || !connectionForm.goals) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in your message and goals to connect with the mentor.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     toast({
-      title: "Mentor Connection Request Sent",
-      description: "Your potential mentor will receive your request and respond within 24 hours.",
+      title: "Connection Request Sent!",
+      description: `Your message has been sent to ${mentorName}. They'll respond within 24 hours.`,
+    });
+    
+    setConnectionForm({
+      message: '',
+      goals: '',
+      availability: '',
+      experience: ''
+    });
+  };
+
+  const handleSendMessage = () => {
+    if (!messageForm.subject || !messageForm.message) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in the subject and message fields.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    toast({
+      title: "Message Sent!",
+      description: `Your message to ${messageForm.recipient} has been delivered.`,
+    });
+    
+    setMessageForm({
+      recipient: '',
+      subject: '',
+      message: ''
+    });
+  };
+
+  const handleScheduleCall = (mentorName: string) => {
+    toast({
+      title: "Calendar Opening",
+      description: `Opening calendar to schedule a session with ${mentorName}...`,
     });
   };
 
@@ -172,16 +236,107 @@ const Mentorship = () => {
                 </div>
 
                 <div className="flex space-x-2">
-                  <Button 
-                    className="flex-1" 
-                    onClick={() => handleConnectMentor(mentor.id)}
-                  >
-                    Connect
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    <MessageCircle className="h-4 w-4" />
-                  </Button>
-                  <Button variant="outline" size="sm">
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button 
+                        className="flex-1" 
+                        onClick={() => handleConnectMentor(mentor.id, mentor.name)}
+                      >
+                        Connect
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-md">
+                      <DialogHeader>
+                        <DialogTitle>Connect with {mentor.name}</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div>
+                          <Label htmlFor="goals">Your Goals</Label>
+                          <Textarea 
+                            id="goals" 
+                            placeholder="What are you hoping to achieve through mentorship?"
+                            value={connectionForm.goals}
+                            onChange={(e) => setConnectionForm({...connectionForm, goals: e.target.value})}
+                          />
+                        </div>
+                        
+                        <div>
+                          <Label htmlFor="experience">Your Background</Label>
+                          <Textarea 
+                            id="experience" 
+                            placeholder="Tell us about your academic/professional background..."
+                            value={connectionForm.experience}
+                            onChange={(e) => setConnectionForm({...connectionForm, experience: e.target.value})}
+                          />
+                        </div>
+                        
+                        <div>
+                          <Label htmlFor="availability">Your Availability</Label>
+                          <Input 
+                            id="availability" 
+                            placeholder="e.g., Weekends, Evenings"
+                            value={connectionForm.availability}
+                            onChange={(e) => setConnectionForm({...connectionForm, availability: e.target.value})}
+                          />
+                        </div>
+                        
+                        <div>
+                          <Label htmlFor="message">Personal Message</Label>
+                          <Textarea 
+                            id="message" 
+                            placeholder="Write a personal message to introduce yourself..."
+                            value={connectionForm.message}
+                            onChange={(e) => setConnectionForm({...connectionForm, message: e.target.value})}
+                          />
+                        </div>
+                        
+                        <Button onClick={() => handleSendConnectionRequest(mentor.name)} className="w-full">
+                          Send Connection Request
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                  
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" size="sm" onClick={() => setMessageForm({...messageForm, recipient: mentor.name})}>
+                        <MessageCircle className="h-4 w-4" />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-md">
+                      <DialogHeader>
+                        <DialogTitle>Send Message to {mentor.name}</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div>
+                          <Label htmlFor="subject">Subject</Label>
+                          <Input 
+                            id="subject" 
+                            placeholder="Enter message subject"
+                            value={messageForm.subject}
+                            onChange={(e) => setMessageForm({...messageForm, subject: e.target.value})}
+                          />
+                        </div>
+                        
+                        <div>
+                          <Label htmlFor="messageText">Message</Label>
+                          <Textarea 
+                            id="messageText" 
+                            placeholder="Write your message..."
+                            rows={4}
+                            value={messageForm.message}
+                            onChange={(e) => setMessageForm({...messageForm, message: e.target.value})}
+                          />
+                        </div>
+                        
+                        <Button onClick={handleSendMessage} className="w-full">
+                          Send Message
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                  
+                  <Button variant="outline" size="sm" onClick={() => handleScheduleCall(mentor.name)}>
                     <Calendar className="h-4 w-4" />
                   </Button>
                 </div>

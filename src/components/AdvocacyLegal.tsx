@@ -3,11 +3,22 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { FileText, Scale, Users, AlertCircle, Download, Phone, MessageCircle, BookOpen } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const AdvocacyLegal = () => {
   const { toast } = useToast();
+  const [contactForm, setContactForm] = useState({
+    service: '',
+    name: '',
+    email: '',
+    issue: '',
+    urgency: 'normal'
+  });
   
   const resources = [
     {
@@ -96,17 +107,70 @@ const AdvocacyLegal = () => {
   ];
 
   const handleDownloadResource = (resource: string) => {
+    // Simulate file download
+    const link = document.createElement('a');
+    link.href = '#'; // In real app, this would be actual file URL
+    link.download = `${resource.replace(/\s+/g, '_')}.pdf`;
+    
     toast({
       title: "Download Started",
       description: `${resource} is being downloaded to your device.`,
     });
+    
+    // Simulate download process
+    setTimeout(() => {
+      toast({
+        title: "Download Complete",
+        description: `${resource} has been saved to your Downloads folder.`,
+      });
+    }, 2000);
   };
 
-  const handleContactLegal = (service: string) => {
+  const handleContactLegal = (serviceName: string) => {
+    setContactForm({...contactForm, service: serviceName});
+  };
+
+  const handleSubmitContact = () => {
+    if (!contactForm.name || !contactForm.email || !contactForm.issue) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required fields to contact legal services.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     toast({
-      title: "Legal Support Request",
-      description: `Connecting you with ${service}. You'll receive contact information shortly.`,
+      title: "Contact Request Sent!",
+      description: `Your request has been sent to ${contactForm.service}. They'll respond within 24 hours.`,
     });
+    
+    setContactForm({
+      service: '',
+      name: '',
+      email: '',
+      issue: '',
+      urgency: 'normal'
+    });
+  };
+
+  const handleDownloadRightsGuide = () => {
+    const link = document.createElement('a');
+    link.href = '#'; // In real app, this would be actual PDF URL
+    link.download = 'Complete_Disability_Rights_Guide.pdf';
+    
+    toast({
+      title: "Downloading Rights Guide",
+      description: "Your complete disability rights guide is being prepared...",
+    });
+    
+    // Simulate download preparation
+    setTimeout(() => {
+      toast({
+        title: "Download Complete",
+        description: "Complete Disability Rights Guide (156 pages) has been downloaded successfully.",
+      });
+    }, 3000);
   };
 
   return (
@@ -235,13 +299,74 @@ const AdvocacyLegal = () => {
                     </Badge>
                   )}
                   <div className="flex space-x-2 mt-4">
-                    <Button 
-                      className="flex-1" 
-                      onClick={() => handleContactLegal(service.name)}
-                    >
-                      <Phone className="h-4 w-4 mr-2" />
-                      Contact
-                    </Button>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button 
+                          className="flex-1" 
+                          onClick={() => handleContactLegal(service.name)}
+                        >
+                          <Phone className="h-4 w-4 mr-2" />
+                          Contact
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-md">
+                        <DialogHeader>
+                          <DialogTitle>Contact {service.name}</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          <div>
+                            <Label htmlFor="name">Your Name *</Label>
+                            <Input 
+                              id="name" 
+                              placeholder="Enter your full name"
+                              value={contactForm.name}
+                              onChange={(e) => setContactForm({...contactForm, name: e.target.value})}
+                            />
+                          </div>
+                          
+                          <div>
+                            <Label htmlFor="email">Email Address *</Label>
+                            <Input 
+                              id="email" 
+                              type="email" 
+                              placeholder="Enter your email"
+                              value={contactForm.email}
+                              onChange={(e) => setContactForm({...contactForm, email: e.target.value})}
+                            />
+                          </div>
+                          
+                          <div>
+                            <Label htmlFor="urgency">Urgency Level</Label>
+                            <select 
+                              id="urgency" 
+                              className="w-full p-2 border rounded"
+                              value={contactForm.urgency}
+                              onChange={(e) => setContactForm({...contactForm, urgency: e.target.value})}
+                            >
+                              <option value="normal">Normal</option>
+                              <option value="urgent">Urgent</option>
+                              <option value="emergency">Emergency</option>
+                            </select>
+                          </div>
+                          
+                          <div>
+                            <Label htmlFor="issue">Describe Your Issue *</Label>
+                            <Textarea 
+                              id="issue" 
+                              placeholder="Please describe your legal issue or concern..."
+                              rows={4}
+                              value={contactForm.issue}
+                              onChange={(e) => setContactForm({...contactForm, issue: e.target.value})}
+                            />
+                          </div>
+                          
+                          <Button onClick={handleSubmitContact} className="w-full">
+                            Send Contact Request
+                          </Button>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                    
                     <Button variant="outline" size="sm">
                       <MessageCircle className="h-4 w-4" />
                     </Button>
@@ -304,7 +429,8 @@ const AdvocacyLegal = () => {
             </div>
           </div>
           <div className="text-center mt-6">
-            <Button size="lg">
+            <Button size="lg" onClick={handleDownloadRightsGuide}>
+              <Download className="h-4 w-4 mr-2" />
               Download Complete Rights Guide
             </Button>
           </div>

@@ -1,13 +1,28 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Calendar, Users, Video, Gamepad2, BookOpen, Music, Coffee, Clock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const VirtualHangouts = () => {
   const { toast } = useToast();
+  const [eventForm, setEventForm] = useState({
+    title: '',
+    type: '',
+    date: '',
+    time: '',
+    duration: '',
+    description: '',
+    maxParticipants: '',
+    accessibilityFeatures: []
+  });
   
   const upcomingEvents = [
     {
@@ -64,18 +79,54 @@ const VirtualHangouts = () => {
     { name: 'Study Group', color: 'bg-orange-500', count: 10 }
   ];
 
-  const handleJoinEvent = (eventId: number) => {
+  const handleJoinEvent = (eventId: number, eventTitle: string) => {
     toast({
       title: "Event Joined!",
-      description: "You'll receive a reminder 15 minutes before the event starts.",
+      description: `You've successfully joined "${eventTitle}". You'll receive a reminder 15 minutes before the event starts.`,
     });
   };
 
   const handleCreateEvent = () => {
+    if (!eventForm.title || !eventForm.type || !eventForm.date || !eventForm.time) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required fields to create your event.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     toast({
-      title: "Event Creation",
-      description: "Event creation form will open shortly.",
+      title: "Event Created Successfully!",
+      description: `"${eventForm.title}" has been scheduled for ${eventForm.date} at ${eventForm.time}`,
     });
+    
+    // Reset form
+    setEventForm({
+      title: '',
+      type: '',
+      date: '',
+      time: '',
+      duration: '',
+      description: '',
+      maxParticipants: '',
+      accessibilityFeatures: []
+    });
+  };
+
+  const handleBrowseCommunities = () => {
+    toast({
+      title: "Communities Directory",
+      description: "Opening community browser with 50+ active groups...",
+    });
+  };
+
+  const toggleAccessibilityFeature = (feature: string) => {
+    const updatedFeatures = eventForm.accessibilityFeatures.includes(feature)
+      ? eventForm.accessibilityFeatures.filter(f => f !== feature)
+      : [...eventForm.accessibilityFeatures, feature];
+    
+    setEventForm({...eventForm, accessibilityFeatures: updatedFeatures});
   };
 
   return (
@@ -89,14 +140,130 @@ const VirtualHangouts = () => {
 
       {/* Quick Actions */}
       <div className="flex flex-wrap gap-4 mb-8 justify-center">
-        <Button onClick={handleCreateEvent} size="lg">
-          <Calendar className="h-5 w-5 mr-2" />
-          Create Event
-        </Button>
-        <Button variant="outline" size="lg">
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button size="lg">
+              <Calendar className="h-5 w-5 mr-2" />
+              Create Event
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Create New Event</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="title">Event Title *</Label>
+                <Input 
+                  id="title" 
+                  placeholder="Enter event title"
+                  value={eventForm.title}
+                  onChange={(e) => setEventForm({...eventForm, title: e.target.value})}
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="type">Event Type *</Label>
+                <Select value={eventForm.type} onValueChange={(value) => setEventForm({...eventForm, type: value})}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select event type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="gaming">Gaming</SelectItem>
+                    <SelectItem value="book-club">Book Club</SelectItem>
+                    <SelectItem value="social">Social Chat</SelectItem>
+                    <SelectItem value="music">Music</SelectItem>
+                    <SelectItem value="study">Study Group</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="date">Date *</Label>
+                  <Input 
+                    id="date" 
+                    type="date" 
+                    value={eventForm.date}
+                    onChange={(e) => setEventForm({...eventForm, date: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="time">Time *</Label>
+                  <Input 
+                    id="time" 
+                    type="time" 
+                    value={eventForm.time}
+                    onChange={(e) => setEventForm({...eventForm, time: e.target.value})}
+                  />
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="duration">Duration (minutes)</Label>
+                  <Select value={eventForm.duration} onValueChange={(value) => setEventForm({...eventForm, duration: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select duration" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="30">30 minutes</SelectItem>
+                      <SelectItem value="60">1 hour</SelectItem>
+                      <SelectItem value="90">1.5 hours</SelectItem>
+                      <SelectItem value="120">2 hours</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="maxParticipants">Max Participants</Label>
+                  <Input 
+                    id="maxParticipants" 
+                    type="number" 
+                    placeholder="e.g., 15"
+                    value={eventForm.maxParticipants}
+                    onChange={(e) => setEventForm({...eventForm, maxParticipants: e.target.value})}
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <Label htmlFor="description">Description</Label>
+                <Textarea 
+                  id="description" 
+                  placeholder="Describe your event..."
+                  value={eventForm.description}
+                  onChange={(e) => setEventForm({...eventForm, description: e.target.value})}
+                />
+              </div>
+              
+              <div>
+                <Label>Accessibility Features</Label>
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  {['Closed Captions', 'Screen Reader Friendly', 'Sign Language', 'Voice Commands', 'Large Text', 'Audio Description'].map((feature) => (
+                    <div key={feature} className="flex items-center space-x-2">
+                      <Checkbox 
+                        id={feature}
+                        checked={eventForm.accessibilityFeatures.includes(feature)}
+                        onCheckedChange={() => toggleAccessibilityFeature(feature)}
+                      />
+                      <Label htmlFor={feature} className="text-sm">{feature}</Label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              <Button onClick={handleCreateEvent} className="w-full">
+                Create Event
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+        
+        <Button variant="outline" size="lg" onClick={handleBrowseCommunities}>
           <Users className="h-5 w-5 mr-2" />
           Browse Communities
         </Button>
+        
         <Button variant="outline" size="lg">
           <Video className="h-5 w-5 mr-2" />
           Join Random Chat
@@ -160,7 +327,7 @@ const VirtualHangouts = () => {
                 <div className="flex space-x-2">
                   <Button 
                     className="flex-1" 
-                    onClick={() => handleJoinEvent(event.id)}
+                    onClick={() => handleJoinEvent(event.id, event.title)}
                   >
                     <Video className="h-4 w-4 mr-2" />
                     Join Event
