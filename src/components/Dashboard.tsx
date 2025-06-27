@@ -7,8 +7,10 @@ import QuickStats from './QuickStats';
 import ServiceCategories from './ServiceCategories';
 import ContactInfo from './ContactInfo';
 
+type ActiveSection = 'home' | 'groceries' | 'reminders' | 'tutors' | 'checkout' | 'live-support' | 'personal-care' | 'virtual-hangouts' | 'mentorship' | 'health-wellness' | 'advocacy-legal';
+
 interface DashboardProps {
-  onNavigate: (section: string) => void;
+  onNavigate: (section: ActiveSection) => void;
 }
 
 const Dashboard = ({ onNavigate }: DashboardProps) => {
