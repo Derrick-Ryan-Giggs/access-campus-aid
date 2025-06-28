@@ -36,7 +36,18 @@ export function useReminders() {
 
       if (error) throw error;
 
-      setReminders(data || []);
+      // Type cast the data to match our interface
+      const typedReminders: Reminder[] = (data || []).map(item => ({
+        id: item.id,
+        type: item.type as 'medication' | 'appointment' | 'academic' | 'exam' | 'meeting',
+        title: item.title,
+        description: item.description,
+        date: item.date,
+        time: item.time,
+        completed: item.completed
+      }));
+
+      setReminders(typedReminders);
     } catch (error) {
       console.error('Error fetching reminders:', error);
       toast({
@@ -65,7 +76,17 @@ export function useReminders() {
 
       if (error) throw error;
 
-      setReminders(prev => [...prev, data]);
+      const typedReminder: Reminder = {
+        id: data.id,
+        type: data.type as 'medication' | 'appointment' | 'academic' | 'exam' | 'meeting',
+        title: data.title,
+        description: data.description,
+        date: data.date,
+        time: data.time,
+        completed: data.completed
+      };
+
+      setReminders(prev => [...prev, typedReminder]);
       toast({
         title: "Success",
         description: "Reminder added successfully",
@@ -94,7 +115,17 @@ export function useReminders() {
 
       if (error) throw error;
 
-      setReminders(prev => prev.map(r => r.id === id ? data : r));
+      const typedReminder: Reminder = {
+        id: data.id,
+        type: data.type as 'medication' | 'appointment' | 'academic' | 'exam' | 'meeting',
+        title: data.title,
+        description: data.description,
+        date: data.date,
+        time: data.time,
+        completed: data.completed
+      };
+
+      setReminders(prev => prev.map(r => r.id === id ? typedReminder : r));
       toast({
         title: "Success",
         description: "Reminder updated successfully",

@@ -83,7 +83,15 @@ const Header = () => {
       </div>
 
       {/* Mobile Menu */}
-      <MobileMenu isOpen={isMobileMenuOpen} onClose={() => setIsMobileMenuOpen(false)} />
+      <MobileMenu 
+        activeSection="home" 
+        onNavigate={() => {}} 
+        onAuthClick={() => {}}
+        onNotificationClick={() => setIsNotificationOpen(true)}
+        onProfileClick={() => {}}
+        isOpen={isMobileMenuOpen} 
+        onClose={() => setIsMobileMenuOpen(false)} 
+      />
     </header>
   );
 };

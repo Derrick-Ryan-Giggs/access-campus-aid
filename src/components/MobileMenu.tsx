@@ -10,11 +10,11 @@ interface MobileMenuProps {
   onAuthClick?: () => void;
   onNotificationClick?: () => void;
   onProfileClick?: () => void;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-const MobileMenu = ({ activeSection, onNavigate, onAuthClick, onNotificationClick, onProfileClick }: MobileMenuProps) => {
-  const [isOpen, setIsOpen] = useState(false);
-
+const MobileMenu = ({ activeSection, onNavigate, onAuthClick, onNotificationClick, onProfileClick, isOpen, onClose }: MobileMenuProps) => {
   const menuItems = [
     { key: 'home' as const, label: 'Home', icon: Home },
     { key: 'groceries' as const, label: 'Groceries', icon: ShoppingCart },
@@ -24,37 +24,26 @@ const MobileMenu = ({ activeSection, onNavigate, onAuthClick, onNotificationClic
 
   const handleNavigate = (section: 'home' | 'groceries' | 'reminders' | 'tutors') => {
     onNavigate(section);
-    setIsOpen(false);
+    onClose();
   };
 
   const handleAuthClick = () => {
     if (onAuthClick) onAuthClick();
-    setIsOpen(false);
+    onClose();
   };
 
   const handleNotificationClick = () => {
     if (onNotificationClick) onNotificationClick();
-    setIsOpen(false);
+    onClose();
   };
 
   const handleProfileClick = () => {
     if (onProfileClick) onProfileClick();
-    setIsOpen(false);
+    onClose();
   };
 
   return (
     <>
-      {/* Mobile Menu Trigger */}
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => setIsOpen(true)}
-        className="md:hidden text-gray-700 hover:text-primary"
-        aria-label="Open mobile menu"
-      >
-        <Menu className="h-5 w-5" />
-      </Button>
-
       {/* Mobile Menu Overlay */}
       {isOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 md:hidden animate-fade-in">
@@ -64,7 +53,7 @@ const MobileMenu = ({ activeSection, onNavigate, onAuthClick, onNotificationClic
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setIsOpen(false)}
+                onClick={onClose}
                 aria-label="Close mobile menu"
               >
                 <X className="h-5 w-5" />

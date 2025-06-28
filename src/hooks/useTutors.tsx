@@ -18,6 +18,7 @@ export interface Tutor {
 
 export interface TutorRequest {
   id: string;
+  user_id: string;
   tutor_id: string;
   subject: string;
   message: string;
@@ -29,7 +30,7 @@ export interface TutorRequest {
 
 export function useTutors() {
   const [tutors, setTutors] = useState<Tutor[]>([]);
-  const [requests, setRequests] = useState<TutorRequest[]>([]);
+  const [tutorRequests, setTutorRequests] = useState<TutorRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
   const { toast } = useToast();
@@ -42,7 +43,20 @@ export function useTutors() {
         .order('rating', { ascending: false });
 
       if (error) throw error;
-      setTutors(data || []);
+
+      const typedTutors: Tutor[] = (data || []).map(item => ({
+        id: item.id,
+        name: item.name,
+        subjects: item.subjects,
+        email: item.email,
+        phone: item.phone,
+        availability: item.availability,
+        rating: parseFloat(item.rating) || 0,
+        bio: item.bio,
+        image: item.image
+      }));
+
+      setTutors(typedTutors);
     } catch (error) {
       console.error('Error fetching tutors:', error);
       toast({
@@ -53,9 +67,9 @@ export function useTutors() {
     }
   };
 
-  const fetchRequests = async () => {
+  const fetchTutorRequests = async () => {
     if (!user) {
-      setRequests([]);
+      setTutorRequests([]);
       return;
     }
 
@@ -70,9 +84,32 @@ export function useTutors() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setRequests(data || []);
+
+      const typedRequests: TutorRequest[] = (data || []).map(item => ({
+        id: item.id,
+        user_id: item.user_id,
+        tutor_id: item.tutor_id,
+        subject: item.subject,
+        message: item.message,
+        preferred_time: item.preferred_time,
+        status: item.status as 'pending' | 'accepted' | 'rejected' | 'completed',
+        created_at: item.created_at,
+        tutor: item.tutor ? {
+          id: item.tutor.id,
+          name: item.tutor.name,
+          subjects: item.tutor.subjects,
+          email: item.tutor.email,
+          phone: item.tutor.phone,
+          availability: item.tutor.availability,
+          rating: parseFloat(item.tutor.rating) || 0,
+          bio: item.tutor.bio,
+          image: item.tutor.image
+        } : undefined
+      }));
+
+      setTutorRequests(typedRequests);
     } catch (error) {
-      console.error('Error fetching requests:', error);
+      console.error('Error fetching tutor requests:', error);
       toast({
         title: "Error",
         description: "Failed to load tutor requests",
@@ -91,7 +128,19 @@ export function useTutors() {
 
       if (error) throw error;
 
-      setTutors(prev => [...prev, data]);
+      const typedTutor: Tutor = {
+        id: data.id,
+        name: data.name,
+        subjects: data.subjects,
+        email: data.email,
+        phone: data.phone,
+        availability: data.availability,
+        rating: parseFloat(data.rating) || 0,
+        bio: data.bio,
+        image: data.image
+      };
+
+      setTutors(prev => [...prev, typedTutor]);
       toast({
         title: "Success",
         description: "Tutor added successfully",
@@ -117,18 +166,20 @@ export function useTutors() {
           tutor_id: tutorId,
           subject,
           message,
-          preferred_time: preferredTime
+          preferred_time: preferredTime,
+          status: 'pending'
         }])
         .select()
         .single();
 
       if (error) throw error;
 
-      await fetchRequests();
       toast({
         title: "Success",
         description: "Tutor request sent successfully",
       });
+
+      await fetchTutorRequests();
     } catch (error) {
       console.error('Error requesting tutor:', error);
       toast({
@@ -142,7 +193,7 @@ export function useTutors() {
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
-      await Promise.all([fetchTutors(), fetchRequests()]);
+      await Promise.all([fetchTutors(), fetchTutorRequests()]);
       setLoading(false);
     };
 
@@ -151,10 +202,10 @@ export function useTutors() {
 
   return {
     tutors,
-    requests,
+    tutorRequests,
     loading,
     addTutor,
     requestTutor,
-    refetch: () => Promise.all([fetchTutors(), fetchRequests()])
+    refetch: () => Promise.all([fetchTutors(), fetchTutorRequests()])
   };
 }
