@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import FeatureCard from './FeatureCard';
@@ -7,7 +6,7 @@ import QuickStats from './QuickStats';
 import ServiceCategories from './ServiceCategories';
 import ContactInfo from './ContactInfo';
 
-type ActiveSection = 'home' | 'groceries' | 'reminders' | 'tutors' | 'checkout' | 'live-support' | 'personal-care' | 'virtual-hangouts' | 'mentorship' | 'health-wellness' | 'advocacy-legal';
+type ActiveSection = 'home' | 'groceries' | 'reminders' | 'tutors' | 'checkout' | 'live-support' | 'personal-care' | 'virtual-hangouts' | 'mentorship' | 'health-wellness' | 'advocacy-legal' | 'smart-assistant' | 'emergency-support' | 'academic-hub';
 
 interface DashboardProps {
   onNavigate: (section: ActiveSection) => void;
