@@ -9,13 +9,14 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Brain, Mic, MicOff, Calendar, Clock, User, AlertTriangle, CheckCircle2, Plus, Zap } from 'lucide-react';
+import { Brain, Mic, MicOff, Calendar, Clock, User, AlertTriangle, CheckCircle2, Plus, Zap, Edit } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const SmartAssistant = () => {
   const { toast } = useToast();
   const [isListening, setIsListening] = useState(false);
   const [voiceText, setVoiceText] = useState('');
+  const [editingTask, setEditingTask] = useState<number | null>(null);
   const [newTask, setNewTask] = useState({
     title: '',
     description: '',
@@ -25,7 +26,7 @@ const SmartAssistant = () => {
     accommodations: ''
   });
 
-  const prioritizedTasks = [
+  const [prioritizedTasks, setPrioritizedTasks] = useState([
     {
       id: 1,
       title: 'Submit Psychology Assignment',
@@ -56,7 +57,7 @@ const SmartAssistant = () => {
       aiReason: 'Social activity recommended for wellness balance',
       accommodations: ['Audio format available', 'Closed captions']
     }
-  ];
+  ]);
 
   const recommendations = [
     {
@@ -111,7 +112,6 @@ const SmartAssistant = () => {
         description: "Listening for your command... Say 'schedule meeting', 'add task', or 'find tutor'",
       });
       
-      // Simulate voice recognition
       setTimeout(() => {
         setIsListening(false);
         setVoiceText("Schedule a study session for tomorrow at 2 PM");
@@ -139,6 +139,18 @@ const SmartAssistant = () => {
       return;
     }
 
+    const task = {
+      id: Date.now(),
+      title: newTask.title,
+      description: newTask.description,
+      priority: newTask.priority,
+      deadline: newTask.deadline,
+      energyRequired: newTask.energyLevel,
+      aiReason: 'AI analyzing optimal scheduling based on your patterns',
+      accommodations: newTask.accommodations ? newTask.accommodations.split(',').map(acc => acc.trim()) : []
+    };
+
+    setPrioritizedTasks([...prioritizedTasks, task]);
     toast({
       title: "Task Added Successfully!",
       description: `"${newTask.title}" has been added to your AI-prioritized task list`,
@@ -155,10 +167,82 @@ const SmartAssistant = () => {
   };
 
   const handleTaskComplete = (taskId: number, taskTitle: string) => {
+    setPrioritizedTasks(prioritizedTasks.filter(task => task.id !== taskId));
     toast({
       title: "Task Completed!",
       description: `"${taskTitle}" marked as complete. AI updating your productivity insights.`,
     });
+  };
+
+  const handleEditTask = (taskId: number) => {
+    const task = prioritizedTasks.find(t => t.id === taskId);
+    if (task) {
+      setNewTask({
+        title: task.title,
+        description: task.description,
+        priority: task.priority,
+        deadline: task.deadline,
+        energyLevel: task.energyRequired,
+        accommodations: task.accommodations.join(', ')
+      });
+      setEditingTask(taskId);
+    }
+  };
+
+  const handleUpdateTask = () => {
+    if (editingTask && newTask.title && newTask.priority) {
+      setPrioritizedTasks(prioritizedTasks.map(task => 
+        task.id === editingTask 
+          ? {
+              ...task,
+              title: newTask.title,
+              description: newTask.description,
+              priority: newTask.priority,
+              deadline: newTask.deadline,
+              energyRequired: newTask.energyLevel,
+              accommodations: newTask.accommodations ? newTask.accommodations.split(',').map(acc => acc.trim()) : []
+            }
+          : task
+      ));
+      
+      toast({
+        title: "Task Updated!",
+        description: `Task has been successfully updated`,
+      });
+      
+      setNewTask({
+        title: '',
+        description: '',
+        priority: '',
+        deadline: '',
+        energyLevel: '',
+        accommodations: ''
+      });
+      setEditingTask(null);
+    }
+  };
+
+  const handleRecommendationAction = (action: string, title: string) => {
+    switch (action) {
+      case 'Book Session':
+        toast({
+          title: "Booking Session",
+          description: `Redirecting to book a session with ${title}`,
+        });
+        break;
+      case 'Join Event':
+        toast({
+          title: "Joining Event",
+          description: `You've been registered for ${title}`,
+        });
+        break;
+      case 'Set Up':
+        toast({
+          title: "Setting Up Service",
+          description: `${title} service is being configured for you`,
+        });
+        break;
+    }
   };
 
   const getPriorityColor = (priority: string) => {
@@ -171,72 +255,72 @@ const SmartAssistant = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4 flex items-center justify-center gap-3">
-          <Brain className="h-8 w-8 text-primary" />
+    <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-8 py-6 sm:py-8">
+      <div className="text-center mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 sm:mb-4 flex items-center justify-center gap-2 sm:gap-3">
+          <Brain className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
           Smart Personal Assistant
         </h1>
-        <p className="text-lg text-gray-600">
+        <p className="text-base sm:text-lg text-gray-600 px-4">
           AI-powered task management designed for your accessibility needs
         </p>
       </div>
 
       {/* Voice Command Section */}
-      <Card className="mb-8">
+      <Card className="mb-6 sm:mb-8">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Mic className="h-5 w-5" />
+          <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+            <Mic className="h-4 w-4 sm:h-5 sm:w-5" />
             Voice Assistant
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col sm:flex-row items-center gap-4">
+          <div className="flex flex-col gap-4">
             <Button
               onClick={handleVoiceCommand}
               variant={isListening ? "destructive" : "default"}
               size="lg"
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 w-full sm:w-auto"
             >
-              {isListening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
+              {isListening ? <MicOff className="h-4 w-4 sm:h-5 sm:w-5" /> : <Mic className="h-4 w-4 sm:h-5 sm:w-5" />}
               {isListening ? 'Stop Listening' : 'Start Voice Command'}
             </Button>
             {voiceText && (
-              <div className="bg-gray-100 p-3 rounded-md flex-1">
+              <div className="bg-gray-100 p-3 rounded-md">
                 <p className="text-sm"><strong>Recognized:</strong> "{voiceText}"</p>
               </div>
             )}
-          </div>
-          <div className="mt-4 text-sm text-gray-600">
-            <p>Try saying: "Add task", "Schedule meeting", "Find tutor", "Check schedule", "Show recommendations"</p>
+            <div className="text-xs sm:text-sm text-gray-600">
+              <p>Try saying: "Add task", "Schedule meeting", "Find tutor", "Check schedule", "Show recommendations"</p>
+            </div>
           </div>
         </CardContent>
       </Card>
 
-      <Tabs defaultValue="tasks" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="tasks">AI Tasks</TabsTrigger>
-          <TabsTrigger value="schedule">Smart Schedule</TabsTrigger>
-          <TabsTrigger value="recommendations">Recommendations</TabsTrigger>
-          <TabsTrigger value="insights">Insights</TabsTrigger>
+      <Tabs defaultValue="tasks" className="space-y-4 sm:space-y-6">
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto">
+          <TabsTrigger value="tasks" className="text-xs sm:text-sm p-2 sm:p-3">AI Tasks</TabsTrigger>
+          <TabsTrigger value="schedule" className="text-xs sm:text-sm p-2 sm:p-3">Smart Schedule</TabsTrigger>
+          <TabsTrigger value="recommendations" className="text-xs sm:text-sm p-2 sm:p-3">Recommendations</TabsTrigger>
+          <TabsTrigger value="insights" className="text-xs sm:text-sm p-2 sm:p-3">Insights</TabsTrigger>
         </TabsList>
 
         <TabsContent value="tasks">
-          <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">AI-Prioritized Tasks</h2>
+          <div className="space-y-4 sm:space-y-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <h2 className="text-xl sm:text-2xl font-bold">AI-Prioritized Tasks</h2>
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button>
+                  <Button className="w-full sm:w-auto">
                     <Plus className="h-4 w-4 mr-2" />
-                    Add Task
+                    {editingTask ? 'Update Task' : 'Add Task'}
                   </Button>
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent className="w-[95vw] max-w-lg mx-auto">
                   <DialogHeader>
-                    <DialogTitle>Add New Task</DialogTitle>
+                    <DialogTitle>{editingTask ? 'Update Task' : 'Add New Task'}</DialogTitle>
                   </DialogHeader>
-                  <div className="space-y-4">
+                  <div className="space-y-4 max-h-[70vh] overflow-y-auto">
                     <div>
                       <Label htmlFor="title">Task Title *</Label>
                       <Input
@@ -255,7 +339,7 @@ const SmartAssistant = () => {
                         onChange={(e) => setNewTask({...newTask, description: e.target.value})}
                       />
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <Label htmlFor="priority">Priority *</Label>
                         <Select value={newTask.priority} onValueChange={(value) => setNewTask({...newTask, priority: value})}>
@@ -301,8 +385,8 @@ const SmartAssistant = () => {
                         onChange={(e) => setNewTask({...newTask, accommodations: e.target.value})}
                       />
                     </div>
-                    <Button onClick={handleAddTask} className="w-full">
-                      Add Task
+                    <Button onClick={editingTask ? handleUpdateTask : handleAddTask} className="w-full">
+                      {editingTask ? 'Update Task' : 'Add Task'}
                     </Button>
                   </div>
                 </DialogContent>
@@ -312,28 +396,28 @@ const SmartAssistant = () => {
             <div className="grid gap-4">
               {prioritizedTasks.map((task) => (
                 <Card key={task.id} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-6">
+                  <CardContent className="p-4 sm:p-6">
                     <div className="flex items-start justify-between mb-4">
-                      <div className="flex-1">
-                        <h3 className="text-lg font-semibold mb-2">{task.title}</h3>
-                        <p className="text-gray-600 mb-3">{task.description}</p>
+                      <div className="flex-1 pr-4">
+                        <h3 className="text-base sm:text-lg font-semibold mb-2">{task.title}</h3>
+                        <p className="text-sm sm:text-base text-gray-600 mb-3">{task.description}</p>
                         
                         <div className="flex flex-wrap gap-2 mb-3">
-                          <Badge className={`${getPriorityColor(task.priority)} text-white`}>
+                          <Badge className={`${getPriorityColor(task.priority)} text-white text-xs`}>
                             {task.priority.toUpperCase()} PRIORITY
                           </Badge>
-                          <Badge variant="outline">
+                          <Badge variant="outline" className="text-xs">
                             <Clock className="h-3 w-3 mr-1" />
                             {task.deadline}
                           </Badge>
-                          <Badge variant="outline">
+                          <Badge variant="outline" className="text-xs">
                             <Zap className="h-3 w-3 mr-1" />
                             {task.energyRequired} energy
                           </Badge>
                         </div>
 
                         <div className="bg-blue-50 p-3 rounded-md mb-3">
-                          <p className="text-sm text-blue-800">
+                          <p className="text-xs sm:text-sm text-blue-800">
                             <strong>AI Insight:</strong> {task.aiReason}
                           </p>
                         </div>
@@ -353,7 +437,7 @@ const SmartAssistant = () => {
                       </div>
                     </div>
 
-                    <div className="flex gap-2">
+                    <div className="flex flex-col sm:flex-row gap-2">
                       <Button 
                         onClick={() => handleTaskComplete(task.id, task.title)}
                         className="flex-1"
@@ -361,7 +445,12 @@ const SmartAssistant = () => {
                         <CheckCircle2 className="h-4 w-4 mr-2" />
                         Mark Complete
                       </Button>
-                      <Button variant="outline">
+                      <Button 
+                        variant="outline" 
+                        onClick={() => handleEditTask(task.id)}
+                        className="sm:w-auto"
+                      >
+                        <Edit className="h-4 w-4 mr-2" />
                         Edit
                       </Button>
                     </div>
@@ -373,21 +462,21 @@ const SmartAssistant = () => {
         </TabsContent>
 
         <TabsContent value="schedule">
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold">Smart Schedule Insights</h2>
-            <div className="grid gap-4">
+          <div className="space-y-4 sm:space-y-6">
+            <h2 className="text-xl sm:text-2xl font-bold">Smart Schedule Insights</h2>
+            <div className="grid gap-3 sm:gap-4">
               {scheduleInsights.map((insight, index) => (
                 <Card key={index} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className="text-lg font-bold text-primary">{insight.time}</div>
-                        <div>
-                          <h3 className="font-semibold">{insight.activity}</h3>
-                          <p className="text-sm text-gray-600">{insight.reason}</p>
+                  <CardContent className="p-3 sm:p-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                        <div className="text-base sm:text-lg font-bold text-primary">{insight.time}</div>
+                        <div className="min-w-0 flex-1">
+                          <h3 className="font-semibold text-sm sm:text-base">{insight.activity}</h3>
+                          <p className="text-xs sm:text-sm text-gray-600">{insight.reason}</p>
                         </div>
                       </div>
-                      <Badge variant={insight.type === 'optimal' ? 'default' : 'outline'}>
+                      <Badge variant={insight.type === 'optimal' ? 'default' : 'outline'} className="text-xs sm:text-sm w-fit">
                         {insight.type}
                       </Badge>
                     </div>
@@ -399,27 +488,32 @@ const SmartAssistant = () => {
         </TabsContent>
 
         <TabsContent value="recommendations">
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold">Personalized Recommendations</h2>
-            <div className="grid gap-4">
+          <div className="space-y-4 sm:space-y-6">
+            <h2 className="text-xl sm:text-2xl font-bold">Personalized Recommendations</h2>
+            <div className="grid gap-3 sm:gap-4">
               {recommendations.map((rec, index) => (
                 <Card key={index} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-6">
+                  <CardContent className="p-4 sm:p-6">
                     <div className="flex items-start justify-between mb-4">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Badge variant="outline">{rec.type}</Badge>
-                          <h3 className="text-lg font-semibold">{rec.title}</h3>
+                      <div className="flex-1 pr-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
+                          <Badge variant="outline" className="text-xs w-fit">{rec.type}</Badge>
+                          <h3 className="text-base sm:text-lg font-semibold">{rec.title}</h3>
                         </div>
-                        <p className="text-gray-600 mb-3">{rec.description}</p>
+                        <p className="text-sm sm:text-base text-gray-600 mb-3">{rec.description}</p>
                         <div className="bg-green-50 p-3 rounded-md">
-                          <p className="text-sm text-green-800">
+                          <p className="text-xs sm:text-sm text-green-800">
                             <strong>AI Recommendation:</strong> {rec.reason}
                           </p>
                         </div>
                       </div>
                     </div>
-                    <Button className="w-full">{rec.action}</Button>
+                    <Button 
+                      className="w-full" 
+                      onClick={() => handleRecommendationAction(rec.action, rec.title)}
+                    >
+                      {rec.action}
+                    </Button>
                   </CardContent>
                 </Card>
               ))}
@@ -428,36 +522,36 @@ const SmartAssistant = () => {
         </TabsContent>
 
         <TabsContent value="insights">
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold">Personal Analytics</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="space-y-4 sm:space-y-6">
+            <h2 className="text-xl sm:text-2xl font-bold">Personal Analytics</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               <Card>
-                <CardHeader>
-                  <CardTitle className="text-center">Productivity Score</CardTitle>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-center text-sm sm:text-base">Productivity Score</CardTitle>
                 </CardHeader>
-                <CardContent className="text-center">
-                  <div className="text-4xl font-bold text-green-600 mb-2">87%</div>
-                  <p className="text-sm text-gray-600">+12% from last week</p>
+                <CardContent className="text-center pt-0">
+                  <div className="text-2xl sm:text-4xl font-bold text-green-600 mb-2">87%</div>
+                  <p className="text-xs sm:text-sm text-gray-600">+12% from last week</p>
                 </CardContent>
               </Card>
               
               <Card>
-                <CardHeader>
-                  <CardTitle className="text-center">Energy Optimization</CardTitle>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-center text-sm sm:text-base">Energy Optimization</CardTitle>
                 </CardHeader>
-                <CardContent className="text-center">
-                  <div className="text-4xl font-bold text-blue-600 mb-2">92%</div>
-                  <p className="text-sm text-gray-600">Tasks aligned with energy levels</p>
+                <CardContent className="text-center pt-0">
+                  <div className="text-2xl sm:text-4xl font-bold text-blue-600 mb-2">92%</div>
+                  <p className="text-xs sm:text-sm text-gray-600">Tasks aligned with energy levels</p>
                 </CardContent>
               </Card>
               
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-center">Accommodation Usage</CardTitle>
+              <Card className="sm:col-span-2 lg:col-span-1">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-center text-sm sm:text-base">Accommodation Usage</CardTitle>
                 </CardHeader>
-                <CardContent className="text-center">
-                  <div className="text-4xl font-bold text-purple-600 mb-2">78%</div>
-                  <p className="text-sm text-gray-600">Effective accommodation utilization</p>
+                <CardContent className="text-center pt-0">
+                  <div className="text-2xl sm:text-4xl font-bold text-purple-600 mb-2">78%</div>
+                  <p className="text-xs sm:text-sm text-gray-600">Effective accommodation utilization</p>
                 </CardContent>
               </Card>
             </div>
