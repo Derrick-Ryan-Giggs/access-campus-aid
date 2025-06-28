@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,6 +16,7 @@ const SmartAssistant = () => {
   const [isListening, setIsListening] = useState(false);
   const [voiceText, setVoiceText] = useState('');
   const [editingTask, setEditingTask] = useState<number | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [newTask, setNewTask] = useState({
     title: '',
     description: '',
@@ -156,6 +156,10 @@ const SmartAssistant = () => {
       description: `"${newTask.title}" has been added to your AI-prioritized task list`,
     });
 
+    resetForm();
+  };
+
+  const resetForm = () => {
     setNewTask({
       title: '',
       description: '',
@@ -164,6 +168,8 @@ const SmartAssistant = () => {
       energyLevel: '',
       accommodations: ''
     });
+    setEditingTask(null);
+    setDialogOpen(false);
   };
 
   const handleTaskComplete = (taskId: number, taskTitle: string) => {
@@ -182,10 +188,11 @@ const SmartAssistant = () => {
         description: task.description,
         priority: task.priority,
         deadline: task.deadline,
-        energyLevel: task.energyRequired,
+        energyRequired: task.energyRequired,
         accommodations: task.accommodations.join(', ')
       });
       setEditingTask(taskId);
+      setDialogOpen(true);
     }
   };
 
@@ -210,15 +217,7 @@ const SmartAssistant = () => {
         description: `Task has been successfully updated`,
       });
       
-      setNewTask({
-        title: '',
-        description: '',
-        priority: '',
-        deadline: '',
-        energyLevel: '',
-        accommodations: ''
-      });
-      setEditingTask(null);
+      resetForm();
     }
   };
 
@@ -309,11 +308,16 @@ const SmartAssistant = () => {
           <div className="space-y-4 sm:space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <h2 className="text-xl sm:text-2xl font-bold">AI-Prioritized Tasks</h2>
-              <Dialog>
+              <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button className="w-full sm:w-auto">
+                  <Button className="w-full sm:w-auto" onClick={() => {
+                    if (!editingTask) {
+                      resetForm();
+                    }
+                    setDialogOpen(true);
+                  }}>
                     <Plus className="h-4 w-4 mr-2" />
-                    {editingTask ? 'Update Task' : 'Add Task'}
+                    Add Task
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="w-[95vw] max-w-lg mx-auto">
