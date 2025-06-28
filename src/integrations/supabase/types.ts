@@ -9,7 +9,453 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      cart_items: {
+        Row: {
+          created_at: string | null
+          grocery_item_id: string
+          id: string
+          quantity: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          grocery_item_id: string
+          id?: string
+          quantity?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          grocery_item_id?: string
+          id?: string
+          quantity?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cart_items_grocery_item_id_fkey"
+            columns: ["grocery_item_id"]
+            isOneToOne: false
+            referencedRelation: "grocery_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_participants: {
+        Row: {
+          event_id: string
+          id: string
+          joined_at: string | null
+          user_id: string
+        }
+        Insert: {
+          event_id: string
+          id?: string
+          joined_at?: string | null
+          user_id: string
+        }
+        Update: {
+          event_id?: string
+          id?: string
+          joined_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_participants_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "virtual_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      grocery_items: {
+        Row: {
+          available: boolean | null
+          category: string
+          created_at: string | null
+          description: string | null
+          id: string
+          image: string | null
+          name: string
+          price: number
+          updated_at: string | null
+        }
+        Insert: {
+          available?: boolean | null
+          category: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image?: string | null
+          name: string
+          price: number
+          updated_at?: string | null
+        }
+        Update: {
+          available?: boolean | null
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image?: string | null
+          name?: string
+          price?: number
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      notes: {
+        Row: {
+          category: string | null
+          content: string | null
+          created_at: string | null
+          id: string
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      order_items: {
+        Row: {
+          created_at: string | null
+          grocery_item_id: string
+          id: string
+          order_id: string
+          price: number
+          quantity: number
+        }
+        Insert: {
+          created_at?: string | null
+          grocery_item_id: string
+          id?: string
+          order_id: string
+          price: number
+          quantity: number
+        }
+        Update: {
+          created_at?: string | null
+          grocery_item_id?: string
+          id?: string
+          order_id?: string
+          price?: number
+          quantity?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_grocery_item_id_fkey"
+            columns: ["grocery_item_id"]
+            isOneToOne: false
+            referencedRelation: "grocery_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          created_at: string | null
+          delivery_address: string | null
+          id: string
+          status: string | null
+          total_amount: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          delivery_address?: string | null
+          id?: string
+          status?: string | null
+          total_amount: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          delivery_address?: string | null
+          id?: string
+          status?: string | null
+          total_amount?: number
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string | null
+          email: string | null
+          id: string
+          name: string | null
+          phone: string | null
+          program: string | null
+          student_id: string | null
+          updated_at: string | null
+          year: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email?: string | null
+          id: string
+          name?: string | null
+          phone?: string | null
+          program?: string | null
+          student_id?: string | null
+          updated_at?: string | null
+          year?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          name?: string | null
+          phone?: string | null
+          program?: string | null
+          student_id?: string | null
+          updated_at?: string | null
+          year?: string | null
+        }
+        Relationships: []
+      }
+      reminders: {
+        Row: {
+          completed: boolean | null
+          created_at: string | null
+          date: string
+          description: string | null
+          id: string
+          time: string
+          title: string
+          type: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean | null
+          created_at?: string | null
+          date: string
+          description?: string | null
+          id?: string
+          time: string
+          title: string
+          type: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          completed?: boolean | null
+          created_at?: string | null
+          date?: string
+          description?: string | null
+          id?: string
+          time?: string
+          title?: string
+          type?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      tasks: {
+        Row: {
+          accommodations: string | null
+          completed: boolean | null
+          created_at: string | null
+          deadline: string | null
+          description: string | null
+          energy_level: string | null
+          id: string
+          priority: string | null
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          accommodations?: string | null
+          completed?: boolean | null
+          created_at?: string | null
+          deadline?: string | null
+          description?: string | null
+          energy_level?: string | null
+          id?: string
+          priority?: string | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          accommodations?: string | null
+          completed?: boolean | null
+          created_at?: string | null
+          deadline?: string | null
+          description?: string | null
+          energy_level?: string | null
+          id?: string
+          priority?: string | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      tutor_requests: {
+        Row: {
+          created_at: string | null
+          id: string
+          message: string
+          preferred_time: string | null
+          status: string | null
+          subject: string
+          tutor_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          message: string
+          preferred_time?: string | null
+          status?: string | null
+          subject: string
+          tutor_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          message?: string
+          preferred_time?: string | null
+          status?: string | null
+          subject?: string
+          tutor_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tutor_requests_tutor_id_fkey"
+            columns: ["tutor_id"]
+            isOneToOne: false
+            referencedRelation: "tutors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tutors: {
+        Row: {
+          availability: string | null
+          bio: string | null
+          created_at: string | null
+          email: string
+          id: string
+          image: string | null
+          name: string
+          phone: string | null
+          rating: number | null
+          subjects: string[]
+          updated_at: string | null
+        }
+        Insert: {
+          availability?: string | null
+          bio?: string | null
+          created_at?: string | null
+          email: string
+          id?: string
+          image?: string | null
+          name: string
+          phone?: string | null
+          rating?: number | null
+          subjects: string[]
+          updated_at?: string | null
+        }
+        Update: {
+          availability?: string | null
+          bio?: string | null
+          created_at?: string | null
+          email?: string
+          id?: string
+          image?: string | null
+          name?: string
+          phone?: string | null
+          rating?: number | null
+          subjects?: string[]
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      virtual_events: {
+        Row: {
+          accessibility_features: string[] | null
+          created_at: string | null
+          creator_id: string
+          date: string
+          description: string | null
+          duration: number | null
+          id: string
+          max_participants: number | null
+          time: string
+          title: string
+          type: string
+          updated_at: string | null
+        }
+        Insert: {
+          accessibility_features?: string[] | null
+          created_at?: string | null
+          creator_id: string
+          date: string
+          description?: string | null
+          duration?: number | null
+          id?: string
+          max_participants?: number | null
+          time: string
+          title: string
+          type: string
+          updated_at?: string | null
+        }
+        Update: {
+          accessibility_features?: string[] | null
+          created_at?: string | null
+          creator_id?: string
+          date?: string
+          description?: string | null
+          duration?: number | null
+          id?: string
+          max_participants?: number | null
+          time?: string
+          title?: string
+          type?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

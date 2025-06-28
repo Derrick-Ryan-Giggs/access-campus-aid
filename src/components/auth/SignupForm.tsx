@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
 
 interface SignupFormProps {
   onSwitchToLogin: () => void;
@@ -13,7 +13,7 @@ interface SignupFormProps {
 }
 
 const SignupForm = ({ onSwitchToLogin, onClose }: SignupFormProps) => {
-  const { toast } = useToast();
+  const { signUp } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -27,34 +27,20 @@ const SignupForm = ({ onSwitchToLogin, onClose }: SignupFormProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
-      toast({
-        title: "Missing Information",
-        description: "Please fill in all fields.",
-        variant: "destructive",
-      });
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      toast({
-        title: "Password Mismatch",
-        description: "Passwords do not match.",
-        variant: "destructive",
-      });
       return;
     }
 
     setIsLoading(true);
-    
-    // Simulate signup process
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
+    const { error } = await signUp(formData.email, formData.password, formData.name);
     setIsLoading(false);
-    toast({
-      title: "Account Created Successfully",
-      description: "Welcome to EmpowerU! You can now sign in.",
-    });
-    onSwitchToLogin();
+    
+    if (!error) {
+      onSwitchToLogin();
+    }
   };
 
   return (

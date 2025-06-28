@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
 
 interface LoginFormProps {
   onSwitchToSignup: () => void;
@@ -13,7 +13,7 @@ interface LoginFormProps {
 }
 
 const LoginForm = ({ onSwitchToSignup, onClose }: LoginFormProps) => {
-  const { toast } = useToast();
+  const { signIn } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -24,25 +24,16 @@ const LoginForm = ({ onSwitchToSignup, onClose }: LoginFormProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.email || !formData.password) {
-      toast({
-        title: "Missing Information",
-        description: "Please fill in all fields.",
-        variant: "destructive",
-      });
       return;
     }
 
     setIsLoading(true);
-    
-    // Simulate login process
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
+    const { error } = await signIn(formData.email, formData.password);
     setIsLoading(false);
-    toast({
-      title: "Login Successful",
-      description: "Welcome back to EmpowerU!",
-    });
-    onClose();
+    
+    if (!error) {
+      onClose();
+    }
   };
 
   return (
@@ -112,9 +103,6 @@ const LoginForm = ({ onSwitchToSignup, onClose }: LoginFormProps) => {
         </form>
         
         <div className="text-center space-y-2">
-          <Button variant="link" className="text-sm text-primary hover:underline">
-            Forgot your password?
-          </Button>
           <p className="text-sm text-gray-600">
             Don't have an account?{' '}
             <Button
