@@ -51,7 +51,7 @@ export function useTutors() {
         email: item.email,
         phone: item.phone,
         availability: item.availability,
-        rating: parseFloat(item.rating) || 0,
+        rating: typeof item.rating === 'string' ? parseFloat(item.rating) : (item.rating || 0),
         bio: item.bio,
         image: item.image
       }));
@@ -101,7 +101,7 @@ export function useTutors() {
           email: item.tutor.email,
           phone: item.tutor.phone,
           availability: item.tutor.availability,
-          rating: parseFloat(item.tutor.rating) || 0,
+          rating: typeof item.tutor.rating === 'string' ? parseFloat(item.tutor.rating) : (item.tutor.rating || 0),
           bio: item.tutor.bio,
           image: item.tutor.image
         } : undefined
@@ -135,7 +135,7 @@ export function useTutors() {
         email: data.email,
         phone: data.phone,
         availability: data.availability,
-        rating: parseFloat(data.rating) || 0,
+        rating: typeof data.rating === 'string' ? parseFloat(data.rating) : (data.rating || 0),
         bio: data.bio,
         image: data.image
       };
