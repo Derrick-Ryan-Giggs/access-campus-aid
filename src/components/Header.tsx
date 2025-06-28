@@ -6,10 +6,20 @@ import { useAuth } from '@/hooks/useAuth';
 import NotificationPanel from './NotificationPanel';
 import MobileMenu from './MobileMenu';
 
-const Header = () => {
+interface HeaderProps {
+  onNavigate?: (section: string) => void;
+}
+
+const Header = ({ onNavigate }: HeaderProps) => {
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, signOut } = useAuth();
+
+  const handleNavClick = (section: string) => {
+    if (onNavigate) {
+      onNavigate(section);
+    }
+  };
 
   return (
     <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
@@ -17,14 +27,34 @@ const Header = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <h1 className="text-2xl font-bold text-primary">EmpowerU</h1>
+            <button 
+              onClick={() => handleNavClick('home')}
+              className="text-2xl font-bold text-primary hover:text-primary/80 transition-colors"
+            >
+              EmpowerU
+            </button>
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-8">
-            <a href="#services" className="text-gray-700 hover:text-primary transition-colors">Services</a>
-            <a href="#dashboard" className="text-gray-700 hover:text-primary transition-colors">Dashboard</a>
-            <a href="#support" className="text-gray-700 hover:text-primary transition-colors">Support</a>
+            <button 
+              onClick={() => handleNavClick('home')} 
+              className="text-gray-700 hover:text-primary transition-colors"
+            >
+              Services
+            </button>
+            <button 
+              onClick={() => handleNavClick('home')} 
+              className="text-gray-700 hover:text-primary transition-colors"
+            >
+              Dashboard
+            </button>
+            <button 
+              onClick={() => handleNavClick('live-support')} 
+              className="text-gray-700 hover:text-primary transition-colors"
+            >
+              Support
+            </button>
           </nav>
 
           {/* Right side actions */}
@@ -85,7 +115,7 @@ const Header = () => {
       {/* Mobile Menu */}
       <MobileMenu 
         activeSection="home" 
-        onNavigate={() => {}} 
+        onNavigate={onNavigate || (() => {})} 
         onAuthClick={() => {}}
         onNotificationClick={() => setIsNotificationOpen(true)}
         onProfileClick={() => {}}

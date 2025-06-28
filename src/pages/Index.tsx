@@ -6,6 +6,18 @@ import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import ServiceCategories from "@/components/ServiceCategories";
 import Dashboard from "@/components/Dashboard";
+import GroceryShop from "@/components/GroceryShop";
+import Reminders from "@/components/Reminders";
+import Tutors from "@/components/Tutors";
+import LiveSupport from "@/components/LiveSupport";
+import PersonalCare from "@/components/PersonalCare";
+import VirtualHangouts from "@/components/VirtualHangouts";
+import Mentorship from "@/components/Mentorship";
+import HealthWellness from "@/components/HealthWellness";
+import AdvocacyLegal from "@/components/AdvocacyLegal";
+import SmartAssistant from "@/components/SmartAssistant";
+import EmergencySupport from "@/components/EmergencySupport";
+import AcademicHub from "@/components/AcademicHub";
 
 type ActiveSection = 'home' | 'groceries' | 'reminders' | 'tutors' | 'checkout' | 'live-support' | 'personal-care' | 'virtual-hangouts' | 'mentorship' | 'health-wellness' | 'advocacy-legal' | 'smart-assistant' | 'emergency-support' | 'academic-hub';
 
@@ -20,10 +32,14 @@ const Index = () => {
     }
   }, [user, loading, navigate]);
 
-  const handleNavigate = (section: ActiveSection) => {
-    setActiveSection(section);
-    // For now, just update the state. Later we can add routing or modals for each section
+  const handleNavigate = (section: ActiveSection | string) => {
+    const validSection = section as ActiveSection;
+    setActiveSection(validSection);
     console.log('Navigating to:', section);
+  };
+
+  const handleBackToHome = () => {
+    setActiveSection('home');
   };
 
   if (loading) {
@@ -38,13 +54,48 @@ const Index = () => {
     return null;
   }
 
+  const renderActiveSection = () => {
+    switch (activeSection) {
+      case 'groceries':
+        return <GroceryShop onBack={handleBackToHome} />;
+      case 'reminders':
+        return <Reminders onBack={handleBackToHome} />;
+      case 'tutors':
+        return <Tutors onBack={handleBackToHome} />;
+      case 'live-support':
+        return <LiveSupport onBack={handleBackToHome} />;
+      case 'personal-care':
+        return <PersonalCare onBack={handleBackToHome} />;
+      case 'virtual-hangouts':
+        return <VirtualHangouts onBack={handleBackToHome} />;
+      case 'mentorship':
+        return <Mentorship onBack={handleBackToHome} />;
+      case 'health-wellness':
+        return <HealthWellness onBack={handleBackToHome} />;
+      case 'advocacy-legal':
+        return <AdvocacyLegal onBack={handleBackToHome} />;
+      case 'smart-assistant':
+        return <SmartAssistant onBack={handleBackToHome} />;
+      case 'emergency-support':
+        return <EmergencySupport onBack={handleBackToHome} />;
+      case 'academic-hub':
+        return <AcademicHub onBack={handleBackToHome} />;
+      default:
+        return (
+          <>
+            <HeroSection />
+            <ServiceCategories />
+            <Dashboard onNavigate={handleNavigate} />
+          </>
+        );
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
+      <Header onNavigate={handleNavigate} />
       <main>
-        <HeroSection />
-        <ServiceCategories />
-        <Dashboard onNavigate={handleNavigate} />
+        {renderActiveSection()}
       </main>
     </div>
   );
