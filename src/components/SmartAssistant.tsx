@@ -188,7 +188,7 @@ const SmartAssistant = () => {
         description: task.description,
         priority: task.priority,
         deadline: task.deadline,
-        energyRequired: task.energyRequired,
+        energyLevel: task.energyRequired,
         accommodations: task.accommodations.join(', ')
       });
       setEditingTask(taskId);
