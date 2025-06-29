@@ -57,29 +57,29 @@ const Index = () => {
   const renderActiveSection = () => {
     switch (activeSection) {
       case 'groceries':
-        return <GroceryShop onBack={handleBackToHome} />;
+        return <GroceryShop />;
       case 'reminders':
-        return <Reminders onBack={handleBackToHome} />;
+        return <Reminders />;
       case 'tutors':
-        return <Tutors onBack={handleBackToHome} />;
+        return <Tutors />;
       case 'live-support':
-        return <LiveSupport onBack={handleBackToHome} />;
+        return <LiveSupport />;
       case 'personal-care':
-        return <PersonalCare onBack={handleBackToHome} />;
+        return <PersonalCare />;
       case 'virtual-hangouts':
-        return <VirtualHangouts onBack={handleBackToHome} />;
+        return <VirtualHangouts />;
       case 'mentorship':
-        return <Mentorship onBack={handleBackToHome} />;
+        return <Mentorship />;
       case 'health-wellness':
-        return <HealthWellness onBack={handleBackToHome} />;
+        return <HealthWellness />;
       case 'advocacy-legal':
-        return <AdvocacyLegal onBack={handleBackToHome} />;
+        return <AdvocacyLegal />;
       case 'smart-assistant':
-        return <SmartAssistant onBack={handleBackToHome} />;
+        return <SmartAssistant />;
       case 'emergency-support':
-        return <EmergencySupport onBack={handleBackToHome} />;
+        return <EmergencySupport />;
       case 'academic-hub':
-        return <AcademicHub onBack={handleBackToHome} />;
+        return <AcademicHub />;
       default:
         return (
           <>
@@ -97,6 +97,16 @@ const Index = () => {
       <main>
         {renderActiveSection()}
       </main>
+      {activeSection !== 'home' && (
+        <div className="fixed bottom-4 left-4 z-50">
+          <button
+            onClick={handleBackToHome}
+            className="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2"
+          >
+            ← Back to Home
+          </button>
+        </div>
+      )}
     </div>
   );
 };
