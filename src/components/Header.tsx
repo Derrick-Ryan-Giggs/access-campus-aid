@@ -68,15 +68,16 @@ const Header = ({ onNavigate }: HeaderProps) => {
 
             {/* Right side actions - responsive layout */}
             <div className="flex items-center space-x-1 sm:space-x-2">
-              {/* Emergency Button - responsive sizing and positioning */}
+              {/* Emergency Button - larger size on mobile */}
               <Button
                 onClick={handleEmergencyClick}
-                className="bg-red-600 hover:bg-red-700 text-white px-2 py-1 text-xs sm:px-3 sm:py-2 sm:text-sm ml-2 sm:ml-0"
+                className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 text-sm sm:px-4 sm:py-2 sm:text-base ml-2 sm:ml-0 h-9 sm:h-10"
                 size="sm"
               >
-                <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1" />
-                <span className="hidden sm:inline">Emergency</span>
-                <span className="sm:hidden">SOS</span>
+                <AlertTriangle className="h-4 w-4 sm:h-4 sm:w-4 sm:mr-1" />
+                <span className="hidden xs:inline sm:hidden">Emergency</span>
+                <span className="xs:hidden sm:inline">SOS</span>
+                <span className="hidden sm:inline ml-1">Emergency</span>
               </Button>
 
               {/* Notifications - hidden on very small screens */}
@@ -144,6 +145,7 @@ const Header = ({ onNavigate }: HeaderProps) => {
           onAuthClick={() => {}}
           onNotificationClick={() => setIsNotificationOpen(true)}
           onProfileClick={() => setIsUserProfileOpen(true)}
+          onEmergencyClick={handleEmergencyClick}
           isOpen={isMobileMenuOpen} 
           onClose={() => setIsMobileMenuOpen(false)} 
         />

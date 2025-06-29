@@ -2,27 +2,40 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Home, Menu, X, ShoppingCart, Clock, GraduationCap, LogIn, Bell, User } from 'lucide-react';
+import { Home, Menu, X, ShoppingCart, Clock, GraduationCap, LogIn, Bell, User, Settings, Headphones, AlertTriangle } from 'lucide-react';
 
 interface MobileMenuProps {
-  activeSection: 'home' | 'groceries' | 'reminders' | 'tutors';
-  onNavigate: (section: 'home' | 'groceries' | 'reminders' | 'tutors') => void;
+  activeSection: string;
+  onNavigate: (section: string) => void;
   onAuthClick?: () => void;
   onNotificationClick?: () => void;
   onProfileClick?: () => void;
+  onEmergencyClick?: () => void;
   isOpen: boolean;
   onClose: () => void;
 }
 
-const MobileMenu = ({ activeSection, onNavigate, onAuthClick, onNotificationClick, onProfileClick, isOpen, onClose }: MobileMenuProps) => {
+const MobileMenu = ({ 
+  activeSection, 
+  onNavigate, 
+  onAuthClick, 
+  onNotificationClick, 
+  onProfileClick, 
+  onEmergencyClick,
+  isOpen, 
+  onClose 
+}: MobileMenuProps) => {
   const menuItems = [
-    { key: 'home' as const, label: 'Home', icon: Home },
-    { key: 'groceries' as const, label: 'Groceries', icon: ShoppingCart },
-    { key: 'reminders' as const, label: 'Reminders', icon: Clock },
-    { key: 'tutors' as const, label: 'Tutors', icon: GraduationCap },
+    { key: 'home', label: 'Home', icon: Home },
+    { key: 'services', label: 'Services', icon: Settings },
+    { key: 'dashboard', label: 'Dashboard', icon: Menu },
+    { key: 'live-support', label: 'Support', icon: Headphones },
+    { key: 'groceries', label: 'Groceries', icon: ShoppingCart },
+    { key: 'reminders', label: 'Reminders', icon: Clock },
+    { key: 'tutors', label: 'Tutors', icon: GraduationCap },
   ];
 
-  const handleNavigate = (section: 'home' | 'groceries' | 'reminders' | 'tutors') => {
+  const handleNavigate = (section: string) => {
     onNavigate(section);
     onClose();
   };
@@ -39,6 +52,11 @@ const MobileMenu = ({ activeSection, onNavigate, onAuthClick, onNotificationClic
 
   const handleProfileClick = () => {
     if (onProfileClick) onProfileClick();
+    onClose();
+  };
+
+  const handleEmergencyClick = () => {
+    if (onEmergencyClick) onEmergencyClick();
     onClose();
   };
 
@@ -117,13 +135,18 @@ const MobileMenu = ({ activeSection, onNavigate, onAuthClick, onNotificationClic
               </div>
               
               {/* Emergency Section */}
-              <div className="p-4 bg-blue-50 rounded-lg">
-                <h3 className="font-semibold text-primary mb-2">Need Help?</h3>
+              <div className="p-4 bg-red-50 rounded-lg">
+                <h3 className="font-semibold text-red-600 mb-2">Need Help?</h3>
                 <p className="text-sm text-gray-600 mb-3">
                   24/7 emergency support is always available
                 </p>
-                <Button size="sm" className="w-full bg-destructive hover:bg-destructive/90">
-                  🚨 Emergency
+                <Button 
+                  size="sm" 
+                  className="w-full bg-red-600 hover:bg-red-700 text-white"
+                  onClick={handleEmergencyClick}
+                >
+                  <AlertTriangle className="h-4 w-4 mr-2" />
+                  Emergency Support
                 </Button>
               </div>
             </nav>
