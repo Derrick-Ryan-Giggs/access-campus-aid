@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Search, Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import AddGroceryForm from './forms/AddGroceryForm';
+import Checkout from './Checkout';
 
 interface GroceryItem {
   id: number;
@@ -46,6 +46,7 @@ const GroceryShop = ({ onCheckout }: GroceryShopProps) => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [groceries, setGroceries] = useState(mockGroceries);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showCheckout, setShowCheckout] = useState(false);
 
   const categories = ['All', 'Fruits', 'Vegetables', 'Dairy', 'Meat', 'Fish', 'Bakery', 'Grains'];
 
@@ -90,14 +91,24 @@ const GroceryShop = ({ onCheckout }: GroceryShopProps) => {
   const cartTotal = cart.reduce((sum, cartItem) => sum + (cartItem.item.price * cartItem.quantity), 0);
 
   const handleCheckout = () => {
-    if (onCheckout) {
-      onCheckout(cart);
+    if (cart.length === 0) {
       toast({
-        title: "Proceeding to Checkout",
-        description: "Your cart has been saved. Complete your order details.",
+        title: "Empty Cart",
+        description: "Please add items to your cart before checkout.",
+        variant: "destructive"
       });
+      return;
     }
+    setShowCheckout(true);
   };
+
+  const handleBackFromCheckout = () => {
+    setShowCheckout(false);
+  };
+
+  if (showCheckout) {
+    return <Checkout cart={cart} onBack={handleBackFromCheckout} />;
+  }
 
   return (
     <div className="max-w-7xl mx-auto p-3 sm:p-4 lg:p-6">
