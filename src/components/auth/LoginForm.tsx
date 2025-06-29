@@ -37,49 +37,54 @@ const LoginForm = ({ onSwitchToSignup, onClose }: LoginFormProps) => {
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto animate-fade-in">
-      <CardHeader className="text-center">
-        <CardTitle className="text-2xl font-bold text-primary">Welcome Back</CardTitle>
-        <p className="text-gray-600">Sign in to your EmpowerU account</p>
+    <Card className="w-full max-w-md mx-auto animate-fade-in bg-white border-2 border-neutral-200">
+      <CardHeader className="text-center pb-6">
+        <CardTitle className="text-2xl font-bold text-neutral-900 mb-2">Welcome Back</CardTitle>
+        <p className="text-neutral-600 text-base">Sign in to your EmpowerU account</p>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <CardContent className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email" className="text-neutral-900 font-medium">Email Address</Label>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-neutral-500 h-5 w-5" />
               <Input
                 id="email"
                 type="email"
-                placeholder="Enter your email"
+                placeholder="Enter your email address"
                 value={formData.email}
                 onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                className="pl-10 transition-all duration-200 focus:scale-105"
+                className="pl-12"
                 disabled={isLoading}
+                required
+                aria-describedby="email-error"
               />
             </div>
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password" className="text-neutral-900 font-medium">Password</Label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-neutral-500 h-5 w-5" />
               <Input
                 id="password"
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter your password"
                 value={formData.password}
                 onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-                className="pl-10 pr-12 transition-all duration-200 focus:scale-105"
+                className="pl-12 pr-12"
                 disabled={isLoading}
+                required
+                aria-describedby="password-error"
               />
               <Button
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 text-neutral-500 hover:text-neutral-700"
                 onClick={() => setShowPassword(!showPassword)}
                 disabled={isLoading}
+                aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </Button>
@@ -88,8 +93,9 @@ const LoginForm = ({ onSwitchToSignup, onClose }: LoginFormProps) => {
           
           <Button
             type="submit"
-            className="w-full bg-primary hover:bg-primary/90 transition-all duration-200 hover:scale-105"
-            disabled={isLoading}
+            className="w-full bg-primary text-white hover:bg-primary-700"
+            disabled={isLoading || !formData.email || !formData.password}
+            size="lg"
           >
             {isLoading ? (
               <div className="flex items-center space-x-2">
@@ -102,13 +108,13 @@ const LoginForm = ({ onSwitchToSignup, onClose }: LoginFormProps) => {
           </Button>
         </form>
         
-        <div className="text-center space-y-2">
-          <p className="text-sm text-gray-600">
+        <div className="text-center pt-4 border-t border-neutral-200">
+          <p className="text-neutral-600">
             Don't have an account?{' '}
             <Button
               variant="link"
               onClick={onSwitchToSignup}
-              className="text-primary hover:underline p-0 h-auto font-medium"
+              className="text-primary hover:text-primary-700 p-0 h-auto font-semibold"
               disabled={isLoading}
             >
               Sign up here

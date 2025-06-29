@@ -16,23 +16,28 @@
     --popover: 255 255 255;
     --popover-foreground: 17 24 39;
 
+    /* Accessible Primary Blue - Main Actions */
     --primary: 37 99 235;
     --primary-foreground: 255 255 255;
 
+    /* Accessible Green - Success Actions */
     --secondary: 22 163 74;
     --secondary-foreground: 255 255 255;
 
+    /* Clean neutral backgrounds */
     --muted: 249 250 251;
     --muted-foreground: 107 114 128;
 
     --accent: 243 244 246;
     --accent-foreground: 55 65 81;
 
+    /* Accessible Red - Danger/Error */
     --destructive: 220 38 38;
     --destructive-foreground: 255 255 255;
 
-    --border: 229 231 235;
-    --input: 229 231 235;
+    /* Input fields - White background with proper borders */
+    --border: 107 114 128;
+    --input: 255 255 255;
     --ring: 37 99 235;
 
     --radius: 0.5rem;
@@ -43,12 +48,18 @@
     --sidebar-primary-foreground: 255 255 255;
     --sidebar-accent: 243 244 246;
     --sidebar-accent-foreground: 55 65 81;
-    --sidebar-border: 229 231 235;
+    --sidebar-border: 107 114 128;
     --sidebar-ring: 37 99 235;
 
-    /* Footer color variables */
-    --footer-background: 31 41 55;
+    /* Accessible Footer - Darker for proper contrast */
+    --footer-background: 55 65 81;
     --footer-foreground: 249 250 251;
+
+    /* Warning colors - ONLY for alerts/notifications */
+    --warning: 245 158 11;
+    --warning-foreground: 255 255 255;
+    --warning-light: 254 243 199;
+    --warning-text: 146 64 14;
   }
 
   .dark {
@@ -76,8 +87,8 @@
     --destructive: 239 68 68;
     --destructive-foreground: 17 24 39;
 
-    --border: 55 65 81;
-    --input: 55 65 81;
+    --border: 75 85 99;
+    --input: 31 41 55;
     --ring: 59 130 246;
 
     --sidebar-background: 31 41 55;
@@ -86,12 +97,16 @@
     --sidebar-primary-foreground: 17 24 39;
     --sidebar-accent: 55 65 81;
     --sidebar-accent-foreground: 249 250 251;
-    --sidebar-border: 55 65 81;
+    --sidebar-border: 75 85 99;
     --sidebar-ring: 59 130 246;
 
-    /* Footer color variables for dark mode */
-    --footer-background: 55 65 81;
+    --footer-background: 31 41 55;
     --footer-foreground: 249 250 251;
+
+    --warning: 245 158 11;
+    --warning-foreground: 255 255 255;
+    --warning-light: 120 53 15;
+    --warning-text: 254 243 199;
   }
 }
 
@@ -112,9 +127,50 @@
     color: rgb(var(--footer-foreground));
   }
 
+  /* Accessible input styling */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="tel"],
+  input[type="number"],
+  select,
+  textarea {
+    background-color: #FFFFFF !important;
+    border: 2px solid #6B7280 !important;
+    color: #111827 !important;
+  }
+
+  input[type="text"]:focus,
+  input[type="email"]:focus,
+  input[type="password"]:focus,
+  input[type="tel"]:focus,
+  input[type="number"]:focus,
+  select:focus,
+  textarea:focus {
+    border-color: #2563EB !important;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: #6B7280 !important;
+  }
+
   /* Accessibility focus styles */
   *:focus-visible {
     @apply outline-2 outline-offset-2 outline-primary ring-2 ring-primary ring-offset-2;
+  }
+
+  /* Warning/Alert specific styling - ONLY for alerts */
+  .warning-alert {
+    background-color: rgb(var(--warning-light)) !important;
+    border: 2px solid rgb(var(--warning)) !important;
+    color: rgb(var(--warning-text)) !important;
+  }
+
+  .warning-badge {
+    background-color: rgb(var(--warning)) !important;
+    color: rgb(var(--warning-foreground)) !important;
   }
 
   /* High contrast mode support */
@@ -123,6 +179,16 @@
       --background: 255 255 255;
       --foreground: 0 0 0;
       --border: 0 0 0;
+    }
+    
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="tel"],
+    input[type="number"],
+    select,
+    textarea {
+      border: 3px solid #000000 !important;
     }
   }
 

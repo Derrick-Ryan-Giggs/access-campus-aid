@@ -34,8 +34,10 @@ export default {
 					50: '#eff6ff',
 					100: '#dbeafe',
 					500: '#2563EB',
-					600: '#1d4ed8',
-					700: '#1e40af'
+					600: '#2563EB',
+					700: '#1d4ed8',
+					800: '#1e40af',
+					900: '#1e3a8a'
 				},
 				secondary: {
 					DEFAULT: '#16A34A',
@@ -43,15 +45,30 @@ export default {
 					50: '#f0fdf4',
 					100: '#dcfce7',
 					500: '#16A34A',
-					600: '#15803d'
+					600: '#16A34A',
+					700: '#15803d',
+					800: '#166534',
+					900: '#14532d'
 				},
 				destructive: {
 					DEFAULT: '#DC2626',
-					foreground: '#ffffff'
+					foreground: '#ffffff',
+					50: '#fef2f2',
+					500: '#DC2626',
+					600: '#DC2626',
+					700: '#b91c1c',
+					800: '#991b1b'
 				},
 				warning: {
 					DEFAULT: '#F59E0B',
-					foreground: '#ffffff'
+					foreground: '#ffffff',
+					light: '#FEF3C7',
+					text: '#92400E',
+					50: '#fffbeb',
+					100: '#fef3c7',
+					500: '#F59E0B',
+					600: '#d97706',
+					700: '#b45309'
 				},
 				muted: {
 					DEFAULT: '#F9FAFB',
@@ -78,6 +95,17 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				// Neutral colors for proper contrast
+				neutral: {
+					50: '#F9FAFB',
+					100: '#F3F4F6',
+					200: '#E5E7EB',
+					500: '#6B7280',
+					600: '#4B5563',
+					700: '#374151',
+					800: '#1F2937',
+					900: '#111827'
 				}
 			},
 			borderRadius: {
@@ -112,6 +140,14 @@ export default {
 						transform: 'translateY(0)'
 					}
 				},
+				'slide-in-right': {
+					'0%': {
+						transform: 'translateX(100%)'
+					},
+					'100%': {
+						transform: 'translateX(0)'
+					}
+				},
 				'pulse-slow': {
 					'0%, 100%': { opacity: '1' },
 					'50%': { opacity: '0.8' }
@@ -121,6 +157,7 @@ export default {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'fade-in': 'fade-in 0.3s ease-out',
+				'slide-in-right': 'slide-in-right 0.3s ease-out',
 				'pulse-slow': 'pulse-slow 2s ease-in-out infinite'
 			},
 			fontSize: {
