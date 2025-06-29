@@ -32,62 +32,63 @@ const Header = ({ onNavigate }: HeaderProps) => {
   return (
     <>
       <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            {/* Logo */}
-            <div className="flex items-center">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
+          <div className="flex justify-between items-center h-14 sm:h-16">
+            {/* Logo - responsive sizing */}
+            <div className="flex items-center min-w-0 flex-shrink">
               <button 
                 onClick={() => handleNavClick('home')}
-                className="text-2xl font-bold text-primary hover:text-primary/80 transition-colors"
+                className="text-lg sm:text-xl lg:text-2xl font-bold text-primary hover:text-primary/80 transition-colors truncate"
               >
                 EmpowerU
               </button>
             </div>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex space-x-8">
+            <nav className="hidden lg:flex space-x-6 xl:space-x-8">
               <button 
                 onClick={() => handleNavClick('home')} 
-                className="text-gray-700 hover:text-primary transition-colors"
+                className="text-gray-700 hover:text-primary transition-colors text-sm xl:text-base"
               >
                 Services
               </button>
               <button 
                 onClick={() => handleNavClick('home')} 
-                className="text-gray-700 hover:text-primary transition-colors"
+                className="text-gray-700 hover:text-primary transition-colors text-sm xl:text-base"
               >
                 Dashboard
               </button>
               <button 
                 onClick={() => handleNavClick('live-support')} 
-                className="text-gray-700 hover:text-primary transition-colors"
+                className="text-gray-700 hover:text-primary transition-colors text-sm xl:text-base"
               >
                 Support
               </button>
             </nav>
 
-            {/* Right side actions */}
-            <div className="flex items-center space-x-2">
-              {/* Emergency Button */}
+            {/* Right side actions - responsive layout */}
+            <div className="flex items-center space-x-1 sm:space-x-2">
+              {/* Emergency Button - responsive sizing */}
               <Button
                 onClick={handleEmergencyClick}
-                className="bg-red-600 hover:bg-red-700 text-white"
+                className="bg-red-600 hover:bg-red-700 text-white px-2 py-1 text-xs sm:px-3 sm:py-2 sm:text-sm"
                 size="sm"
               >
-                <AlertTriangle className="h-4 w-4 mr-1" />
-                Emergency
+                <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1" />
+                <span className="hidden sm:inline">Emergency</span>
+                <span className="sm:hidden">SOS</span>
               </Button>
 
-              {/* Notifications */}
-              <div className="relative">
+              {/* Notifications - hidden on very small screens */}
+              <div className="relative hidden xs:block">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setIsNotificationOpen(!isNotificationOpen)}
-                  className="relative"
+                  className="relative p-1 sm:p-2"
                 >
-                  <Bell className="h-5 w-5" />
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                  <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-3 w-3 sm:h-4 sm:w-4 flex items-center justify-center text-[10px] sm:text-xs">
                     2
                   </span>
                 </Button>
@@ -98,16 +99,16 @@ const Header = ({ onNavigate }: HeaderProps) => {
                 />
               </div>
 
-              {/* User Menu */}
-              <div className="flex items-center space-x-2">
+              {/* User Menu - responsive */}
+              <div className="hidden sm:flex items-center space-x-1 lg:space-x-2">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setIsUserProfileOpen(true)}
-                  className="hidden md:flex items-center space-x-2"
+                  className="flex items-center space-x-1 lg:space-x-2 p-1 lg:p-2"
                 >
-                  <User className="h-4 w-4 text-gray-600" />
-                  <span className="text-sm text-gray-700">
+                  <User className="h-3 w-3 lg:h-4 lg:w-4 text-gray-600" />
+                  <span className="text-xs lg:text-sm text-gray-700 max-w-20 lg:max-w-none truncate">
                     {user?.email?.split('@')[0] || 'User'}
                   </span>
                 </Button>
@@ -116,10 +117,10 @@ const Header = ({ onNavigate }: HeaderProps) => {
                   variant="ghost"
                   size="sm"
                   onClick={signOut}
-                  className="text-gray-600 hover:text-red-600"
+                  className="text-gray-600 hover:text-red-600 p-1 lg:p-2"
                 >
-                  <LogOut className="h-4 w-4" />
-                  <span className="hidden md:inline ml-1">Sign Out</span>
+                  <LogOut className="h-3 w-3 lg:h-4 lg:w-4" />
+                  <span className="hidden lg:inline ml-1 text-sm">Sign Out</span>
                 </Button>
               </div>
 
@@ -127,10 +128,10 @@ const Header = ({ onNavigate }: HeaderProps) => {
               <Button
                 variant="ghost"
                 size="sm"
-                className="md:hidden"
+                className="lg:hidden p-1 sm:p-2"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               >
-                {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                {isMobileMenuOpen ? <X className="h-4 w-4 sm:h-5 sm:w-5" /> : <Menu className="h-4 w-4 sm:h-5 sm:w-5" />}
               </Button>
             </div>
           </div>
