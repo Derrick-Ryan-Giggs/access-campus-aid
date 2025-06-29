@@ -6,6 +6,7 @@ import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import ServiceCategories from "@/components/ServiceCategories";
 import Dashboard from "@/components/Dashboard";
+import Services from "@/components/Services";
 import GroceryShop from "@/components/GroceryShop";
 import Reminders from "@/components/Reminders";
 import Tutors from "@/components/Tutors";
@@ -18,8 +19,9 @@ import AdvocacyLegal from "@/components/AdvocacyLegal";
 import SmartAssistant from "@/components/SmartAssistant";
 import EmergencySupport from "@/components/EmergencySupport";
 import AcademicHub from "@/components/AcademicHub";
+import Checkout from "@/components/Checkout";
 
-type ActiveSection = 'home' | 'groceries' | 'reminders' | 'tutors' | 'checkout' | 'live-support' | 'personal-care' | 'virtual-hangouts' | 'mentorship' | 'health-wellness' | 'advocacy-legal' | 'smart-assistant' | 'emergency-support' | 'academic-hub';
+type ActiveSection = 'home' | 'services' | 'dashboard' | 'groceries' | 'reminders' | 'tutors' | 'checkout' | 'live-support' | 'personal-care' | 'virtual-hangouts' | 'mentorship' | 'health-wellness' | 'advocacy-legal' | 'smart-assistant' | 'emergency-support' | 'academic-hub';
 
 const Index = () => {
   const { user, loading } = useAuth();
@@ -56,8 +58,14 @@ const Index = () => {
 
   const renderActiveSection = () => {
     switch (activeSection) {
+      case 'services':
+        return <Services onNavigate={handleNavigate} />;
+      case 'dashboard':
+        return <Dashboard onNavigate={handleNavigate} />;
       case 'groceries':
         return <GroceryShop />;
+      case 'checkout':
+        return <Checkout onBack={() => setActiveSection('groceries')} />;
       case 'reminders':
         return <Reminders />;
       case 'tutors':

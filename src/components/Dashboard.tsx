@@ -1,7 +1,6 @@
 
 import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import FeatureCard from './FeatureCard';
 import QuickStats from './QuickStats';
 import ContactInfo from './ContactInfo';
 
@@ -12,90 +11,37 @@ interface DashboardProps {
 }
 
 const Dashboard = ({ onNavigate }: DashboardProps) => {
-  const features = [
+  const recentActivities = [
+    { action: "Grocery order", status: "Delivered", time: "2 hours ago", color: "bg-green-100 text-green-800" },
+    { action: "Tutor session", status: "Scheduled", time: "Today 3:00 PM", color: "bg-blue-100 text-blue-800" },
+    { action: "Reminder set", status: "Active", time: "Yesterday", color: "bg-yellow-100 text-yellow-800" },
+    { action: "Health check", status: "Completed", time: "3 days ago", color: "bg-purple-100 text-purple-800" }
+  ];
+
+  const quickActions = [
     {
-      title: "Smart Personal Assistant",
-      description: "AI-powered task prioritization, voice commands, and personalized recommendations designed for accessibility needs.",
-      icon: "🧠",
-      buttonText: "Open Assistant",
-      onClick: () => onNavigate('smart-assistant')
-    },
-    {
-      title: "Emergency & Safety",
-      description: "Comprehensive safety features including emergency contacts, buddy system, and campus navigation assistance.",
-      icon: "🚨",
-      buttonText: "Safety Features",
-      onClick: () => onNavigate('emergency-support')
-    },
-    {
-      title: "Academic Integration Hub",
-      description: "Assignment tracking, study groups, shared notes, and exam accommodations all in one accessible platform.",
-      icon: "📚",
-      buttonText: "Academic Hub",
-      onClick: () => onNavigate('academic-hub')
-    },
-    {
-      title: "Grocery Shopping",
-      description: "Order groceries online with easy-to-use interface designed for accessibility. Browse categories, search items, and get essentials delivered.",
+      title: "Order Groceries",
+      description: "Quick grocery shopping",
       icon: "🛒",
-      buttonText: "Start Shopping",
       onClick: () => onNavigate('groceries')
     },
     {
-      title: "Reminders",
-      description: "Never miss important medications, appointments, or academic deadlines. Set up personalized reminders with notifications.",
+      title: "Set Reminder",
+      description: "Add new reminder",
       icon: "⏰",
-      buttonText: "Manage Reminders",
       onClick: () => onNavigate('reminders')
     },
     {
-      title: "Find Tutors",
-      description: "Connect with qualified tutors for academic support. Search by subject and schedule sessions that work for you.",
-      icon: "👨‍🎓",
-      buttonText: "Browse Tutors",
-      onClick: () => onNavigate('tutors')
-    },
-    {
-      title: "Live Support",
-      description: "Real-time assistance for navigating campus and accessing support services through video or chat.",
+      title: "Get Support",
+      description: "Live assistance",
       icon: "🎥",
-      buttonText: "Get Live Help",
       onClick: () => onNavigate('live-support')
     },
     {
-      title: "Personal Care Services",
-      description: "Professional assistance with daily living tasks including laundry, cleaning, and meal preparation.",
-      icon: "🏠",
-      buttonText: "Browse Services",
-      onClick: () => onNavigate('personal-care')
-    },
-    {
-      title: "Virtual Hangouts",
-      description: "Join accessible online events, gaming sessions, book clubs, and social activities with fellow students.",
-      icon: "🎮",
-      buttonText: "Join Community",
-      onClick: () => onNavigate('virtual-hangouts')
-    },
-    {
-      title: "Mentorship Program",
-      description: "Connect with disabled alumni and professionals for career guidance and personal development.",
-      icon: "🤝",
-      buttonText: "Find Mentors",
-      onClick: () => onNavigate('mentorship')
-    },
-    {
-      title: "Health & Wellness",
-      description: "Access telehealth services, fitness programs, and mental health support tailored for disabled students.",
-      icon: "🏥",
-      buttonText: "Health Services",
-      onClick: () => onNavigate('health-wellness')
-    },
-    {
-      title: "Advocacy & Legal",
-      description: "Get legal assistance, accommodation templates, and support for disability rights and accessibility issues.",
-      icon: "⚖️",
-      buttonText: "Legal Resources",
-      onClick: () => onNavigate('advocacy-legal')
+      title: "Emergency",
+      description: "Safety features",
+      icon: "🚨",
+      onClick: () => onNavigate('emergency-support')
     }
   ];
 
@@ -107,24 +53,42 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
           Your Personal Dashboard
         </h1>
         <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto">
-          Access all your essential services and tools in one place, designed specifically for students with disabilities.
+          Track your activities, quick actions, and personalized insights.
         </p>
       </div>
-      
-      {/* Features Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-12 sm:mb-16">
-        {features.map((feature, index) => (
-          <FeatureCard
-            key={index}
-            title={feature.title}
-            description={feature.description}
-            icon={feature.icon}
-            buttonText={feature.buttonText}
-            onClick={feature.onClick}
-            className="animate-fade-in"
-          />
+
+      {/* Quick Actions */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        {quickActions.map((action, index) => (
+          <Card key={index} className="hover:shadow-md transition-shadow cursor-pointer" onClick={action.onClick}>
+            <CardContent className="p-4 text-center">
+              <div className="text-2xl mb-2">{action.icon}</div>
+              <h3 className="font-semibold text-sm">{action.title}</h3>
+              <p className="text-xs text-gray-600 mt-1">{action.description}</p>
+            </CardContent>
+          </Card>
         ))}
       </div>
+
+      {/* Recent Activities */}
+      <Card className="mb-8">
+        <CardContent className="p-6">
+          <h2 className="text-xl font-semibold mb-4">Recent Activities</h2>
+          <div className="space-y-3">
+            {recentActivities.map((activity, index) => (
+              <div key={index} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                <div>
+                  <p className="font-medium">{activity.action}</p>
+                  <p className="text-sm text-gray-600">{activity.time}</p>
+                </div>
+                <span className={`px-2 py-1 rounded-full text-xs font-medium ${activity.color}`}>
+                  {activity.status}
+                </span>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
 
       <QuickStats />
       <ContactInfo />

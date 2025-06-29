@@ -45,6 +45,10 @@
     --sidebar-accent-foreground: 55 65 81;
     --sidebar-border: 229 231 235;
     --sidebar-ring: 37 99 235;
+
+    /* Footer color variables */
+    --footer-background: 31 41 55;
+    --footer-foreground: 249 250 251;
   }
 
   .dark {
@@ -84,6 +88,10 @@
     --sidebar-accent-foreground: 249 250 251;
     --sidebar-border: 55 65 81;
     --sidebar-ring: 59 130 246;
+
+    /* Footer color variables for dark mode */
+    --footer-background: 55 65 81;
+    --footer-foreground: 249 250 251;
   }
 }
 
@@ -96,6 +104,12 @@
     @apply bg-background text-foreground;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
     line-height: 1.6;
+  }
+
+  /* Footer styling */
+  footer {
+    background-color: rgb(var(--footer-background));
+    color: rgb(var(--footer-foreground));
   }
 
   /* Accessibility focus styles */

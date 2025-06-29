@@ -197,6 +197,13 @@ const EmergencySupport = () => {
     }
   };
 
+  const handleNavigateToLocation = (locationName: string) => {
+    toast({
+      title: "Navigation Started",
+      description: `Showing accessible route to ${locationName} with safety information`,
+    });
+  };
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="text-center mb-8">
@@ -419,7 +426,11 @@ const EmergencySupport = () => {
                 <p className="text-sm text-gray-600 mb-2">{location.accessibility}</p>
                 <div className="flex justify-between items-center">
                   <Badge variant="outline">Emergency Phone: {location.emergencyPhone}</Badge>
-                  <Button size="sm" variant="outline">
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    onClick={() => handleNavigateToLocation(location.name)}
+                  >
                     <Navigation className="h-4 w-4 mr-1" />
                     Navigate
                   </Button>

@@ -47,13 +47,13 @@ const Header = ({ onNavigate }: HeaderProps) => {
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex space-x-6 xl:space-x-8">
               <button 
-                onClick={() => handleNavClick('home')} 
+                onClick={() => handleNavClick('services')} 
                 className="text-gray-700 hover:text-primary transition-colors text-sm xl:text-base"
               >
                 Services
               </button>
               <button 
-                onClick={() => handleNavClick('home')} 
+                onClick={() => handleNavClick('dashboard')} 
                 className="text-gray-700 hover:text-primary transition-colors text-sm xl:text-base"
               >
                 Dashboard
@@ -68,10 +68,10 @@ const Header = ({ onNavigate }: HeaderProps) => {
 
             {/* Right side actions - responsive layout */}
             <div className="flex items-center space-x-1 sm:space-x-2">
-              {/* Emergency Button - responsive sizing */}
+              {/* Emergency Button - responsive sizing and positioning */}
               <Button
                 onClick={handleEmergencyClick}
-                className="bg-red-600 hover:bg-red-700 text-white px-2 py-1 text-xs sm:px-3 sm:py-2 sm:text-sm"
+                className="bg-red-600 hover:bg-red-700 text-white px-2 py-1 text-xs sm:px-3 sm:py-2 sm:text-sm ml-2 sm:ml-0"
                 size="sm"
               >
                 <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1" />
