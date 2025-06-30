@@ -51,7 +51,7 @@ const LoginForm = ({ onSwitchToSignup, onClose }: LoginFormProps) => {
               <Input
                 id="email"
                 type="email"
-                placeholder="Enter your email address"
+                placeholder="your.email@example.com"
                 value={formData.email}
                 onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                 className="pl-14 bg-white border-2 border-gray-500 text-gray-900 placeholder:text-gray-500 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
@@ -69,7 +69,7 @@ const LoginForm = ({ onSwitchToSignup, onClose }: LoginFormProps) => {
               <Input
                 id="password"
                 type={showPassword ? "text" : "password"}
-                placeholder="Enter your password"
+                placeholder="your password"
                 value={formData.password}
                 onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
                 className="pl-14 pr-14 bg-white border-2 border-gray-500 text-gray-900 placeholder:text-gray-500 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"

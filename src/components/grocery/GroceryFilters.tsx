@@ -23,7 +23,7 @@ const GroceryFilters = ({
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
         <Input
           type="text"
-          placeholder="Search groceries..."
+          placeholder="Search items..."
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
           className="pl-12 text-sm sm:text-base bg-white border-2 border-gray-500 text-gray-900 placeholder:text-gray-500 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
