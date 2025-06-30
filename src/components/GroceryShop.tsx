@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
@@ -10,18 +9,8 @@ import CartSummary from './grocery/CartSummary';
 import GroceryFilters from './grocery/GroceryFilters';
 import { groceryItems, categories } from './grocery/mockData';
 
-// Define the GroceryItem type based on the structure in mockData
-type GroceryItemType = {
-  id: number;
-  name: string;
-  category: string;
-  price: number;
-  unit: string;
-  image: string;
-  description: string;
-  inStock: boolean;
-  nutrition: Record<string, string | number>;
-};
+// Use the actual type from the imported groceryItems
+type GroceryItemType = typeof groceryItems[0];
 
 interface GroceryShopProps {
   onCheckout?: (cart: { item: GroceryItemType; quantity: number }[]) => void;
