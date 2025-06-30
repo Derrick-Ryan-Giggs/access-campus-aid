@@ -127,12 +127,15 @@
     color: rgb(var(--footer-foreground));
   }
 
-  /* Accessible input styling */
+  /* Accessible input styling - FORCE WHITE BACKGROUNDS */
   input[type="text"],
   input[type="email"],
   input[type="password"],
   input[type="tel"],
   input[type="number"],
+  input[type="search"],
+  input[type="date"],
+  input[type="time"],
   select,
   textarea {
     background-color: #FFFFFF !important;
@@ -145,15 +148,56 @@
   input[type="password"]:focus,
   input[type="tel"]:focus,
   input[type="number"]:focus,
+  input[type="search"]:focus,
+  input[type="date"]:focus,
+  input[type="time"]:focus,
   select:focus,
   textarea:focus {
     border-color: #2563EB !important;
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+    background-color: #FFFFFF !important;
   }
 
   input::placeholder,
   textarea::placeholder {
     color: #6B7280 !important;
+  }
+
+  /* FORCE FORM BACKGROUNDS TO WHITE */
+  .auth-form,
+  .form-container,
+  .dialog-content,
+  .modal-content,
+  form {
+    background-color: #FFFFFF !important;
+  }
+
+  /* REMOVE ALL YELLOW BACKGROUNDS */
+  .bg-yellow-50,
+  .bg-yellow-100,
+  .bg-yellow-200,
+  .bg-yellow-300,
+  .bg-yellow-400,
+  .bg-yellow-500 {
+    background-color: #FFFFFF !important;
+  }
+
+  /* Tab buttons - proper styling */
+  .tab-button {
+    background-color: #F3F4F6 !important;
+    color: #374151 !important;
+    border: 1px solid #D1D5DB !important;
+  }
+
+  .tab-button.active {
+    background-color: #2563EB !important;
+    color: #FFFFFF !important;
+    border-color: #2563EB !important;
+  }
+
+  .tab-button:hover:not(.active) {
+    background-color: #E5E7EB !important;
+    color: #1F2937 !important;
   }
 
   /* Accessibility focus styles */
@@ -163,14 +207,14 @@
 
   /* Warning/Alert specific styling - ONLY for alerts */
   .warning-alert {
-    background-color: rgb(var(--warning-light)) !important;
-    border: 2px solid rgb(var(--warning)) !important;
-    color: rgb(var(--warning-text)) !important;
+    background-color: #FEF3C7 !important;
+    border: 2px solid #F59E0B !important;
+    color: #92400E !important;
   }
 
   .warning-badge {
-    background-color: rgb(var(--warning)) !important;
-    color: rgb(var(--warning-foreground)) !important;
+    background-color: #F59E0B !important;
+    color: #FFFFFF !important;
   }
 
   /* High contrast mode support */
@@ -186,6 +230,9 @@
     input[type="password"],
     input[type="tel"],
     input[type="number"],
+    input[type="search"],
+    input[type="date"],
+    input[type="time"],
     select,
     textarea {
       border: 3px solid #000000 !important;

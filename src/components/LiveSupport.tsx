@@ -198,6 +198,7 @@ const LiveSupport = () => {
                         setChatMessages([]);
                         setConnectionStatus('disconnected');
                       }}
+                      className="bg-white"
                     >
                       End Session
                     </Button>
@@ -206,7 +207,7 @@ const LiveSupport = () => {
               </CardHeader>
               <CardContent>
                 {/* Chat Interface */}
-                <div className="h-96 border rounded-lg mb-4 flex flex-col">
+                <div className="h-96 border rounded-lg mb-4 flex flex-col bg-white">
                   <ScrollArea className="flex-1 p-4">
                     {chatMessages.map((message) => (
                       <div
@@ -230,24 +231,24 @@ const LiveSupport = () => {
                     <div ref={chatEndRef} />
                   </ScrollArea>
                   
-                  <div className="p-4 border-t">
-                    <div className="flex space-x-2">
+                  <div className="p-4 border-t bg-white">
+                    <div className="flex space-x-2 items-center">
                       <Input
                         placeholder="Type your message..."
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
                         onKeyPress={handleKeyPress}
-                        className="flex-1"
+                        className="flex-1 bg-white"
                       />
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={toggleVoiceRecording}
-                        className={isRecording ? 'bg-red-100 text-red-600' : ''}
+                        className={`w-10 h-10 p-0 ${isRecording ? 'bg-red-100 text-red-600' : 'bg-white'}`}
                       >
                         <Mic className="h-4 w-4" />
                       </Button>
-                      <Button onClick={sendMessage}>
+                      <Button onClick={sendMessage} className="w-10 h-10 p-0">
                         <Send className="h-4 w-4" />
                       </Button>
                     </div>
@@ -263,7 +264,7 @@ const LiveSupport = () => {
       {(!activeRequest || connectionStatus === 'disconnected') && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {supportTypes.map(({ id, title, icon: Icon, description, waitTime, available, volunteers }) => (
-            <Card key={id} className="hover:shadow-md transition-shadow">
+            <Card key={id} className="hover:shadow-md transition-shadow bg-white">
               <CardHeader>
                 <div className="flex items-center justify-between mb-2">
                   <Icon className="h-8 w-8 text-primary" />
@@ -296,7 +297,7 @@ const LiveSupport = () => {
                   </Button>
                   <Button 
                     variant="outline" 
-                    className="w-full"
+                    className="w-full bg-white"
                     onClick={() => handleRequestSupport(id)}
                     disabled={!available}
                   >
@@ -311,27 +312,27 @@ const LiveSupport = () => {
       )}
 
       {/* Quick Access */}
-      <Card>
+      <Card className="bg-white">
         <CardHeader>
           <CardTitle>Quick Access & Emergency</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Button variant="outline" className="h-20 flex-col">
+            <Button variant="outline" className="h-20 flex flex-col items-center justify-center bg-white hover:bg-gray-50 p-4">
               <MapPin className="h-6 w-6 mb-2" />
-              Campus Maps
+              <span className="text-sm">Campus Maps</span>
             </Button>
-            <Button variant="outline" className="h-20 flex-col bg-red-50 border-red-200 hover:bg-red-100">
+            <Button variant="outline" className="h-20 flex flex-col items-center justify-center bg-red-50 border-red-200 hover:bg-red-100 p-4">
               <AlertTriangle className="h-6 w-6 mb-2 text-red-600" />
-              Emergency
+              <span className="text-sm text-red-600">Emergency</span>
             </Button>
-            <Button variant="outline" className="h-20 flex-col">
+            <Button variant="outline" className="h-20 flex flex-col items-center justify-center bg-white hover:bg-gray-50 p-4">
               <Users className="h-6 w-6 mb-2" />
-              Volunteer Hub
+              <span className="text-sm">Volunteer Hub</span>
             </Button>
-            <Button variant="outline" className="h-20 flex-col">
+            <Button variant="outline" className="h-20 flex flex-col items-center justify-center bg-white hover:bg-gray-50 p-4">
               <MessageCircle className="h-6 w-6 mb-2" />
-              Report Issue
+              <span className="text-sm">Report Issue</span>
             </Button>
           </div>
         </CardContent>

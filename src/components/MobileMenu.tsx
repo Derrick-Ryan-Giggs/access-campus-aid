@@ -2,7 +2,8 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Home, Menu, X, ShoppingCart, Clock, GraduationCap, LogIn, Bell, User, Settings, Headphones, AlertTriangle } from 'lucide-react';
+import { Home, Menu, X, ShoppingCart, Clock, GraduationCap, LogOut, Bell, User, Settings, Headphones, AlertTriangle, LayoutGrid } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 interface MobileMenuProps {
   activeSection: string;
@@ -25,10 +26,12 @@ const MobileMenu = ({
   isOpen, 
   onClose 
 }: MobileMenuProps) => {
+  const { user, signOut } = useAuth();
+
   const menuItems = [
     { key: 'home', label: 'Home', icon: Home },
     { key: 'services', label: 'Services', icon: Settings },
-    { key: 'dashboard', label: 'Dashboard', icon: Menu },
+    { key: 'dashboard', label: 'Dashboard', icon: LayoutGrid },
     { key: 'live-support', label: 'Support', icon: Headphones },
     { key: 'groceries', label: 'Groceries', icon: ShoppingCart },
     { key: 'reminders', label: 'Reminders', icon: Clock },
@@ -41,7 +44,11 @@ const MobileMenu = ({
   };
 
   const handleAuthClick = () => {
-    if (onAuthClick) onAuthClick();
+    if (user) {
+      signOut();
+    } else if (onAuthClick) {
+      onAuthClick();
+    }
     onClose();
   };
 
@@ -107,8 +114,8 @@ const MobileMenu = ({
                     onClick={handleAuthClick}
                     className="w-full justify-start text-left p-4 h-auto hover:bg-gray-100 text-gray-700"
                   >
-                    <LogIn className="h-5 w-5 mr-3" />
-                    <span className="font-medium">Sign In</span>
+                    <LogOut className="h-5 w-5 mr-3" />
+                    <span className="font-medium">{user ? 'Sign Out' : 'Sign In'}</span>
                   </Button>
                   
                   <Button
