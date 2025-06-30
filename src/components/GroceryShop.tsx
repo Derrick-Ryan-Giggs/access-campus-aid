@@ -9,8 +9,21 @@ import CartSummary from './grocery/CartSummary';
 import GroceryFilters from './grocery/GroceryFilters';
 import { groceryItems, categories } from './grocery/mockData';
 
-// Use the actual type from the imported groceryItems
-type GroceryItemType = typeof groceryItems[0];
+// Define a proper interface that accommodates all nutrition properties
+interface GroceryItemType {
+  id: number;
+  name: string;
+  category: string;
+  price: number;
+  unit: string;
+  image: string;
+  description: string;
+  inStock: boolean;
+  nutrition: {
+    calories: number;
+    [key: string]: string | number;
+  };
+}
 
 interface GroceryShopProps {
   onCheckout?: (cart: { item: GroceryItemType; quantity: number }[]) => void;
@@ -21,7 +34,7 @@ const GroceryShop = ({ onCheckout }: GroceryShopProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [cart, setCart] = useState<{ item: GroceryItemType; quantity: number }[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [groceries, setGroceries] = useState(groceryItems);
+  const [groceries, setGroceries] = useState<GroceryItemType[]>(groceryItems as GroceryItemType[]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [showCheckout, setShowCheckout] = useState(false);
 
