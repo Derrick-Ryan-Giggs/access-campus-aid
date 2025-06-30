@@ -1,4 +1,3 @@
-
 export const groceryItems = [
   // Fresh Produce
   {
@@ -75,7 +74,7 @@ export const groceryItems = [
     category: "pantry",
     price: 6.49,
     unit: "1lb bag",
-    image: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=300&h=300&fit=crop",
+    image: "https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?w=300&h=300&fit=crop",
     description: "Organic quinoa, complete protein",
     inStock: true,
     nutrition: { calories: 222, protein: "8g", fiber: "5g" }
@@ -86,7 +85,7 @@ export const groceryItems = [
     category: "pantry",
     price: 1.89,
     unit: "can",
-    image: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=300&h=300&fit=crop",
+    image: "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=300&h=300&fit=crop",
     description: "Organic black beans, no salt added",
     inStock: true,
     nutrition: { calories: 227, protein: "15g", fiber: "15g" }
@@ -110,7 +109,7 @@ export const groceryItems = [
     category: "dairy",
     price: 5.99,
     unit: "32oz container",
-    image: "https://images.unsplash.com/photo-1571212689742-d762bc1b2b5c?w=300&h=300&fit=crop",
+    image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=300&h=300&fit=crop",
     description: "Plain Greek yogurt, high protein",
     inStock: true,
     nutrition: { calories: 100, protein: "18g", calcium: "20% DV" }
@@ -123,7 +122,7 @@ export const groceryItems = [
     category: "protein",
     price: 3.49,
     unit: "14oz package",
-    image: "https://images.unsplash.com/photo-1609501676725-7186f08a0c2e?w=300&h=300&fit=crop",
+    image: "https://images.unsplash.com/photo-1535268647677-300dbf3d78d1?w=300&h=300&fit=crop",
     description: "Extra firm organic tofu",
     inStock: true,
     nutrition: { calories: 94, protein: "10g", calcium: "35% DV" }
@@ -158,7 +157,7 @@ export const groceryItems = [
     category: "snacks",
     price: 8.99,
     unit: "1lb bag",
-    image: "https://images.unsplash.com/photo-1599599810694-57a2ca8276a8?w=300&h=300&fit=crop",
+    image: "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=300&h=300&fit=crop",
     description: "Unsalted mixed nuts",
     inStock: true,
     nutrition: { calories: 607, protein: "20g", healthyFats: "54g" }

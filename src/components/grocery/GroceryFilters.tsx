@@ -26,7 +26,7 @@ const GroceryFilters = ({
           placeholder="Search groceries..."
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="pl-10 text-sm sm:text-base"
+          className="pl-12 text-sm sm:text-base bg-white border-2 border-gray-500 text-gray-900 placeholder:text-gray-500 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
           aria-label="Search grocery items"
         />
       </div>
@@ -34,7 +34,7 @@ const GroceryFilters = ({
       <select
         value={selectedCategory}
         onChange={(e) => onCategoryChange(e.target.value)}
-        className="px-3 sm:px-4 py-2 border border-gray-300 rounded-md text-sm sm:text-base focus:ring-2 focus:ring-primary focus:border-primary w-full sm:w-auto"
+        className="px-3 sm:px-4 py-2 bg-white border-2 border-gray-500 text-gray-900 rounded-md text-sm sm:text-base focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 w-full sm:w-auto"
         aria-label="Filter by category"
       >
         {categories.map(category => (

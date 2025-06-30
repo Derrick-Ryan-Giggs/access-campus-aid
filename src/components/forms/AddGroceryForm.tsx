@@ -55,30 +55,31 @@ const AddGroceryForm = ({ isOpen, onClose, onSubmit, categories }: AddGroceryFor
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-md max-h-[90vh] overflow-y-auto">
+      <Card className="w-full max-w-md max-h-[90vh] overflow-y-auto bg-white border border-gray-200 shadow-lg">
         <CardHeader>
           <CardTitle>Add New Grocery Item</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="name">Name *</Label>
+              <Label htmlFor="name" className="text-gray-900 font-medium">Name *</Label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                 placeholder="Enter item name"
+                className="bg-white border-2 border-gray-500 text-gray-900 placeholder:text-gray-500 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
                 required
               />
             </div>
 
             <div>
-              <Label htmlFor="category">Category *</Label>
+              <Label htmlFor="category" className="text-gray-900 font-medium">Category *</Label>
               <select
                 id="category"
                 value={formData.category}
                 onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
+                className="w-full px-3 py-2 bg-white border-2 border-gray-500 text-gray-900 rounded-md focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600"
                 required
               >
                 {categories.map(category => (
@@ -88,7 +89,7 @@ const AddGroceryForm = ({ isOpen, onClose, onSubmit, categories }: AddGroceryFor
             </div>
 
             <div>
-              <Label htmlFor="price">Price *</Label>
+              <Label htmlFor="price" className="text-gray-900 font-medium">Price *</Label>
               <Input
                 id="price"
                 type="number"
@@ -97,30 +98,33 @@ const AddGroceryForm = ({ isOpen, onClose, onSubmit, categories }: AddGroceryFor
                 value={formData.price}
                 onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
                 placeholder="0.00"
+                className="bg-white border-2 border-gray-500 text-gray-900 placeholder:text-gray-500 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
                 required
               />
             </div>
 
             <div>
-              <Label htmlFor="description">Description *</Label>
+              <Label htmlFor="description" className="text-gray-900 font-medium">Description *</Label>
               <Textarea
                 id="description"
                 value={formData.description}
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                 placeholder="Enter item description"
                 rows={3}
+                className="bg-white border-2 border-gray-500 text-gray-900 placeholder:text-gray-500 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
                 required
               />
             </div>
 
             <div>
-              <Label htmlFor="image">Image URL (optional)</Label>
+              <Label htmlFor="image" className="text-gray-900 font-medium">Image URL (optional)</Label>
               <Input
                 id="image"
                 type="url"
                 value={formData.image}
                 onChange={(e) => setFormData(prev => ({ ...prev, image: e.target.value }))}
                 placeholder="https://example.com/image.jpg"
+                className="bg-white border-2 border-gray-500 text-gray-900 placeholder:text-gray-500 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
               />
             </div>
 

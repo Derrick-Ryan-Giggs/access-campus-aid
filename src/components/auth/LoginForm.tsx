@@ -37,24 +37,24 @@ const LoginForm = ({ onSwitchToSignup, onClose }: LoginFormProps) => {
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto animate-fade-in bg-white border-2 border-neutral-200">
+    <Card className="w-full max-w-md mx-auto animate-fade-in bg-white border border-gray-200 shadow-lg">
       <CardHeader className="text-center pb-6">
-        <CardTitle className="text-2xl font-bold text-neutral-900 mb-2">Welcome Back</CardTitle>
-        <p className="text-neutral-600 text-base">Sign in to your EmpowerU account</p>
+        <CardTitle className="text-2xl font-bold text-gray-900 mb-2">Welcome Back</CardTitle>
+        <p className="text-gray-600 text-base">Sign in to your EmpowerU account</p>
       </CardHeader>
       <CardContent className="space-y-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-neutral-900 font-medium">Email Address</Label>
+            <Label htmlFor="email" className="text-gray-900 font-medium">Email Address</Label>
             <div className="relative">
-              <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-neutral-500 h-5 w-5" />
+              <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
               <Input
                 id="email"
                 type="email"
                 placeholder="Enter your email address"
                 value={formData.email}
                 onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                className="pl-12"
+                className="pl-14 bg-white border-2 border-gray-500 text-gray-900 placeholder:text-gray-500 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
                 disabled={isLoading}
                 required
                 aria-describedby="email-error"
@@ -63,16 +63,16 @@ const LoginForm = ({ onSwitchToSignup, onClose }: LoginFormProps) => {
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="password" className="text-neutral-900 font-medium">Password</Label>
+            <Label htmlFor="password" className="text-gray-900 font-medium">Password</Label>
             <div className="relative">
-              <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-neutral-500 h-5 w-5" />
+              <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
               <Input
                 id="password"
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter your password"
                 value={formData.password}
                 onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-                className="pl-12 pr-12"
+                className="pl-14 pr-14 bg-white border-2 border-gray-500 text-gray-900 placeholder:text-gray-500 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
                 disabled={isLoading}
                 required
                 aria-describedby="password-error"
@@ -81,7 +81,7 @@ const LoginForm = ({ onSwitchToSignup, onClose }: LoginFormProps) => {
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 text-neutral-500 hover:text-neutral-700"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 text-gray-500 hover:text-gray-700"
                 onClick={() => setShowPassword(!showPassword)}
                 disabled={isLoading}
                 aria-label={showPassword ? "Hide password" : "Show password"}
@@ -108,8 +108,8 @@ const LoginForm = ({ onSwitchToSignup, onClose }: LoginFormProps) => {
           </Button>
         </form>
         
-        <div className="text-center pt-4 border-t border-neutral-200">
-          <p className="text-neutral-600">
+        <div className="text-center pt-4 border-t border-gray-200">
+          <p className="text-gray-600">
             Don't have an account?{' '}
             <Button
               variant="link"
