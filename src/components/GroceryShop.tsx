@@ -8,7 +8,20 @@ import Checkout from './Checkout';
 import GroceryItem from './grocery/GroceryItem';
 import CartSummary from './grocery/CartSummary';
 import GroceryFilters from './grocery/GroceryFilters';
-import { mockGroceries, categories, GroceryItem as GroceryItemType } from './grocery/mockData';
+import { groceryItems, categories } from './grocery/mockData';
+
+// Define the GroceryItem type based on the structure in mockData
+type GroceryItemType = {
+  id: number;
+  name: string;
+  category: string;
+  price: number;
+  unit: string;
+  image: string;
+  description: string;
+  inStock: boolean;
+  nutrition: Record<string, string | number>;
+};
 
 interface GroceryShopProps {
   onCheckout?: (cart: { item: GroceryItemType; quantity: number }[]) => void;
@@ -18,14 +31,14 @@ const GroceryShop = ({ onCheckout }: GroceryShopProps) => {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [cart, setCart] = useState<{ item: GroceryItemType; quantity: number }[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const [groceries, setGroceries] = useState(mockGroceries);
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [groceries, setGroceries] = useState(groceryItems);
   const [showAddForm, setShowAddForm] = useState(false);
   const [showCheckout, setShowCheckout] = useState(false);
 
   const filteredGroceries = groceries.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'All' || item.category === selectedCategory;
+    const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
@@ -100,7 +113,7 @@ const GroceryShop = ({ onCheckout }: GroceryShopProps) => {
           onSearchChange={setSearchTerm}
           selectedCategory={selectedCategory}
           onCategoryChange={setSelectedCategory}
-          categories={categories}
+          categories={categories.map(cat => cat.id)}
         />
 
         <CartSummary cart={cart} onCheckout={handleCheckout} />
@@ -129,7 +142,7 @@ const GroceryShop = ({ onCheckout }: GroceryShopProps) => {
           isOpen={showAddForm}
           onClose={() => setShowAddForm(false)}
           onSubmit={handleAddGrocery}
-          categories={categories.filter(cat => cat !== 'All')}
+          categories={categories.filter(cat => cat.id !== 'all').map(cat => cat.id)}
         />
       )}
     </div>
