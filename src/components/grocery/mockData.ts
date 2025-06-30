@@ -64,7 +64,7 @@ export const groceryItems = [
     category: "pantry",
     price: 4.99,
     unit: "2lb bag",
-    image: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=300&h=300&fit=crop",
+    image: "https://images.unsplash.com/photo-1536304993881-ff6e9eefa2a6?w=300&h=300&fit=crop",
     description: "Whole grain brown rice",
     inStock: true,
     nutrition: { calories: 216, fiber: "3.5g", manganese: "88% DV" }
@@ -75,7 +75,7 @@ export const groceryItems = [
     category: "pantry",
     price: 6.49,
     unit: "1lb bag",
-    image: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=300&h=300&fit=crop",
+    image: "https://images.unsplash.com/photo-1586444248902-2f64eddc13df?w=300&h=300&fit=crop",
     description: "Organic quinoa, complete protein",
     inStock: true,
     nutrition: { calories: 222, protein: "8g", fiber: "5g" }
@@ -86,7 +86,7 @@ export const groceryItems = [
     category: "pantry",
     price: 1.89,
     unit: "can",
-    image: "https://images.unsplash.com/photo-1501286353178-1ec881214838?w=300&h=300&fit=crop",
+    image: "https://images.unsplash.com/photo-1585062544131-f9e6b4fa7d58?w=300&h=300&fit=crop",
     description: "Organic black beans, no salt added",
     inStock: true,
     nutrition: { calories: 227, protein: "15g", fiber: "15g" }
@@ -110,7 +110,7 @@ export const groceryItems = [
     category: "dairy",
     price: 5.99,
     unit: "32oz container",
-    image: "https://images.unsplash.com/photo-1488477181946-6428a0291777?w=300&h=300&fit=crop",
+    image: "https://images.unsplash.com/photo-1571212515416-fca51dc073ea?w=300&h=300&fit=crop",
     description: "Plain Greek yogurt, high protein",
     inStock: true,
     nutrition: { calories: 100, protein: "18g", calcium: "20% DV" }
@@ -123,7 +123,7 @@ export const groceryItems = [
     category: "protein",
     price: 3.49,
     unit: "14oz package",
-    image: "https://images.unsplash.com/photo-1609501676725-7186f44ac3a8?w=300&h=300&fit=crop",
+    image: "https://images.unsplash.com/photo-1615485500704-8e990f9900f7?w=300&h=300&fit=crop",
     description: "Extra firm organic tofu",
     inStock: true,
     nutrition: { calories: 94, protein: "10g", calcium: "35% DV" }
@@ -158,7 +158,7 @@ export const groceryItems = [
     category: "snacks",
     price: 8.99,
     unit: "1lb bag",
-    image: "https://images.unsplash.com/photo-1508747703725-719777637510?w=300&h=300&fit=crop",
+    image: "https://images.unsplash.com/photo-1599599810694-57a2ca8276a8?w=300&h=300&fit=crop",
     description: "Unsalted mixed nuts",
     inStock: true,
     nutrition: { calories: 607, protein: "20g", healthyFats: "54g" }

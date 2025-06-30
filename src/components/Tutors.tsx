@@ -193,13 +193,13 @@ const Tutors = () => {
         {/* Search and Filter */}
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4 sm:mb-6">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
             <Input
               type="text"
               placeholder="Search tutors or subjects..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-12 text-sm sm:text-base bg-white border-2 border-gray-500 text-gray-900 placeholder:text-gray-500 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
+              className="pl-12 pr-4 h-12 text-sm sm:text-base bg-white border-2 border-gray-500 text-gray-900 placeholder:text-gray-500 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
               aria-label="Search tutors"
             />
           </div>
@@ -207,7 +207,7 @@ const Tutors = () => {
           <select
             value={selectedSubject}
             onChange={(e) => setSelectedSubject(e.target.value)}
-            className="px-3 sm:px-4 py-2 bg-white border-2 border-gray-500 text-gray-900 rounded-md text-sm sm:text-base focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 w-full sm:w-auto"
+            className="px-4 py-3 h-12 bg-white border-2 border-gray-500 text-gray-900 rounded-md text-sm sm:text-base focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 w-full sm:w-auto"
             aria-label="Filter by subject"
           >
             <option value="All">All Subjects</option>
