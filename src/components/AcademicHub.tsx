@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,8 +9,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
-import { BookOpen, Calendar, Users, Upload, Plus, CheckCircle2, AlertCircle, Clock, Edit } from 'lucide-react';
+import { BookOpen, Calendar, Users, Upload, Plus, CheckCircle2, AlertCircle, Clock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import AssignmentCard from './academic/AssignmentCard';
+import SharedNotesCard from './academic/SharedNotesCard';
+import EditAssignmentDialog from './academic/EditAssignmentDialog';
 
 const AcademicHub = () => {
   const { toast } = useToast();
@@ -105,17 +107,27 @@ const AcademicHub = () => {
     file: null as File | null
   });
 
+  const [editingAssignment, setEditingAssignment] = useState<any>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+
   const handleUpdateProgress = (assignmentId: number, newProgress: number) => {
     setAssignments(assignments.map(assignment => 
       assignment.id === assignmentId 
         ? { ...assignment, progress: newProgress, status: newProgress === 100 ? 'completed' : newProgress > 0 ? 'in-progress' : 'not-started' }
         : assignment
     ));
-    
-    toast({
-      title: "Progress Updated",
-      description: `Assignment progress updated to ${newProgress}%`,
-    });
+  };
+
+  const handleEditAssignment = (assignment: any) => {
+    setEditingAssignment(assignment);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleSaveAssignment = (updatedAssignment: any) => {
+    setAssignments(assignments.map(assignment => 
+      assignment.id === updatedAssignment.id ? updatedAssignment : assignment
+    ));
+    setEditingAssignment(null);
   };
 
   const handleAddAssignment = () => {
@@ -327,96 +339,12 @@ const AcademicHub = () => {
 
             <div className="grid gap-3 sm:gap-4">
               {assignments.map((assignment) => (
-                <Card key={assignment.id} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-4 sm:p-6">
-                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-                      <div className="flex-1">
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
-                          <h3 className="text-base sm:text-lg font-semibold">{assignment.title}</h3>
-                          <Badge className={`${getPriorityColor(assignment.priority)} text-white text-xs w-fit`}>
-                            {assignment.priority.toUpperCase()}
-                          </Badge>
-                        </div>
-                        
-                        <div className="flex flex-wrap gap-2 mb-3">
-                          <Badge variant="outline" className="text-xs">
-                            {assignment.course}
-                          </Badge>
-                          <Badge variant="outline" className="text-xs">
-                            <Calendar className="h-3 w-3 mr-1" />
-                            Due: {assignment.dueDate}
-                          </Badge>
-                          <Badge className={`text-xs ${getStatusColor(assignment.status)}`}>
-                            {assignment.status.replace('-', ' ')}
-                          </Badge>
-                        </div>
-
-                        <div className="mb-3">
-                          <div className="flex justify-between items-center mb-2">
-                            <span className="text-sm font-medium">Progress</span>
-                            <span className="text-sm text-gray-600">{assignment.progress}%</span>
-                          </div>
-                          <Progress value={assignment.progress} className="h-2" />
-                        </div>
-
-                        {assignment.accommodations.length > 0 && (
-                          <div className="mb-3">
-                            <p className="text-sm font-medium mb-1">Accommodations:</p>
-                            <div className="flex flex-wrap gap-1">
-                              {assignment.accommodations.map((acc, index) => (
-                                <Badge key={index} variant="secondary" className="text-xs">
-                                  {acc}
-                                </Badge>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col sm:flex-row gap-2 mt-4">
-                      <div className="flex items-center gap-2 flex-1">
-                        <Input
-                          type="number"
-                          min="0"
-                          max="100"
-                          placeholder="Progress %"
-                          className="w-20"
-                          onKeyPress={(e) => {
-                            if (e.key === 'Enter') {
-                              const target = e.target as HTMLInputElement;
-                              const progress = Math.min(100, Math.max(0, parseInt(target.value) || 0));
-                              handleUpdateProgress(assignment.id, progress);
-                              target.value = '';
-                            }
-                          }}
-                        />
-                        <Button 
-                          size="sm" 
-                          onClick={() => {
-                            const input = (event?.target as HTMLElement)?.parentElement?.querySelector('input') as HTMLInputElement;
-                            if (input) {
-                              const progress = Math.min(100, Math.max(0, parseInt(input.value) || 0));
-                              handleUpdateProgress(assignment.id, progress);
-                              input.value = '';
-                            }
-                          }}
-                          className="whitespace-nowrap"
-                        >
-                          Update Progress
-                        </Button>
-                      </div>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        className="sm:w-auto"
-                      >
-                        <Edit className="h-4 w-4 mr-1" />
-                        Edit
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+                <AssignmentCard
+                  key={assignment.id}
+                  assignment={assignment}
+                  onUpdateProgress={handleUpdateProgress}
+                  onEdit={handleEditAssignment}
+                />
               ))}
             </div>
           </div>
@@ -537,47 +465,7 @@ const AcademicHub = () => {
 
             <div className="grid gap-3 sm:gap-4">
               {sharedNotes.map((note) => (
-                <Card key={note.id} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-4 sm:p-6">
-                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-                      <div className="flex-1">
-                        <h3 className="text-base sm:text-lg font-semibold mb-2">{note.title}</h3>
-                        
-                        <div className="flex flex-wrap gap-2 mb-3">
-                          <Badge variant="outline" className="text-xs">
-                            {note.course}
-                          </Badge>
-                          <Badge variant="outline" className="text-xs">
-                            By {note.author}
-                          </Badge>
-                          <Badge variant="outline" className="text-xs">
-                            {note.downloads} downloads
-                          </Badge>
-                          {note.rating > 0 && (
-                            <Badge variant="outline" className="text-xs">
-                              ⭐ {note.rating}
-                            </Badge>
-                          )}
-                        </div>
-
-                        <div className="mb-3">
-                          <p className="text-sm font-medium mb-1">Available Formats:</p>
-                          <div className="flex flex-wrap gap-1">
-                            {note.format.map((format, index) => (
-                              <Badge key={index} variant="secondary" className="text-xs">
-                                {format}
-                              </Badge>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <Button className="w-full sm:w-auto">
-                      Download Notes
-                    </Button>
-                  </CardContent>
-                </Card>
+                <SharedNotesCard key={note.id} note={note} />
               ))}
             </div>
           </div>
@@ -651,6 +539,16 @@ const AcademicHub = () => {
           </div>
         </TabsContent>
       </Tabs>
+
+      <EditAssignmentDialog
+        assignment={editingAssignment}
+        isOpen={isEditDialogOpen}
+        onClose={() => {
+          setIsEditDialogOpen(false);
+          setEditingAssignment(null);
+        }}
+        onSave={handleSaveAssignment}
+      />
     </div>
   );
 };

@@ -1,4 +1,3 @@
-
 export const groceryItems = [
   // Fresh Fruits
   {
@@ -88,7 +87,7 @@ export const groceryItems = [
     category: "grains",
     price: 1.89,
     unit: "can",
-    image: "https://images.unsplash.com/photo-1622528786041-e4b54e0bcaaf?w=300&h=300&fit=crop",
+    image: "https://images.unsplash.com/photo-1509358271058-acd22cc93898?w=300&h=300&fit=crop",
     description: "Organic black beans, no salt added",
     inStock: true,
     nutrition: { calories: 227, protein: "15g", fiber: "15g" }
@@ -125,7 +124,7 @@ export const groceryItems = [
     category: "protein",
     price: 3.49,
     unit: "14oz package",
-    image: "https://images.unsplash.com/photo-1615485925763-92c6b2b3cc34?w=300&h=300&fit=crop",
+    image: "https://images.unsplash.com/photo-1603048297172-c92544798d5a?w=300&h=300&fit=crop",
     description: "Extra firm organic tofu",
     inStock: true,
     nutrition: { calories: 94, protein: "10g", calcium: "35% DV" }
