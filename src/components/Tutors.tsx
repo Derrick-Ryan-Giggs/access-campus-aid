@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -192,16 +191,18 @@ const Tutors = () => {
         
         {/* Search and Filter */}
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4 sm:mb-6">
-          <div className="relative flex-1">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
-            <Input
-              type="text"
-              placeholder="Search tutors or subjects..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-12 pr-4 h-12 text-sm sm:text-base bg-white border-2 border-gray-500 text-gray-900 placeholder:text-gray-500 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
-              aria-label="Search tutors"
-            />
+          <div className="flex-1">
+            <div className="flex items-center gap-3 p-3 border-2 border-gray-500 rounded-md focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-500/20 bg-white">
+              <Search className="text-gray-500 h-5 w-5 flex-shrink-0" />
+              <Input
+                type="text"
+                placeholder="Search tutors or subjects..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="border-0 p-0 h-auto bg-transparent text-gray-900 placeholder:text-gray-500 focus-visible:ring-0 focus-visible:ring-offset-0"
+                aria-label="Search tutors"
+              />
+            </div>
           </div>
           
           <select

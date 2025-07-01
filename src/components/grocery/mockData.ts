@@ -4,7 +4,7 @@ export const groceryItems = [
   {
     id: 1,
     name: "Organic Bananas",
-    category: "produce",
+    category: "fruits",
     price: 2.99,
     unit: "bunch",
     image: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=300&h=300&fit=crop",
@@ -15,7 +15,7 @@ export const groceryItems = [
   {
     id: 2,
     name: "Sweet Potatoes",
-    category: "produce",
+    category: "vegetables",
     price: 1.89,
     unit: "lb",
     image: "https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=300&h=300&fit=crop",
@@ -26,7 +26,7 @@ export const groceryItems = [
   {
     id: 3,
     name: "Organic Spinach",
-    category: "produce",
+    category: "vegetables",
     price: 3.49,
     unit: "bag",
     image: "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=300&h=300&fit=crop",
@@ -37,7 +37,7 @@ export const groceryItems = [
   {
     id: 4,
     name: "Avocados",
-    category: "produce",
+    category: "fruits",
     price: 1.25,
     unit: "each",
     image: "https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=300&h=300&fit=crop",
@@ -48,7 +48,7 @@ export const groceryItems = [
   {
     id: 5,
     name: "Organic Carrots",
-    category: "produce",
+    category: "vegetables",
     price: 2.29,
     unit: "bag",
     image: "https://images.unsplash.com/photo-1445282768818-728615cc910a?w=300&h=300&fit=crop",
@@ -61,7 +61,7 @@ export const groceryItems = [
   {
     id: 6,
     name: "Brown Rice",
-    category: "pantry",
+    category: "grains",
     price: 4.99,
     unit: "2lb bag",
     image: "https://images.unsplash.com/photo-1536304993881-ff6e9eefa2a6?w=300&h=300&fit=crop",
@@ -72,7 +72,7 @@ export const groceryItems = [
   {
     id: 7,
     name: "Quinoa",
-    category: "pantry",
+    category: "grains",
     price: 6.49,
     unit: "1lb bag",
     image: "https://images.unsplash.com/photo-1586444248902-2f64eddc13df?w=300&h=300&fit=crop",
@@ -83,10 +83,10 @@ export const groceryItems = [
   {
     id: 8,
     name: "Black Beans",
-    category: "pantry",
+    category: "grains",
     price: 1.89,
     unit: "can",
-    image: "https://images.unsplash.com/photo-1585062544131-f9e6b4fa7d58?w=300&h=300&fit=crop",
+    image: "https://images.unsplash.com/photo-1622528786041-e4b54e0bcaaf?w=300&h=300&fit=crop",
     description: "Organic black beans, no salt added",
     inStock: true,
     nutrition: { calories: 227, protein: "15g", fiber: "15g" }
@@ -110,7 +110,7 @@ export const groceryItems = [
     category: "dairy",
     price: 5.99,
     unit: "32oz container",
-    image: "https://images.unsplash.com/photo-1571212515416-fca51dc073ea?w=300&h=300&fit=crop",
+    image: "https://images.unsplash.com/photo-1488477181946-6428a0291777?w=300&h=300&fit=crop",
     description: "Plain Greek yogurt, high protein",
     inStock: true,
     nutrition: { calories: 100, protein: "18g", calcium: "20% DV" }
@@ -123,7 +123,7 @@ export const groceryItems = [
     category: "protein",
     price: 3.49,
     unit: "14oz package",
-    image: "https://images.unsplash.com/photo-1615485500704-8e990f9900f7?w=300&h=300&fit=crop",
+    image: "https://images.unsplash.com/photo-1615485925763-92c6b2b3cc34?w=300&h=300&fit=crop",
     description: "Extra firm organic tofu",
     inStock: true,
     nutrition: { calories: 94, protein: "10g", calcium: "35% DV" }
@@ -158,7 +158,7 @@ export const groceryItems = [
     category: "snacks",
     price: 8.99,
     unit: "1lb bag",
-    image: "https://images.unsplash.com/photo-1599599810694-57a2ca8276a8?w=300&h=300&fit=crop",
+    image: "https://images.unsplash.com/photo-1529258283598-8d6fe60b27f4?w=300&h=300&fit=crop",
     description: "Unsalted mixed nuts",
     inStock: true,
     nutrition: { calories: 607, protein: "20g", healthyFats: "54g" }
@@ -178,8 +178,9 @@ export const groceryItems = [
 
 export const categories = [
   { id: "all", name: "All Items", count: groceryItems.length },
-  { id: "produce", name: "Fresh Produce", count: groceryItems.filter(item => item.category === "produce").length },
-  { id: "pantry", name: "Pantry Staples", count: groceryItems.filter(item => item.category === "pantry").length },
+  { id: "fruits", name: "Fresh Fruits", count: groceryItems.filter(item => item.category === "fruits").length },
+  { id: "vegetables", name: "Fresh Vegetables", count: groceryItems.filter(item => item.category === "vegetables").length },
+  { id: "grains", name: "Grains & Legumes", count: groceryItems.filter(item => item.category === "grains").length },
   { id: "dairy", name: "Dairy & Alternatives", count: groceryItems.filter(item => item.category === "dairy").length },
   { id: "protein", name: "Protein", count: groceryItems.filter(item => item.category === "protein").length },
   { id: "snacks", name: "Snacks & Beverages", count: groceryItems.filter(item => item.category === "snacks" || item.category === "beverages").length }
