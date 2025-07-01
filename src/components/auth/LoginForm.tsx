@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 
 interface LoginFormProps {
@@ -20,10 +20,51 @@ const LoginForm = ({ onSwitchToSignup, onClose }: LoginFormProps) => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validateForm = (): boolean => {
+    const newErrors: { email?: string; password?: string } = {};
+
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email address is required';
+    } else if (!validateEmail(formData.email)) {
+      newErrors.email = 'Please enter a valid email address';
+    }
+
+    if (!formData.password.trim()) {
+      newErrors.password = 'Password is required';
+    } else if (formData.password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleInputChange = (field: 'email' | 'password', value: string): void => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors(prev => ({
+        ...prev,
+        [field]: undefined
+      }));
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.email || !formData.password) {
+    
+    if (!validateForm()) {
       return;
     }
 
@@ -49,20 +90,44 @@ const LoginForm = ({ onSwitchToSignup, onClose }: LoginFormProps) => {
               Email Address
             </Label>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5 z-10" />
-              <Input
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
+                <Mail className="h-5 w-5 text-gray-400" aria-hidden="true" />
+              </div>
+              <input
                 id="email"
                 type="email"
                 placeholder="Enter your email"
                 value={formData.email}
-                onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                className="h-12 pl-11 pr-4 bg-white border-2 border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
+                onChange={(e) => handleInputChange('email', e.target.value)}
+                className={`
+                  w-full h-12 pl-12 pr-4 py-3 border-2 rounded-lg text-base bg-gray-50
+                  transition-all duration-200 ease-in-out text-gray-900 placeholder:text-gray-500
+                  focus:outline-none focus:ring-3 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white
+                  hover:border-gray-300 hover:bg-white
+                  ${errors.email 
+                    ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-500/20' 
+                    : 'border-gray-300'
+                  }
+                `}
                 disabled={isLoading}
                 required
                 aria-label="Email address"
                 aria-required="true"
+                aria-invalid={!!errors.email}
+                aria-describedby={errors.email ? 'email-error' : undefined}
               />
             </div>
+            {errors.email && (
+              <div 
+                id="email-error" 
+                className="flex items-center mt-2 text-sm text-red-600"
+                role="alert"
+                aria-live="polite"
+              >
+                <AlertCircle className="h-4 w-4 mr-1" />
+                {errors.email}
+              </div>
+            )}
           </div>
           
           <div className="space-y-2">
@@ -70,42 +135,64 @@ const LoginForm = ({ onSwitchToSignup, onClose }: LoginFormProps) => {
               Password
             </Label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5 z-10" />
-              <Input
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
+                <Lock className="h-5 w-5 text-gray-400" aria-hidden="true" />
+              </div>
+              <input
                 id="password"
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter your password"
                 value={formData.password}
-                onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-                className="h-12 pl-11 pr-12 bg-white border-2 border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
+                onChange={(e) => handleInputChange('password', e.target.value)}
+                className={`
+                  w-full h-12 pl-12 pr-12 py-3 border-2 rounded-lg text-base bg-gray-50
+                  transition-all duration-200 ease-in-out text-gray-900 placeholder:text-gray-500
+                  focus:outline-none focus:ring-3 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white
+                  hover:border-gray-300 hover:bg-white
+                  ${errors.password 
+                    ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-500/20' 
+                    : 'border-gray-300'
+                  }
+                `}
                 disabled={isLoading}
                 required
                 aria-label="Password"
                 aria-required="true"
+                aria-invalid={!!errors.password}
+                aria-describedby={errors.password ? 'password-error' : undefined}
               />
-              <Button
+              <button
                 type="button"
-                variant="ghost"
-                size="sm"
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 h-auto w-auto p-0 text-gray-500 hover:text-gray-700 hover:bg-transparent"
                 onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 pr-4 flex items-center z-10 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
                 disabled={isLoading}
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </Button>
+                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+              </button>
             </div>
+            {errors.password && (
+              <div 
+                id="password-error" 
+                className="flex items-center mt-2 text-sm text-red-600"
+                role="alert"
+                aria-live="polite"
+              >
+                <AlertCircle className="h-4 w-4 mr-1" />
+                {errors.password}
+              </div>
+            )}
           </div>
           
           <Button
             type="submit"
-            className="w-full h-12 bg-primary text-white hover:bg-primary-700 text-base font-semibold focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-200"
+            className="w-full h-12 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold hover:from-blue-700 hover:to-blue-800 hover:shadow-lg hover:-translate-y-0.5 focus:ring-3 focus:ring-blue-500/50 transition-all duration-200 ease-in-out active:translate-y-0 active:shadow-md"
             disabled={isLoading || !formData.email || !formData.password}
             aria-label="Sign in to your account"
           >
             {isLoading ? (
-              <div className="flex items-center space-x-2">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              <div className="flex items-center justify-center">
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
                 <span>Signing In...</span>
               </div>
             ) : (
@@ -120,7 +207,7 @@ const LoginForm = ({ onSwitchToSignup, onClose }: LoginFormProps) => {
             <Button
               variant="link"
               onClick={onSwitchToSignup}
-              className="text-primary hover:text-primary-700 p-0 h-auto font-semibold underline"
+              className="text-blue-600 hover:text-blue-700 p-0 h-auto font-semibold underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
               disabled={isLoading}
               aria-label="Switch to sign up form"
             >
