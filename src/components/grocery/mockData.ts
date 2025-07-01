@@ -1,6 +1,6 @@
 
 export const groceryItems = [
-  // Fresh Produce
+  // Fresh Fruits
   {
     id: 1,
     name: "Organic Bananas",
@@ -12,6 +12,19 @@ export const groceryItems = [
     inStock: true,
     nutrition: { calories: 105, fiber: "3g", potassium: "422mg" }
   },
+  {
+    id: 4,
+    name: "Avocados",
+    category: "fruits",
+    price: 1.25,
+    unit: "each",
+    image: "https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=300&h=300&fit=crop",
+    description: "Ripe Hass avocados",
+    inStock: true,
+    nutrition: { calories: 234, fiber: "10g", potassium: "690mg" }
+  },
+
+  // Fresh Vegetables
   {
     id: 2,
     name: "Sweet Potatoes",
@@ -35,17 +48,6 @@ export const groceryItems = [
     nutrition: { calories: 7, iron: "5% DV", vitaminK: "181% DV" }
   },
   {
-    id: 4,
-    name: "Avocados",
-    category: "fruits",
-    price: 1.25,
-    unit: "each",
-    image: "https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=300&h=300&fit=crop",
-    description: "Ripe Hass avocados",
-    inStock: true,
-    nutrition: { calories: 234, fiber: "10g", potassium: "690mg" }
-  },
-  {
     id: 5,
     name: "Organic Carrots",
     category: "vegetables",
@@ -57,7 +59,7 @@ export const groceryItems = [
     nutrition: { calories: 25, fiber: "2g", vitaminA: "184% DV" }
   },
 
-  // Pantry Staples
+  // Grains & Legumes
   {
     id: 6,
     name: "Brown Rice",
@@ -116,7 +118,7 @@ export const groceryItems = [
     nutrition: { calories: 100, protein: "18g", calcium: "20% DV" }
   },
 
-  // Proteins
+  // Protein Sources
   {
     id: 11,
     name: "Organic Tofu",
@@ -140,7 +142,7 @@ export const groceryItems = [
     nutrition: { calories: 208, protein: "25g", omega3: "1.8g" }
   },
 
-  // Snacks & Beverages
+  // Healthy Snacks
   {
     id: 13,
     name: "Green Tea",
@@ -182,6 +184,6 @@ export const categories = [
   { id: "vegetables", name: "Fresh Vegetables", count: groceryItems.filter(item => item.category === "vegetables").length },
   { id: "grains", name: "Grains & Legumes", count: groceryItems.filter(item => item.category === "grains").length },
   { id: "dairy", name: "Dairy & Alternatives", count: groceryItems.filter(item => item.category === "dairy").length },
-  { id: "protein", name: "Protein", count: groceryItems.filter(item => item.category === "protein").length },
-  { id: "snacks", name: "Snacks & Beverages", count: groceryItems.filter(item => item.category === "snacks" || item.category === "beverages").length }
+  { id: "protein", name: "Protein Sources", count: groceryItems.filter(item => item.category === "protein").length },
+  { id: "snacks", name: "Healthy Snacks", count: groceryItems.filter(item => item.category === "snacks" || item.category === "beverages").length }
 ];

@@ -45,41 +45,49 @@ const LoginForm = ({ onSwitchToSignup, onClose }: LoginFormProps) => {
       <CardContent className="space-y-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-gray-900 font-medium">Email Address</Label>
-            <div className="flex items-center gap-3 p-3 border-2 border-gray-500 rounded-md focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-500/20 bg-white">
-              <Mail className="text-gray-500 h-5 w-5 flex-shrink-0" />
+            <Label htmlFor="email" className="text-gray-900 font-medium text-sm">
+              Email Address
+            </Label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5 z-10" />
               <Input
                 id="email"
                 type="email"
                 placeholder="Enter your email"
                 value={formData.email}
                 onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                className="border-0 p-0 h-auto bg-transparent text-gray-900 placeholder:text-gray-500 focus-visible:ring-0 focus-visible:ring-offset-0"
+                className="h-12 pl-11 pr-4 bg-white border-2 border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
                 disabled={isLoading}
                 required
+                aria-label="Email address"
+                aria-required="true"
               />
             </div>
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="password" className="text-gray-900 font-medium">Password</Label>
-            <div className="flex items-center gap-3 p-3 border-2 border-gray-500 rounded-md focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-500/20 bg-white">
-              <Lock className="text-gray-500 h-5 w-5 flex-shrink-0" />
+            <Label htmlFor="password" className="text-gray-900 font-medium text-sm">
+              Password
+            </Label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5 z-10" />
               <Input
                 id="password"
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter your password"
                 value={formData.password}
                 onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-                className="border-0 p-0 h-auto bg-transparent text-gray-900 placeholder:text-gray-500 focus-visible:ring-0 focus-visible:ring-offset-0 flex-1"
+                className="h-12 pl-11 pr-12 bg-white border-2 border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
                 disabled={isLoading}
                 required
+                aria-label="Password"
+                aria-required="true"
               />
               <Button
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="h-auto w-auto p-0 text-gray-500 hover:text-gray-700 hover:bg-transparent"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 h-auto w-auto p-0 text-gray-500 hover:text-gray-700 hover:bg-transparent"
                 onClick={() => setShowPassword(!showPassword)}
                 disabled={isLoading}
                 aria-label={showPassword ? "Hide password" : "Show password"}
@@ -91,8 +99,9 @@ const LoginForm = ({ onSwitchToSignup, onClose }: LoginFormProps) => {
           
           <Button
             type="submit"
-            className="w-full h-12 bg-primary text-white hover:bg-primary-700 text-base font-semibold"
+            className="w-full h-12 bg-primary text-white hover:bg-primary-700 text-base font-semibold focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-200"
             disabled={isLoading || !formData.email || !formData.password}
+            aria-label="Sign in to your account"
           >
             {isLoading ? (
               <div className="flex items-center space-x-2">
@@ -111,8 +120,9 @@ const LoginForm = ({ onSwitchToSignup, onClose }: LoginFormProps) => {
             <Button
               variant="link"
               onClick={onSwitchToSignup}
-              className="text-primary hover:text-primary-700 p-0 h-auto font-semibold"
+              className="text-primary hover:text-primary-700 p-0 h-auto font-semibold underline"
               disabled={isLoading}
+              aria-label="Switch to sign up form"
             >
               Sign up here
             </Button>
