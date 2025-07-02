@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar, Video, Heart, Activity, Pill, Stethoscope, Brain, Dumbbell } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import HealthServiceCard from '@/components/health/HealthServiceCard';
 
 const HealthWellness = () => {
   const { toast } = useToast();
@@ -181,81 +182,86 @@ const HealthWellness = () => {
 
       {/* Quick Actions */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <Button variant="outline" className="h-20 flex-col">
-          <Stethoscope className="h-6 w-6 mb-2" />
-          Book Telehealth
-        </Button>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button variant="outline" className="h-20 flex-col">
-              <Pill className="h-6 w-6 mb-2" />
-              Medication Tracker
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>Setup Medication Tracking</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="medications">Current Medications *</Label>
-                <Textarea 
-                  id="medications" 
-                  placeholder="List your medications with dosages..."
-                  value={medicationForm.medications}
-                  onChange={(e) => setMedicationForm({...medicationForm, medications: e.target.value})}
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="reminders">Reminder Frequency</Label>
-                <Select value={medicationForm.reminders} onValueChange={(value) => setMedicationForm({...medicationForm, reminders: value})}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select frequency" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="daily">Daily</SelectItem>
-                    <SelectItem value="twice-daily">Twice Daily</SelectItem>
-                    <SelectItem value="weekly">Weekly</SelectItem>
-                    <SelectItem value="as-needed">As Needed</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div>
-                <Label htmlFor="pharmacy">Preferred Pharmacy</Label>
-                <Input 
-                  id="pharmacy" 
-                  placeholder="Enter pharmacy name/location"
-                  value={medicationForm.pharmacy}
-                  onChange={(e) => setMedicationForm({...medicationForm, pharmacy: e.target.value})}
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="allergies">Drug Allergies</Label>
-                <Textarea 
-                  id="allergies" 
-                  placeholder="List any drug allergies or adverse reactions..."
-                  value={medicationForm.allergies}
-                  onChange={(e) => setMedicationForm({...medicationForm, allergies: e.target.value})}
-                />
-              </div>
-              
-              <Button onClick={handleSetupMedicationTracking} className="w-full">
-                Setup Tracking
+        <HealthServiceCard 
+          icon={Stethoscope} 
+          title="Book Telehealth"
+        />
+        
+        <HealthServiceCard icon={Pill} title="Medication Tracker">
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="outline" className="h-20 flex-col">
+                <Pill className="h-6 w-6 mb-2" />
+                Medication Tracker
               </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
-        <Button variant="outline" className="h-20 flex-col">
-          <Activity className="h-6 w-6 mb-2" />
-          Fitness Programs
-        </Button>
-        <Button variant="outline" className="h-20 flex-col">
-          <Heart className="h-6 w-6 mb-2" />
-          Wellness Check
-        </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>Setup Medication Tracking</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="medications">Current Medications *</Label>
+                  <Textarea 
+                    id="medications" 
+                    placeholder="List your medications with dosages..."
+                    value={medicationForm.medications}
+                    onChange={(e) => setMedicationForm({...medicationForm, medications: e.target.value})}
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="reminders">Reminder Frequency</Label>
+                  <Select value={medicationForm.reminders} onValueChange={(value) => setMedicationForm({...medicationForm, reminders: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select frequency" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="daily">Daily</SelectItem>
+                      <SelectItem value="twice-daily">Twice Daily</SelectItem>
+                      <SelectItem value="weekly">Weekly</SelectItem>
+                      <SelectItem value="as-needed">As Needed</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
+                  <Label htmlFor="pharmacy">Preferred Pharmacy</Label>
+                  <Input 
+                    id="pharmacy" 
+                    placeholder="Enter pharmacy name/location"
+                    value={medicationForm.pharmacy}
+                    onChange={(e) => setMedicationForm({...medicationForm, pharmacy: e.target.value})}
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="allergies">Drug Allergies</Label>
+                  <Textarea 
+                    id="allergies" 
+                    placeholder="List any drug allergies or adverse reactions..."
+                    value={medicationForm.allergies}
+                    onChange={(e) => setMedicationForm({...medicationForm, allergies: e.target.value})}
+                  />
+                </div>
+                
+                <Button onClick={handleSetupMedicationTracking} className="w-full">
+                  Setup Tracking
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </HealthServiceCard>
+        
+        <HealthServiceCard 
+          icon={Activity} 
+          title="Fitness Programs"
+        />
+        
+        <HealthServiceCard 
+          icon={Heart} 
+          title="Wellness Check"
+        />
       </div>
 
       {/* Telehealth Providers */}
