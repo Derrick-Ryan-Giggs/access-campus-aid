@@ -17,11 +17,11 @@ const HealthServiceCard = ({ icon: Icon, title, onClick, children }: HealthServi
   return (
     <Button 
       variant="outline" 
-      className="h-24 w-full flex flex-col items-center justify-center gap-2 p-4 border border-gray-200 hover:bg-gray-50 transition-colors" 
+      className="h-32 w-full flex flex-col items-center justify-center gap-4 p-6 border border-gray-200 hover:bg-gray-50 transition-colors" 
       onClick={onClick}
     >
-      <Icon className="h-6 w-6 text-primary flex-shrink-0" />
-      <span className="text-sm text-center leading-tight font-medium">{title}</span>
+      <Icon className="h-8 w-8 text-primary flex-shrink-0" />
+      <span className="text-base text-center leading-relaxed font-medium px-2">{title}</span>
     </Button>
   );
 };
