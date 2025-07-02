@@ -1,12 +1,11 @@
 
-import { useState, useRef, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Video, MessageCircle, Phone, MapPin, Clock, Users, Send, Mic, Camera, ScreenShare, AlertTriangle } from 'lucide-react';
+import { useState } from 'react';
+import { MapPin, MessageCircle, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import SupportTypeCard from '@/components/support/SupportTypeCard';
+import ChatInterface from '@/components/support/ChatInterface';
+import QueueStatus from '@/components/support/QueueStatus';
+import QuickAccessPanel from '@/components/support/QuickAccessPanel';
 
 interface ChatMessage {
   id: string;
@@ -20,11 +19,8 @@ const LiveSupport = () => {
   const { toast } = useToast();
   const [activeRequest, setActiveRequest] = useState<string | null>(null);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
-  const [newMessage, setNewMessage] = useState('');
   const [queuePosition, setQueuePosition] = useState<number | null>(null);
-  const [isRecording, setIsRecording] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<'disconnected' | 'connecting' | 'connected'>('disconnected');
-  const chatEndRef = useRef<HTMLDivElement>(null);
 
   const supportTypes = [
     {
@@ -55,12 +51,6 @@ const LiveSupport = () => {
       volunteers: 2
     }
   ];
-
-  useEffect(() => {
-    if (chatMessages.length > 0) {
-      chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [chatMessages]);
 
   const handleRequestSupport = (type: string) => {
     setActiveRequest(type);
@@ -93,19 +83,16 @@ const LiveSupport = () => {
     });
   };
 
-  const sendMessage = () => {
-    if (!newMessage.trim()) return;
-    
+  const handleSendMessage = (message: string) => {
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
-      text: newMessage,
+      text: message,
       sender: 'user',
       timestamp: new Date(),
       type: 'text'
     };
     
     setChatMessages(prev => [...prev, userMessage]);
-    setNewMessage('');
     
     // Simulate support response
     setTimeout(() => {
@@ -120,33 +107,11 @@ const LiveSupport = () => {
     }, 1000);
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
-  };
-
-  const toggleVoiceRecording = () => {
-    setIsRecording(!isRecording);
-    toast({
-      title: isRecording ? "Voice Recording Stopped" : "Voice Recording Started",
-      description: isRecording ? "Processing your voice message..." : "Speak now to record your message",
-    });
-  };
-
-  const startVideoCall = () => {
-    toast({
-      title: "Video Call Starting",
-      description: "Initializing video connection with accessibility features enabled.",
-    });
-  };
-
-  const shareScreen = () => {
-    toast({
-      title: "Screen Sharing Enabled",
-      description: "Your screen is now being shared with the support volunteer.",
-    });
+  const handleEndSession = () => {
+    setActiveRequest(null);
+    setChatMessages([]);
+    setConnectionStatus('disconnected');
+    setQueuePosition(null);
   };
 
   return (
@@ -162,100 +127,15 @@ const LiveSupport = () => {
       {activeRequest && (
         <div className="mb-8">
           {connectionStatus === 'connecting' && queuePosition && (
-            <Card className="mb-4 border-yellow-500 bg-yellow-50">
-              <CardContent className="p-6">
-                <div className="flex items-center space-x-3">
-                  <div className="animate-pulse bg-yellow-500 rounded-full w-3 h-3"></div>
-                  <span className="font-semibold">Position in queue: {queuePosition}</span>
-                </div>
-                <p className="text-sm text-gray-600 mt-2">
-                  Estimated wait time: {queuePosition * 2} minutes
-                </p>
-              </CardContent>
-            </Card>
+            <QueueStatus queuePosition={queuePosition} />
           )}
 
           {connectionStatus === 'connected' && (
-            <Card className="border-green-500 bg-green-50">
-              <CardHeader>
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="animate-pulse bg-green-500 rounded-full w-3 h-3"></div>
-                    <CardTitle>Connected to Support</CardTitle>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    <Button variant="outline" size="sm" onClick={startVideoCall}>
-                      <Video className="h-4 w-4" />
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={shareScreen}>
-                      <ScreenShare className="h-4 w-4" />
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => {
-                        setActiveRequest(null);
-                        setChatMessages([]);
-                        setConnectionStatus('disconnected');
-                      }}
-                      className="bg-white"
-                    >
-                      End Session
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                {/* Chat Interface */}
-                <div className="h-96 border rounded-lg mb-4 flex flex-col bg-white overflow-hidden">
-                  <ScrollArea className="flex-1 p-4">
-                    {chatMessages.map((message) => (
-                      <div
-                        key={message.id}
-                        className={`mb-4 ${message.sender === 'user' ? 'text-right' : 'text-left'}`}
-                      >
-                        <div
-                          className={`inline-block p-3 rounded-lg max-w-xs ${
-                            message.sender === 'user'
-                              ? 'bg-primary text-white'
-                              : 'bg-gray-100 text-gray-900'
-                          }`}
-                        >
-                          <p className="text-sm">{message.text}</p>
-                          <p className="text-xs opacity-70 mt-1">
-                            {message.timestamp.toLocaleTimeString()}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                    <div ref={chatEndRef} />
-                  </ScrollArea>
-                  
-                  <div className="p-4 border-t bg-white flex-shrink-0">
-                    <div className="flex space-x-2 items-center">
-                      <Input
-                        placeholder="Type your message..."
-                        value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                        onKeyPress={handleKeyPress}
-                        className="flex-1 bg-white"
-                      />
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={toggleVoiceRecording}
-                        className={`w-10 h-10 p-0 flex-shrink-0 ${isRecording ? 'bg-red-100 text-red-600' : 'bg-white'}`}
-                      >
-                        <Mic className="h-4 w-4" />
-                      </Button>
-                      <Button onClick={sendMessage} className="w-10 h-10 p-0 flex-shrink-0">
-                        <Send className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <ChatInterface 
+              messages={chatMessages} 
+              onSendMessage={handleSendMessage}
+              onEndSession={handleEndSession}
+            />
           )}
         </div>
       )}
@@ -263,92 +143,18 @@ const LiveSupport = () => {
       {/* Support Options */}
       {(!activeRequest || connectionStatus === 'disconnected') && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {supportTypes.map(({ id, title, icon: Icon, description, waitTime, available, volunteers }) => (
-            <Card key={id} className="hover:shadow-md transition-shadow bg-white">
-              <CardHeader>
-                <div className="flex items-center justify-between mb-2">
-                  <Icon className="h-8 w-8 text-primary" />
-                  <Badge variant={available ? "default" : "secondary"}>
-                    {available ? "Available" : "Offline"}
-                  </Badge>
-                </div>
-                <CardTitle className="text-lg">{title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600 mb-4 text-sm">{description}</p>
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center text-sm text-gray-500">
-                    <Clock className="h-4 w-4 mr-1" />
-                    {waitTime}
-                  </div>
-                  <div className="flex items-center text-sm text-gray-500">
-                    <Users className="h-4 w-4 mr-1" />
-                    {volunteers} available
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Button 
-                    className="w-full" 
-                    onClick={() => handleRequestSupport(id)}
-                    disabled={!available}
-                  >
-                    <Video className="h-4 w-4 mr-2" />
-                    Start Video Call
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    className="w-full bg-white"
-                    onClick={() => handleRequestSupport(id)}
-                    disabled={!available}
-                  >
-                    <MessageCircle className="h-4 w-4 mr-2" />
-                    Start Chat
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+          {supportTypes.map((supportType) => (
+            <SupportTypeCard
+              key={supportType.id}
+              {...supportType}
+              onRequestSupport={handleRequestSupport}
+            />
           ))}
         </div>
       )}
 
       {/* Quick Access */}
-      <Card className="bg-white">
-        <CardHeader>
-          <CardTitle>Quick Access & Emergency</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Button 
-              variant="outline" 
-              className="h-20 flex flex-col items-center justify-center space-y-2 bg-white hover:bg-gray-50 p-4"
-            >
-              <MapPin className="h-6 w-6 flex-shrink-0" />
-              <span className="text-sm text-center leading-tight">Campus Maps</span>
-            </Button>
-            <Button 
-              variant="outline" 
-              className="h-20 flex flex-col items-center justify-center space-y-2 bg-red-50 border-red-200 hover:bg-red-100 p-4"
-            >
-              <AlertTriangle className="h-6 w-6 text-red-600 flex-shrink-0" />
-              <span className="text-sm text-red-600 text-center leading-tight">Emergency</span>
-            </Button>
-            <Button 
-              variant="outline" 
-              className="h-20 flex flex-col items-center justify-center space-y-2 bg-white hover:bg-gray-50 p-4"
-            >
-              <Users className="h-6 w-6 flex-shrink-0" />
-              <span className="text-sm text-center leading-tight">Volunteer Hub</span>
-            </Button>
-            <Button 
-              variant="outline" 
-              className="h-20 flex flex-col items-center justify-center space-y-2 bg-white hover:bg-gray-50 p-4"
-            >
-              <MessageCircle className="h-6 w-6 flex-shrink-0" />
-              <span className="text-sm text-center leading-tight">Report Issue</span>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <QuickAccessPanel />
     </div>
   );
 };
