@@ -178,12 +178,12 @@ const LiveSupport = () => {
           {connectionStatus === 'connected' && (
             <Card className="border-green-500 bg-green-50">
               <CardHeader>
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div className="flex items-center space-x-3">
                     <div className="animate-pulse bg-green-500 rounded-full w-3 h-3"></div>
                     <CardTitle>Connected to Support</CardTitle>
                   </div>
-                  <div className="flex space-x-2">
+                  <div className="flex flex-wrap gap-2">
                     <Button variant="outline" size="sm" onClick={startVideoCall}>
                       <Video className="h-4 w-4" />
                     </Button>
@@ -207,7 +207,7 @@ const LiveSupport = () => {
               </CardHeader>
               <CardContent>
                 {/* Chat Interface */}
-                <div className="h-96 border rounded-lg mb-4 flex flex-col bg-white">
+                <div className="h-96 border rounded-lg mb-4 flex flex-col bg-white overflow-hidden">
                   <ScrollArea className="flex-1 p-4">
                     {chatMessages.map((message) => (
                       <div
@@ -231,7 +231,7 @@ const LiveSupport = () => {
                     <div ref={chatEndRef} />
                   </ScrollArea>
                   
-                  <div className="p-4 border-t bg-white">
+                  <div className="p-4 border-t bg-white flex-shrink-0">
                     <div className="flex space-x-2 items-center">
                       <Input
                         placeholder="Type your message..."
@@ -244,11 +244,11 @@ const LiveSupport = () => {
                         variant="outline"
                         size="sm"
                         onClick={toggleVoiceRecording}
-                        className={`w-10 h-10 p-0 ${isRecording ? 'bg-red-100 text-red-600' : 'bg-white'}`}
+                        className={`w-10 h-10 p-0 flex-shrink-0 ${isRecording ? 'bg-red-100 text-red-600' : 'bg-white'}`}
                       >
                         <Mic className="h-4 w-4" />
                       </Button>
-                      <Button onClick={sendMessage} className="w-10 h-10 p-0">
+                      <Button onClick={sendMessage} className="w-10 h-10 p-0 flex-shrink-0">
                         <Send className="h-4 w-4" />
                       </Button>
                     </div>
@@ -318,21 +318,33 @@ const LiveSupport = () => {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Button variant="outline" className="h-20 flex flex-col items-center justify-center bg-white hover:bg-gray-50 p-4">
-              <MapPin className="h-6 w-6 mb-2" />
-              <span className="text-sm">Campus Maps</span>
+            <Button 
+              variant="outline" 
+              className="h-20 flex flex-col items-center justify-center space-y-2 bg-white hover:bg-gray-50 p-4"
+            >
+              <MapPin className="h-6 w-6 flex-shrink-0" />
+              <span className="text-sm text-center leading-tight">Campus Maps</span>
             </Button>
-            <Button variant="outline" className="h-20 flex flex-col items-center justify-center bg-red-50 border-red-200 hover:bg-red-100 p-4">
-              <AlertTriangle className="h-6 w-6 mb-2 text-red-600" />
-              <span className="text-sm text-red-600">Emergency</span>
+            <Button 
+              variant="outline" 
+              className="h-20 flex flex-col items-center justify-center space-y-2 bg-red-50 border-red-200 hover:bg-red-100 p-4"
+            >
+              <AlertTriangle className="h-6 w-6 text-red-600 flex-shrink-0" />
+              <span className="text-sm text-red-600 text-center leading-tight">Emergency</span>
             </Button>
-            <Button variant="outline" className="h-20 flex flex-col items-center justify-center bg-white hover:bg-gray-50 p-4">
-              <Users className="h-6 w-6 mb-2" />
-              <span className="text-sm">Volunteer Hub</span>
+            <Button 
+              variant="outline" 
+              className="h-20 flex flex-col items-center justify-center space-y-2 bg-white hover:bg-gray-50 p-4"
+            >
+              <Users className="h-6 w-6 flex-shrink-0" />
+              <span className="text-sm text-center leading-tight">Volunteer Hub</span>
             </Button>
-            <Button variant="outline" className="h-20 flex flex-col items-center justify-center bg-white hover:bg-gray-50 p-4">
-              <MessageCircle className="h-6 w-6 mb-2" />
-              <span className="text-sm">Report Issue</span>
+            <Button 
+              variant="outline" 
+              className="h-20 flex flex-col items-center justify-center space-y-2 bg-white hover:bg-gray-50 p-4"
+            >
+              <MessageCircle className="h-6 w-6 flex-shrink-0" />
+              <span className="text-sm text-center leading-tight">Report Issue</span>
             </Button>
           </div>
         </CardContent>
