@@ -1,29 +1,32 @@
 
-import { Button } from '@/components/ui/button';
 import { LucideIcon } from 'lucide-react';
 
 interface ServiceCardProps {
   icon: LucideIcon;
   title: string;
+  description?: string;
   variant?: 'default' | 'emergency';
   onClick?: () => void;
 }
 
-const ServiceCard = ({ icon: Icon, title, variant = 'default', onClick }: ServiceCardProps) => {
-  const baseClasses = "h-32 w-full flex flex-col items-center justify-center gap-4 p-6 border transition-colors";
-  const variantClasses = variant === 'emergency' 
-    ? "bg-red-50 border-red-200 hover:bg-red-100 text-red-600"
-    : "bg-white border-gray-200 hover:bg-gray-50 text-gray-700";
+const ServiceCard = ({ icon: Icon, title, description, variant = 'default', onClick }: ServiceCardProps) => {
+  const iconBgColor = variant === 'emergency' ? 'bg-red-50' : 'bg-blue-50';
+  const iconColor = variant === 'emergency' ? 'text-red-600' : 'text-blue-600';
 
   return (
-    <Button 
-      variant="outline" 
-      className={`${baseClasses} ${variantClasses}`}
-      onClick={onClick}
-    >
-      <Icon className="h-8 w-8 flex-shrink-0" />
-      <span className="text-base text-center leading-relaxed font-medium px-2">{title}</span>
-    </Button>
+    <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6 hover:shadow-lg transition-shadow duration-200 cursor-pointer" onClick={onClick}>
+      <div className="flex flex-col items-center text-center space-y-4">
+        <div className={`p-3 ${iconBgColor} rounded-full`}>
+          <Icon className={`w-6 h-6 ${iconColor}`} />
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold text-gray-800 mb-2">{title}</h3>
+          {description && (
+            <p className="text-sm text-gray-600 leading-relaxed">{description}</p>
+          )}
+        </div>
+      </div>
+    </div>
   );
 };
 

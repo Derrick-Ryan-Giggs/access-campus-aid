@@ -181,19 +181,31 @@ const HealthWellness = () => {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <HealthServiceCard 
           icon={Stethoscope} 
           title="Book Telehealth"
+          description="Schedule virtual appointments with healthcare specialists"
         />
         
-        <HealthServiceCard icon={Pill} title="Medication Tracker">
+        <HealthServiceCard 
+          icon={Pill} 
+          title="Medication Tracker"
+          description="Track and manage your daily medications and prescriptions"
+        >
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="outline" className="h-20 flex-col">
-                <Pill className="h-6 w-6 mb-2" />
-                Medication Tracker
-              </Button>
+              <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6 hover:shadow-lg transition-shadow duration-200 cursor-pointer">
+                <div className="flex flex-col items-center text-center space-y-4">
+                  <div className="p-3 bg-blue-50 rounded-full">
+                    <Pill className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-800 mb-2">Medication Tracker</h3>
+                    <p className="text-sm text-gray-600 leading-relaxed">Track and manage your daily medications and prescriptions</p>
+                  </div>
+                </div>
+              </div>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
               <DialogHeader>
@@ -254,13 +266,15 @@ const HealthWellness = () => {
         </HealthServiceCard>
         
         <HealthServiceCard 
-          icon={Activity} 
+          icon={Dumbbell} 
           title="Fitness Programs"
+          description="Access personalized fitness routines and wellness plans"
         />
         
         <HealthServiceCard 
           icon={Heart} 
           title="Wellness Check"
+          description="Monitor your health metrics and wellness progress"
         />
       </div>
 
