@@ -90,10 +90,19 @@ const NotificationPanel = ({ isOpen, onClose }: NotificationPanelProps) => {
 
   if (!isOpen) return null;
 
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-end animate-fade-in">
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-50 z-[60] flex justify-end animate-fade-in"
+      onClick={handleBackdropClick}
+    >
       <div className="bg-white w-full max-w-md h-full shadow-xl animate-slide-in-right overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b p-4 flex justify-between items-center">
+        <div className="sticky top-0 bg-white border-b p-4 flex justify-between items-center z-10">
           <div className="flex items-center gap-2">
             <Bell className="h-5 w-5" />
             <h2 className="text-lg font-semibold">Notifications</h2>
@@ -103,7 +112,13 @@ const NotificationPanel = ({ isOpen, onClose }: NotificationPanelProps) => {
               </span>
             )}
           </div>
-          <Button variant="ghost" size="sm" onClick={onClose}>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={onClose}
+            className="touch-manipulation"
+            aria-label="Close notifications"
+          >
             <X className="h-4 w-4" />
           </Button>
         </div>
@@ -114,7 +129,7 @@ const NotificationPanel = ({ isOpen, onClose }: NotificationPanelProps) => {
               variant="outline"
               size="sm"
               onClick={markAllAsRead}
-              className="mb-4 w-full"
+              className="mb-4 w-full touch-manipulation"
             >
               Mark All as Read
             </Button>
@@ -126,7 +141,7 @@ const NotificationPanel = ({ isOpen, onClose }: NotificationPanelProps) => {
                 key={notification.id}
                 className={`cursor-pointer transition-all hover:shadow-md border-l-4 ${getBorderColor(notification.type)} ${
                   !notification.read ? 'bg-blue-50' : ''
-                }`}
+                } touch-manipulation`}
                 onClick={() => markAsRead(notification.id)}
               >
                 <CardContent className="p-3">

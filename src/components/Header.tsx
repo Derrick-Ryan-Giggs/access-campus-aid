@@ -29,9 +29,20 @@ const Header = ({ onNavigate }: HeaderProps) => {
     }
   };
 
+  const handleNotificationClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsNotificationOpen(!isNotificationOpen);
+    console.log('Notification clicked, state:', !isNotificationOpen);
+  };
+
+  const handleNotificationClose = () => {
+    setIsNotificationOpen(false);
+  };
+
   return (
     <>
-      <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+      <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
           <div className="flex justify-between items-center h-14 sm:h-16">
             {/* Logo - responsive sizing */}
@@ -80,24 +91,20 @@ const Header = ({ onNavigate }: HeaderProps) => {
                 <span className="hidden sm:inline ml-1">Emergency</span>
               </Button>
 
-              {/* Notifications - hidden on very small screens */}
-              <div className="relative hidden xs:block">
+              {/* Notifications - visible on all screen sizes now */}
+              <div className="relative">
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => setIsNotificationOpen(!isNotificationOpen)}
-                  className="relative p-1 sm:p-2"
+                  onClick={handleNotificationClick}
+                  className="relative p-1 sm:p-2 touch-manipulation"
+                  aria-label="Open notifications"
                 >
                   <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
                   <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-3 w-3 sm:h-4 sm:w-4 flex items-center justify-center text-[10px] sm:text-xs">
                     2
                   </span>
                 </Button>
-                
-                <NotificationPanel 
-                  isOpen={isNotificationOpen} 
-                  onClose={() => setIsNotificationOpen(false)} 
-                />
               </div>
 
               {/* User Menu - responsive */}
@@ -143,13 +150,19 @@ const Header = ({ onNavigate }: HeaderProps) => {
           activeSection="home" 
           onNavigate={onNavigate || (() => {})} 
           onAuthClick={() => {}}
-          onNotificationClick={() => setIsNotificationOpen(true)}
+          onNotificationClick={handleNotificationClick}
           onProfileClick={() => setIsUserProfileOpen(true)}
           onEmergencyClick={handleEmergencyClick}
           isOpen={isMobileMenuOpen} 
           onClose={() => setIsMobileMenuOpen(false)} 
         />
       </header>
+
+      {/* Notification Panel - moved outside header for proper z-index */}
+      <NotificationPanel 
+        isOpen={isNotificationOpen} 
+        onClose={handleNotificationClose} 
+      />
 
       {/* User Profile Modal */}
       <UserProfile 

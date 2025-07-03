@@ -9,7 +9,7 @@ interface MobileMenuProps {
   activeSection: string;
   onNavigate: (section: string) => void;
   onAuthClick?: () => void;
-  onNotificationClick?: () => void;
+  onNotificationClick?: (e: React.MouseEvent) => void;
   onProfileClick?: () => void;
   onEmergencyClick?: () => void;
   isOpen: boolean;
@@ -52,8 +52,12 @@ const MobileMenu = ({
     onClose();
   };
 
-  const handleNotificationClick = () => {
-    if (onNotificationClick) onNotificationClick();
+  const handleNotificationClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (onNotificationClick) {
+      onNotificationClick(e);
+    }
     onClose();
   };
 
@@ -80,6 +84,7 @@ const MobileMenu = ({
                 size="sm"
                 onClick={onClose}
                 aria-label="Close mobile menu"
+                className="touch-manipulation"
               >
                 <X className="h-5 w-5" />
               </Button>
@@ -93,7 +98,7 @@ const MobileMenu = ({
                     key={key}
                     variant="ghost"
                     onClick={() => handleNavigate(key)}
-                    className={`w-full justify-start text-left p-4 h-auto transition-all duration-200 ${
+                    className={`w-full justify-start text-left p-4 h-auto transition-all duration-200 touch-manipulation ${
                       activeSection === key
                         ? 'bg-primary/10 text-primary border-l-4 border-primary'
                         : 'hover:bg-gray-100 text-gray-700'
@@ -112,7 +117,7 @@ const MobileMenu = ({
                   <Button
                     variant="ghost"
                     onClick={handleAuthClick}
-                    className="w-full justify-start text-left p-4 h-auto hover:bg-gray-100 text-gray-700"
+                    className="w-full justify-start text-left p-4 h-auto hover:bg-gray-100 text-gray-700 touch-manipulation"
                   >
                     <LogOut className="h-5 w-5 mr-3" />
                     <span className="font-medium">{user ? 'Sign Out' : 'Sign In'}</span>
@@ -121,7 +126,7 @@ const MobileMenu = ({
                   <Button
                     variant="ghost"
                     onClick={handleNotificationClick}
-                    className="w-full justify-start text-left p-4 h-auto hover:bg-gray-100 text-gray-700 relative"
+                    className="w-full justify-start text-left p-4 h-auto hover:bg-gray-100 text-gray-700 relative touch-manipulation"
                   >
                     <Bell className="h-5 w-5 mr-3" />
                     <span className="font-medium">Notifications</span>
@@ -133,7 +138,7 @@ const MobileMenu = ({
                   <Button
                     variant="ghost"
                     onClick={handleProfileClick}
-                    className="w-full justify-start text-left p-4 h-auto hover:bg-gray-100 text-gray-700"
+                    className="w-full justify-start text-left p-4 h-auto hover:bg-gray-100 text-gray-700 touch-manipulation"
                   >
                     <User className="h-5 w-5 mr-3" />
                     <span className="font-medium">Profile</span>
@@ -149,7 +154,7 @@ const MobileMenu = ({
                 </p>
                 <Button 
                   size="sm" 
-                  className="w-full bg-red-600 hover:bg-red-700 text-white"
+                  className="w-full bg-red-600 hover:bg-red-700 text-white touch-manipulation"
                   onClick={handleEmergencyClick}
                 >
                   <AlertTriangle className="h-4 w-4 mr-2" />
