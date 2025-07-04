@@ -1,10 +1,8 @@
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
+import { Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 
 interface SignupFormProps {
@@ -12,39 +10,169 @@ interface SignupFormProps {
   onClose: () => void;
 }
 
+interface FormData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  agreeToTerms: boolean;
+  newsletter: boolean;
+}
+
+interface FormErrors {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  password?: string;
+  confirmPassword?: string;
+  agreeToTerms?: string;
+}
+
 const SignupForm = ({ onSwitchToLogin, onClose }: SignupFormProps) => {
   const { signUp } = useAuth();
-  const [formData, setFormData] = useState({
-    name: '',
+  const [formData, setFormData] = useState<FormData>({
+    firstName: '',
+    lastName: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    agreeToTerms: false,
+    newsletter: false
   });
+
+  const [errors, setErrors] = useState<FormErrors>({});
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [passwordMismatch, setPasswordMismatch] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+
+  const formRef = useRef<HTMLFormElement>(null);
+  const firstErrorRef = useRef<HTMLInputElement>(null);
+
+  // Focus management for errors
+  useEffect(() => {
+    if (Object.keys(errors).length > 0 && firstErrorRef.current) {
+      firstErrorRef.current.focus();
+    }
+  }, [errors]);
+
+  const validateForm = (): boolean => {
+    const newErrors: FormErrors = {};
+
+    // First name validation
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = 'First name is required';
+    } else if (formData.firstName.trim().length < 2) {
+      newErrors.firstName = 'First name must be at least 2 characters';
+    }
+
+    // Last name validation
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = 'Last name is required';
+    } else if (formData.lastName.trim().length < 2) {
+      newErrors.lastName = 'Last name must be at least 2 characters';
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!emailRegex.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email address';
+    }
+
+    // Password validation
+    if (!formData.password) {
+      newErrors.password = 'Password is required';
+    } else if (formData.password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters';
+    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
+      newErrors.password = 'Password must contain at least one uppercase letter, one lowercase letter, and one number';
+    }
+
+    // Confirm password validation
+    if (!formData.confirmPassword) {
+      newErrors.confirmPassword = 'Please confirm your password';
+    } else if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
+    }
+
+    // Terms agreement validation
+    if (!formData.agreeToTerms) {
+      newErrors.agreeToTerms = 'You must agree to the terms and conditions';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+
+    // Clear error when user starts typing
+    if (errors[name as keyof FormErrors]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: undefined
+      }));
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
-      return;
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      setPasswordMismatch(true);
-      return;
-    }
-
-    setPasswordMismatch(false);
-    setIsLoading(true);
-    const { error } = await signUp(formData.email, formData.password, formData.name);
-    setIsLoading(false);
     
-    if (!error) {
-      onSwitchToLogin();
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    try {
+      const fullName = `${formData.firstName} ${formData.lastName}`;
+      const { error } = await signUp(formData.email, formData.password, fullName);
+      
+      if (!error) {
+        setSubmitSuccess(true);
+      }
+    } catch (error) {
+      console.error('Submission error:', error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
+  const togglePasswordVisibility = (field: 'password' | 'confirmPassword') => {
+    if (field === 'password') {
+      setShowPassword(!showPassword);
+    } else {
+      setShowConfirmPassword(!showConfirmPassword);
+    }
+  };
+
+  if (submitSuccess) {
+    return (
+      <Card className="w-full max-w-md mx-auto animate-fade-in bg-white border border-gray-200 shadow-lg">
+        <CardContent className="p-6">
+          <div className="text-center">
+            <CheckCircle className="mx-auto h-12 w-12 text-green-500 mb-4" />
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Account Created Successfully!</h2>
+            <p className="text-gray-600 mb-4">Welcome! Please check your email to verify your account.</p>
+            <Button
+              onClick={onSwitchToLogin}
+              className="w-full bg-secondary hover:bg-secondary-700"
+            >
+              Go to Sign In
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="w-full max-w-md mx-auto animate-fade-in bg-white border border-gray-200 shadow-lg">
@@ -53,134 +181,237 @@ const SignupForm = ({ onSwitchToLogin, onClose }: SignupFormProps) => {
         <p className="text-gray-600 text-base">Create your account to get started</p>
       </CardHeader>
       <CardContent className="space-y-5">
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form ref={formRef} onSubmit={handleSubmit} className="space-y-5" role="form">
+          {/* First Name */}
           <div className="space-y-2">
-            <Label htmlFor="name" className="text-gray-900 font-medium text-sm">
-              Full Name
-            </Label>
-            <div className="relative">
-              <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5 z-10" />
-              <Input
-                id="name"
-                type="text"
-                placeholder="Enter your full name"
-                value={formData.name}
-                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                className="h-12 pl-11 pr-4 bg-white border-2 border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
-                disabled={isLoading}
-                required
-                aria-label="Full name"
-                aria-required="true"
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="email" className="text-gray-900 font-medium text-sm">
-              Email Address
-            </Label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5 z-10" />
-              <Input
-                id="email"
-                type="email"
-                placeholder="Enter your email address"
-                value={formData.email}
-                onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                className="h-12 pl-11 pr-4 bg-white border-2 border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
-                disabled={isLoading}
-                required
-                aria-label="Email address"
-                aria-required="true"
-              />
-            </div>
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="password" className="text-gray-900 font-medium text-sm">
-              Password
-            </Label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5 z-10" />
-              <Input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                placeholder="Create a strong password"
-                value={formData.password}
-                onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-                className="h-12 pl-11 pr-12 bg-white border-2 border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
-                disabled={isLoading}
-                required
-                aria-label="Password"
-                aria-required="true"
-              />
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 h-auto w-auto p-0 text-gray-500 hover:text-gray-700 hover:bg-transparent"
-                onClick={() => setShowPassword(!showPassword)}
-                disabled={isLoading}
-                aria-label={showPassword ? "Hide password" : "Show password"}
-              >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </Button>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="confirmPassword" className="text-gray-900 font-medium text-sm">
-              Confirm Password
-            </Label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5 z-10" />
-              <Input
-                id="confirmPassword"
-                type={showConfirmPassword ? "text" : "password"}
-                placeholder="Confirm your password"
-                value={formData.confirmPassword}
-                onChange={(e) => {
-                  setFormData(prev => ({ ...prev, confirmPassword: e.target.value }));
-                  setPasswordMismatch(false);
-                }}
-                className={`h-12 pl-11 pr-12 bg-white border-2 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 ${
-                  passwordMismatch 
-                    ? 'border-red-500 focus:border-red-500' 
-                    : 'border-gray-300 focus:border-blue-600'
-                }`}
-                disabled={isLoading}
-                required
-                aria-label="Confirm password"
-                aria-required="true"
-                aria-invalid={passwordMismatch}
-                aria-describedby={passwordMismatch ? "password-error" : undefined}
-              />
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 h-auto w-auto p-0 text-gray-500 hover:text-gray-700 hover:bg-transparent"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                disabled={isLoading}
-                aria-label={showConfirmPassword ? "Hide password" : "Show password"}
-              >
-                {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </Button>
-            </div>
-            {passwordMismatch && (
-              <p id="password-error" className="text-red-500 text-sm mt-1" role="alert">
-                Passwords do not match
-              </p>
+            <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
+              First Name *
+            </label>
+            <input
+              ref={errors.firstName ? firstErrorRef : undefined}
+              type="text"
+              id="firstName"
+              name="firstName"
+              value={formData.firstName}
+              onChange={handleInputChange}
+              required
+              aria-invalid={!!errors.firstName}
+              aria-describedby={errors.firstName ? 'firstName-error' : undefined}
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                errors.firstName ? 'border-red-500' : 'border-gray-300'
+              }`}
+              disabled={isSubmitting}
+            />
+            {errors.firstName && (
+              <div id="firstName-error" role="alert" className="mt-1 flex items-center text-sm text-red-600">
+                <AlertCircle className="h-4 w-4 mr-1" />
+                {errors.firstName}
+              </div>
             )}
+          </div>
+
+          {/* Last Name */}
+          <div className="space-y-2">
+            <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
+              Last Name *
+            </label>
+            <input
+              ref={!errors.firstName && errors.lastName ? firstErrorRef : undefined}
+              type="text"
+              id="lastName"
+              name="lastName"
+              value={formData.lastName}
+              onChange={handleInputChange}
+              required
+              aria-invalid={!!errors.lastName}
+              aria-describedby={errors.lastName ? 'lastName-error' : undefined}
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                errors.lastName ? 'border-red-500' : 'border-gray-300'
+              }`}
+              disabled={isSubmitting}
+            />
+            {errors.lastName && (
+              <div id="lastName-error" role="alert" className="mt-1 flex items-center text-sm text-red-600">
+                <AlertCircle className="h-4 w-4 mr-1" />
+                {errors.lastName}
+              </div>
+            )}
+          </div>
+
+          {/* Email */}
+          <div className="space-y-2">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              Email Address *
+            </label>
+            <input
+              ref={!errors.firstName && !errors.lastName && errors.email ? firstErrorRef : undefined}
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              required
+              aria-invalid={!!errors.email}
+              aria-describedby={errors.email ? 'email-error' : 'email-help'}
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                errors.email ? 'border-red-500' : 'border-gray-300'
+              }`}
+              disabled={isSubmitting}
+            />
+            {errors.email ? (
+              <div id="email-error" role="alert" className="mt-1 flex items-center text-sm text-red-600">
+                <AlertCircle className="h-4 w-4 mr-1" />
+                {errors.email}
+              </div>
+            ) : (
+              <div id="email-help" className="mt-1 text-sm text-gray-500">
+                We'll use this to send you important updates
+              </div>
+            )}
+          </div>
+
+          {/* Password */}
+          <div className="space-y-2">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              Password *
+            </label>
+            <div className="relative">
+              <input
+                ref={!errors.firstName && !errors.lastName && !errors.email && errors.password ? firstErrorRef : undefined}
+                type={showPassword ? 'text' : 'password'}
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleInputChange}
+                required
+                aria-invalid={!!errors.password}
+                aria-describedby={errors.password ? 'password-error' : 'password-help'}
+                className={`w-full px-3 py-2 pr-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  errors.password ? 'border-red-500' : 'border-gray-300'
+                }`}
+                disabled={isSubmitting}
+              />
+              <button
+                type="button"
+                onClick={() => togglePasswordVisibility('password')}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                disabled={isSubmitting}
+              >
+                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+              </button>
+            </div>
+            {errors.password ? (
+              <div id="password-error" role="alert" className="mt-1 flex items-center text-sm text-red-600">
+                <AlertCircle className="h-4 w-4 mr-1" />
+                {errors.password}
+              </div>
+            ) : (
+              <div id="password-help" className="mt-1 text-sm text-gray-500">
+                Must be at least 8 characters with uppercase, lowercase, and numbers
+              </div>
+            )}
+          </div>
+
+          {/* Confirm Password */}
+          <div className="space-y-2">
+            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+              Confirm Password *
+            </label>
+            <div className="relative">
+              <input
+                ref={!errors.firstName && !errors.lastName && !errors.email && !errors.password && errors.confirmPassword ? firstErrorRef : undefined}
+                type={showConfirmPassword ? 'text' : 'password'}
+                id="confirmPassword"
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleInputChange}
+                required
+                aria-invalid={!!errors.confirmPassword}
+                aria-describedby={errors.confirmPassword ? 'confirmPassword-error' : undefined}
+                className={`w-full px-3 py-2 pr-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
+                }`}
+                disabled={isSubmitting}
+              />
+              <button
+                type="button"
+                onClick={() => togglePasswordVisibility('confirmPassword')}
+                aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                disabled={isSubmitting}
+              >
+                {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+              </button>
+            </div>
+            {errors.confirmPassword && (
+              <div id="confirmPassword-error" role="alert" className="mt-1 flex items-center text-sm text-red-600">
+                <AlertCircle className="h-4 w-4 mr-1" />
+                {errors.confirmPassword}
+              </div>
+            )}
+          </div>
+
+          {/* Terms Agreement */}
+          <div className="space-y-2">
+            <div className="flex items-start">
+              <input
+                ref={!errors.firstName && !errors.lastName && !errors.email && !errors.password && !errors.confirmPassword && errors.agreeToTerms ? firstErrorRef : undefined}
+                type="checkbox"
+                id="agreeToTerms"
+                name="agreeToTerms"
+                checked={formData.agreeToTerms}
+                onChange={handleInputChange}
+                required
+                aria-invalid={!!errors.agreeToTerms}
+                aria-describedby={errors.agreeToTerms ? 'agreeToTerms-error' : undefined}
+                className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                disabled={isSubmitting}
+              />
+              <label htmlFor="agreeToTerms" className="ml-2 block text-sm text-gray-700">
+                I agree to the{' '}
+                <a href="#" className="text-blue-600 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 rounded">
+                  Terms and Conditions
+                </a>{' '}
+                and{' '}
+                <a href="#" className="text-blue-600 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 rounded">
+                  Privacy Policy
+                </a>
+                *
+              </label>
+            </div>
+            {errors.agreeToTerms && (
+              <div id="agreeToTerms-error" role="alert" className="mt-1 flex items-center text-sm text-red-600">
+                <AlertCircle className="h-4 w-4 mr-1" />
+                {errors.agreeToTerms}
+              </div>
+            )}
+          </div>
+
+          {/* Newsletter Subscription */}
+          <div className="space-y-2">
+            <div className="flex items-start">
+              <input
+                type="checkbox"
+                id="newsletter"
+                name="newsletter"
+                checked={formData.newsletter}
+                onChange={handleInputChange}
+                className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                disabled={isSubmitting}
+              />
+              <label htmlFor="newsletter" className="ml-2 block text-sm text-gray-700">
+                Subscribe to our newsletter for updates and special offers
+              </label>
+            </div>
           </div>
           
           <Button
             type="submit"
             className="w-full h-12 bg-secondary text-white hover:bg-secondary-700 text-base font-semibold focus:ring-2 focus:ring-secondary focus:ring-offset-2 transition-all duration-200"
-            disabled={isLoading || !formData.name || !formData.email || !formData.password || !formData.confirmPassword}
-            aria-label="Create your account"
+            disabled={isSubmitting}
           >
-            {isLoading ? (
+            {isSubmitting ? (
               <div className="flex items-center space-x-2">
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                 <span>Creating Account...</span>
@@ -198,8 +429,7 @@ const SignupForm = ({ onSwitchToLogin, onClose }: SignupFormProps) => {
               variant="link"
               onClick={onSwitchToLogin}
               className="text-primary hover:text-primary-700 p-0 h-auto font-semibold underline"
-              disabled={isLoading}
-              aria-label="Switch to sign in form"
+              disabled={isSubmitting}
             >
               Sign in here
             </Button>
