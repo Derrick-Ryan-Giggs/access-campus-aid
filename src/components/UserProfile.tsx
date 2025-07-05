@@ -1,12 +1,14 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { User, X, Settings, Shield, HelpCircle } from 'lucide-react';
+import { User, X, Settings, Shield, HelpCircle, Camera, Upload } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface UserProfileProps {
   isOpen: boolean;
@@ -15,14 +17,19 @@ interface UserProfileProps {
 
 const UserProfile = ({ isOpen, onClose }: UserProfileProps) => {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'profile' | 'settings' | 'accessibility'>('profile');
+  const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  
   const [profile, setProfile] = useState({
-    name: 'John Doe',
-    email: 'john.doe@university.edu',
-    phone: '+1 (555) 123-4567',
-    studentId: 'STU2024001',
-    year: 'Third Year',
-    program: 'Computer Science'
+    name: '',
+    email: '',
+    phone: '',
+    studentId: '',
+    year: '',
+    program: '',
+    avatar_url: ''
   });
 
   const [settings, setSettings] = useState({
@@ -40,14 +47,136 @@ const UserProfile = ({ isOpen, onClose }: UserProfileProps) => {
     confirmPassword: ''
   });
 
-  const handleSaveProfile = () => {
-    // Simulate API call
-    setTimeout(() => {
+  // Load user profile data when component mounts
+  useEffect(() => {
+    if (user && isOpen) {
+      loadProfile();
+    }
+  }, [user, isOpen]);
+
+  const loadProfile = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user?.id)
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        throw error;
+      }
+
+      if (data) {
+        setProfile({
+          name: data.name || '',
+          email: data.email || user?.email || '',
+          phone: data.phone || '',
+          studentId: data.student_id || '',
+          year: data.year || '',
+          program: data.program || '',
+          avatar_url: data.avatar_url || ''
+        });
+      } else {
+        // Set default values if no profile exists
+        setProfile(prev => ({
+          ...prev,
+          email: user?.email || ''
+        }));
+      }
+    } catch (error) {
+      console.error('Error loading profile:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load profile data.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      setUploading(true);
+      
+      if (!event.target.files || event.target.files.length === 0) {
+        throw new Error('You must select an image to upload.');
+      }
+
+      const file = event.target.files[0];
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user?.id}-${Math.random()}.${fileExt}`;
+      const filePath = `avatars/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      const { data } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      setProfile(prev => ({
+        ...prev,
+        avatar_url: data.publicUrl
+      }));
+
+      toast({
+        title: "Avatar Uploaded",
+        description: "Your profile picture has been uploaded successfully.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Upload Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleSaveProfile = async () => {
+    try {
+      setLoading(true);
+      
+      const profileData = {
+        id: user?.id,
+        name: profile.name,
+        email: profile.email,
+        phone: profile.phone,
+        student_id: profile.studentId,
+        year: profile.year,
+        program: profile.program,
+        avatar_url: profile.avatar_url,
+        updated_at: new Date().toISOString()
+      };
+
+      const { error } = await supabase
+        .from('profiles')
+        .upsert(profileData);
+
+      if (error) throw error;
+
       toast({
         title: "Profile Updated",
         description: "Your profile information has been successfully saved.",
       });
-    }, 500);
+    } catch (error: any) {
+      console.error('Error saving profile:', error);
+      toast({
+        title: "Save Error",
+        description: error.message || "Failed to save profile changes.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChangePassword = () => {
@@ -172,10 +301,35 @@ const UserProfile = ({ isOpen, onClose }: UserProfileProps) => {
           {/* Profile Tab */}
           {activeTab === 'profile' && (
             <div className="space-y-4">
-              <div className="flex justify-center mb-4 sm:mb-6">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-primary rounded-full flex items-center justify-center">
-                  <User className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
+              {/* Avatar Upload Section */}
+              <div className="flex flex-col items-center mb-4 sm:mb-6">
+                <div className="relative">
+                  <Avatar className="w-20 h-20 sm:w-24 sm:h-24">
+                    <AvatarImage src={profile.avatar_url} alt="Profile picture" />
+                    <AvatarFallback className="bg-primary text-white text-lg">
+                      {profile.name ? profile.name.charAt(0).toUpperCase() : <User className="h-8 w-8" />}
+                    </AvatarFallback>
+                  </Avatar>
+                  <label
+                    htmlFor="avatar-upload"
+                    className="absolute bottom-0 right-0 bg-primary text-white rounded-full p-2 cursor-pointer hover:bg-primary/90 transition-colors"
+                  >
+                    {uploading ? (
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    ) : (
+                      <Camera className="h-4 w-4" />
+                    )}
+                  </label>
+                  <input
+                    id="avatar-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarUpload}
+                    disabled={uploading}
+                    className="hidden"
+                  />
                 </div>
+                <p className="text-sm text-gray-500 mt-2">Click the camera icon to upload a profile picture</p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
@@ -186,6 +340,7 @@ const UserProfile = ({ isOpen, onClose }: UserProfileProps) => {
                     value={profile.name}
                     onChange={(e) => setProfile(prev => ({ ...prev, name: e.target.value }))}
                     className="text-sm"
+                    disabled={loading}
                   />
                 </div>
                 <div>
@@ -196,6 +351,7 @@ const UserProfile = ({ isOpen, onClose }: UserProfileProps) => {
                     value={profile.email}
                     onChange={(e) => setProfile(prev => ({ ...prev, email: e.target.value }))}
                     className="text-sm"
+                    disabled={loading}
                   />
                 </div>
                 <div>
@@ -205,6 +361,7 @@ const UserProfile = ({ isOpen, onClose }: UserProfileProps) => {
                     value={profile.phone}
                     onChange={(e) => setProfile(prev => ({ ...prev, phone: e.target.value }))}
                     className="text-sm"
+                    disabled={loading}
                   />
                 </div>
                 <div>
@@ -212,8 +369,9 @@ const UserProfile = ({ isOpen, onClose }: UserProfileProps) => {
                   <Input
                     id="studentId"
                     value={profile.studentId}
-                    readOnly
-                    className="bg-gray-100 text-sm"
+                    onChange={(e) => setProfile(prev => ({ ...prev, studentId: e.target.value }))}
+                    className="text-sm"
+                    disabled={loading}
                   />
                 </div>
                 <div>
@@ -223,6 +381,7 @@ const UserProfile = ({ isOpen, onClose }: UserProfileProps) => {
                     value={profile.year}
                     onChange={(e) => setProfile(prev => ({ ...prev, year: e.target.value }))}
                     className="text-sm"
+                    disabled={loading}
                   />
                 </div>
                 <div>
@@ -232,12 +391,24 @@ const UserProfile = ({ isOpen, onClose }: UserProfileProps) => {
                     value={profile.program}
                     onChange={(e) => setProfile(prev => ({ ...prev, program: e.target.value }))}
                     className="text-sm"
+                    disabled={loading}
                   />
                 </div>
               </div>
 
-              <Button className="w-full bg-primary hover:bg-primary/90" onClick={handleSaveProfile}>
-                Save Changes
+              <Button 
+                className="w-full bg-primary hover:bg-primary/90" 
+                onClick={handleSaveProfile}
+                disabled={loading}
+              >
+                {loading ? (
+                  <span className="flex items-center gap-2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    Saving...
+                  </span>
+                ) : (
+                  'Save Changes'
+                )}
               </Button>
             </div>
           )}
