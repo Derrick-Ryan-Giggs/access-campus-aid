@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { User, X, Settings, Shield, HelpCircle, Camera, Upload } from 'lucide-react';
+import { User, X, Settings, Shield, HelpCircle, Camera } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
@@ -15,6 +15,16 @@ interface UserProfileProps {
   onClose: () => void;
 }
 
+interface ProfileData {
+  name: string;
+  email: string;
+  phone: string;
+  studentId: string;
+  year: string;
+  program: string;
+  avatar_url: string;
+}
+
 const UserProfile = ({ isOpen, onClose }: UserProfileProps) => {
   const { toast } = useToast();
   const { user } = useAuth();
@@ -22,7 +32,7 @@ const UserProfile = ({ isOpen, onClose }: UserProfileProps) => {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   
-  const [profile, setProfile] = useState({
+  const [profile, setProfile] = useState<ProfileData>({
     name: '',
     email: '',
     phone: '',
@@ -75,7 +85,7 @@ const UserProfile = ({ isOpen, onClose }: UserProfileProps) => {
           studentId: data.student_id || '',
           year: data.year || '',
           program: data.program || '',
-          avatar_url: data.avatar_url || ''
+          avatar_url: (data as any).avatar_url || ''
         });
       } else {
         // Set default values if no profile exists
@@ -106,8 +116,8 @@ const UserProfile = ({ isOpen, onClose }: UserProfileProps) => {
 
       const file = event.target.files[0];
       const fileExt = file.name.split('.').pop();
-      const fileName = `${user?.id}-${Math.random()}.${fileExt}`;
-      const filePath = `avatars/${fileName}`;
+      const fileName = `${user?.id}/${Math.random()}.${fileExt}`;
+      const filePath = fileName;
 
       const { error: uploadError } = await supabase.storage
         .from('avatars')
