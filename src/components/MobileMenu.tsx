@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Home, Menu, X, ShoppingCart, Clock, GraduationCap, LogOut, Bell, User, Settings, Headphones, AlertTriangle, LayoutGrid } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { useNotifications } from '@/hooks/useNotifications';
 
 interface MobileMenuProps {
   activeSection: string;
@@ -27,6 +28,7 @@ const MobileMenu = ({
   onClose 
 }: MobileMenuProps) => {
   const { user, signOut } = useAuth();
+  const { unreadCount } = useNotifications();
 
   const menuItems = [
     { key: 'home', label: 'Home', icon: Home },
@@ -130,9 +132,11 @@ const MobileMenu = ({
                   >
                     <Bell className="h-5 w-5 mr-3" />
                     <span className="font-medium">Notifications</span>
-                    <span className="absolute right-4 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                      2
-                    </span>
+                    {unreadCount > 0 && (
+                      <span className="absolute right-4 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                        {unreadCount > 99 ? '99+' : unreadCount}
+                      </span>
+                    )}
                   </Button>
                   
                   <Button

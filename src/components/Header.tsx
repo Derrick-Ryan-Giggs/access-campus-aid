@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Button } from './ui/button';
 import { Bell, Menu, X, User, LogOut, AlertTriangle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { useNotifications } from '@/hooks/useNotifications';
 import NotificationPanel from './NotificationPanel';
 import MobileMenu from './MobileMenu';
 import UserProfile from './UserProfile';
@@ -16,6 +17,7 @@ const Header = ({ onNavigate }: HeaderProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserProfileOpen, setIsUserProfileOpen] = useState(false);
   const { user, signOut } = useAuth();
+  const { unreadCount } = useNotifications();
 
   const handleNavClick = (section: string) => {
     if (onNavigate) {
@@ -101,9 +103,11 @@ const Header = ({ onNavigate }: HeaderProps) => {
                   aria-label="Open notifications"
                 >
                   <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-3 w-3 sm:h-4 sm:w-4 flex items-center justify-center text-[10px] sm:text-xs">
-                    2
-                  </span>
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-3 w-3 sm:h-4 sm:w-4 flex items-center justify-center text-[10px] sm:text-xs">
+                      {unreadCount > 99 ? '99+' : unreadCount}
+                    </span>
+                  )}
                 </Button>
               </div>
 

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useNotifications } from '@/hooks/useNotifications';
 import AddGroceryForm from './forms/AddGroceryForm';
 import Checkout from './Checkout';
 import GroceryItem from './grocery/GroceryItem';
@@ -31,6 +32,7 @@ interface GroceryShopProps {
 
 const GroceryShop = ({ onCheckout }: GroceryShopProps) => {
   const { toast } = useToast();
+  const { addNotification } = useNotifications();
   const [searchTerm, setSearchTerm] = useState('');
   const [cart, setCart] = useState<{ item: GroceryItemType; quantity: number }[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -57,6 +59,14 @@ const GroceryShop = ({ onCheckout }: GroceryShopProps) => {
       return [...prev, { item, quantity: 1 }];
     });
 
+    // Add notification for item added to cart
+    addNotification({
+      type: 'success',
+      title: 'Item Added',
+      message: `${item.name} has been added to your cart.`,
+      data: { itemId: item.id, itemName: item.name }
+    });
+
     toast({
       title: "Added to Cart",
       description: `${item.name} has been added to your cart.`,
@@ -70,6 +80,15 @@ const GroceryShop = ({ onCheckout }: GroceryShopProps) => {
     };
     setGroceries(prev => [...prev, grocery]);
     setShowAddForm(false);
+    
+    // Add notification for new grocery item
+    addNotification({
+      type: 'info',
+      title: 'New Item Added',
+      message: `${newGrocery.name} has been added to the store.`,
+      data: { itemName: newGrocery.name }
+    });
+
     toast({
       title: "Grocery Added",
       description: `${newGrocery.name} has been added to the store.`,

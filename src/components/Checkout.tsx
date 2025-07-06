@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { CreditCard, MapPin, User, CheckCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useNotifications } from '@/hooks/useNotifications';
 
 interface CheckoutItem {
   item: {
@@ -23,6 +23,7 @@ interface CheckoutProps {
 
 const Checkout = ({ cart = [], onBack }: CheckoutProps) => {
   const { toast } = useToast();
+  const { addNotification } = useNotifications();
   const [step, setStep] = useState<'shipping' | 'payment' | 'confirmation'>('shipping');
   const [orderPlaced, setOrderPlaced] = useState(false);
   
@@ -74,6 +75,22 @@ const Checkout = ({ cart = [], onBack }: CheckoutProps) => {
     setTimeout(() => {
       setOrderPlaced(true);
       setStep('confirmation');
+      
+      const orderNumber = `GR-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+      
+      // Add notification for successful order
+      addNotification({
+        type: 'success',
+        title: 'Order Confirmed!',
+        message: `Your grocery order #${orderNumber} has been placed successfully. Total: $${finalTotal.toFixed(2)}`,
+        data: { 
+          orderNumber, 
+          total: finalTotal, 
+          itemCount: cart.length,
+          items: cart.map(item => ({ name: item.item.name, quantity: item.quantity }))
+        }
+      });
+
       toast({
         title: "Order Placed Successfully!",
         description: "Your groceries will be delivered within 2-3 business days.",

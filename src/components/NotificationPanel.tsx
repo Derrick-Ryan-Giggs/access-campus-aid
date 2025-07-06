@@ -1,17 +1,9 @@
 
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Bell, X, Check, AlertCircle, Info } from 'lucide-react';
-
-interface Notification {
-  id: number;
-  type: 'info' | 'warning' | 'success' | 'emergency';
-  title: string;
-  message: string;
-  timestamp: string;
-  read: boolean;
-}
+import { useNotifications } from '@/hooks/useNotifications';
+import { formatDistanceToNow } from 'date-fns';
 
 interface NotificationPanelProps {
   isOpen: boolean;
@@ -19,54 +11,7 @@ interface NotificationPanelProps {
 }
 
 const NotificationPanel = ({ isOpen, onClose }: NotificationPanelProps) => {
-  const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      id: 1,
-      type: 'info',
-      title: 'Tutor Response',
-      message: 'Sarah Johnson has accepted your tutoring request for Mathematics.',
-      timestamp: '2 hours ago',
-      read: false
-    },
-    {
-      id: 2,
-      type: 'warning',
-      title: 'Reminder Due Soon',
-      message: 'Your medication reminder is due in 30 minutes.',
-      timestamp: '30 minutes ago',
-      read: false
-    },
-    {
-      id: 3,
-      type: 'success',
-      title: 'Order Delivered',
-      message: 'Your grocery order has been successfully delivered.',
-      timestamp: '1 day ago',
-      read: true
-    },
-    {
-      id: 4,
-      type: 'info',
-      title: 'New Feature',
-      message: 'Check out our new accessibility features in settings.',
-      timestamp: '2 days ago',
-      read: true
-    }
-  ]);
-
-  const markAsRead = (id: number) => {
-    setNotifications(prev =>
-      prev.map(notif =>
-        notif.id === id ? { ...notif, read: true } : notif
-      )
-    );
-  };
-
-  const markAllAsRead = () => {
-    setNotifications(prev =>
-      prev.map(notif => ({ ...notif, read: true }))
-    );
-  };
+  const { notifications, unreadCount, markAsRead, markAllAsRead, loading } = useNotifications();
 
   const getIcon = (type: string) => {
     switch (type) {
@@ -85,8 +30,6 @@ const NotificationPanel = ({ isOpen, onClose }: NotificationPanelProps) => {
       default: return 'border-l-blue-400';
     }
   };
-
-  const unreadCount = notifications.filter(n => !n.read).length;
 
   if (!isOpen) return null;
 
@@ -135,38 +78,44 @@ const NotificationPanel = ({ isOpen, onClose }: NotificationPanelProps) => {
             </Button>
           )}
 
-          <div className="space-y-3">
-            {notifications.map(notification => (
-              <Card
-                key={notification.id}
-                className={`cursor-pointer transition-all hover:shadow-md border-l-4 ${getBorderColor(notification.type)} ${
-                  !notification.read ? 'bg-blue-50' : ''
-                } touch-manipulation`}
-                onClick={() => markAsRead(notification.id)}
-              >
-                <CardContent className="p-3">
-                  <div className="flex items-start gap-3">
-                    {getIcon(notification.type)}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h4 className="font-medium text-sm">{notification.title}</h4>
-                        {!notification.read && (
-                          <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                        )}
+          {loading ? (
+            <div className="flex justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {notifications.length > 0 ? notifications.map(notification => (
+                <Card
+                  key={notification.id}
+                  className={`cursor-pointer transition-all hover:shadow-md border-l-4 ${getBorderColor(notification.type)} ${
+                    !notification.read ? 'bg-blue-50' : ''
+                  } touch-manipulation`}
+                  onClick={() => markAsRead(notification.id)}
+                >
+                  <CardContent className="p-3">
+                    <div className="flex items-start gap-3">
+                      {getIcon(notification.type)}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h4 className="font-medium text-sm">{notification.title}</h4>
+                          {!notification.read && (
+                            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                          )}
+                        </div>
+                        <p className="text-sm text-gray-600 mb-2">{notification.message}</p>
+                        <p className="text-xs text-gray-400">
+                          {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
+                        </p>
                       </div>
-                      <p className="text-sm text-gray-600 mb-2">{notification.message}</p>
-                      <p className="text-xs text-gray-400">{notification.timestamp}</p>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {notifications.length === 0 && (
-            <div className="text-center py-8 text-gray-500">
-              <Bell className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>No notifications yet</p>
+                  </CardContent>
+                </Card>
+              )) : (
+                <div className="text-center py-8 text-gray-500">
+                  <Bell className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>No notifications yet</p>
+                </div>
+              )}
             </div>
           )}
         </div>
