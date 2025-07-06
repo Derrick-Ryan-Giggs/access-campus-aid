@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { FileText, Scale, Users, AlertCircle, Download, Phone, MessageCircle, BookOpen } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import AdvocacyLegalCards from './support/AdvocacyLegalCards';
 
 const AdvocacyLegal = () => {
   const { toast } = useToast();
@@ -182,24 +182,9 @@ const AdvocacyLegal = () => {
         </p>
       </div>
 
-      {/* Quick Actions */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <Button variant="outline" className="h-20 flex-col">
-          <FileText className="h-6 w-6 mb-2" />
-          Templates
-        </Button>
-        <Button variant="outline" className="h-20 flex-col">
-          <Scale className="h-6 w-6 mb-2" />
-          Legal Help
-        </Button>
-        <Button variant="outline" className="h-20 flex-col">
-          <Users className="h-6 w-6 mb-2" />
-          File Complaint
-        </Button>
-        <Button variant="outline" className="h-20 flex-col">
-          <AlertCircle className="h-6 w-6 mb-2" />
-          Emergency Legal
-        </Button>
+      {/* Quick Actions - Using new AdvocacyLegalCards */}
+      <div className="mb-8">
+        <AdvocacyLegalCards />
       </div>
 
       {/* Document Templates and Resources */}
