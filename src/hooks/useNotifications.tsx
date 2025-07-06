@@ -45,7 +45,7 @@ export const NotificationsProvider = ({ children }: { children: ReactNode }) => 
         .limit(50);
 
       if (error) throw error;
-      setNotifications(data || []);
+      setNotifications((data as Notification[]) || []);
     } catch (error) {
       console.error('Error fetching notifications:', error);
     } finally {
@@ -80,7 +80,7 @@ export const NotificationsProvider = ({ children }: { children: ReactNode }) => 
         variant: notification.type === 'success' ? 'default' : notification.type === 'warning' ? 'destructive' : 'default'
       });
 
-      setNotifications(prev => [data, ...prev]);
+      setNotifications(prev => [data as Notification, ...prev]);
     } catch (error) {
       console.error('Error adding notification:', error);
     }
