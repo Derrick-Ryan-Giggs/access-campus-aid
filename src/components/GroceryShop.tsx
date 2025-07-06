@@ -66,11 +66,6 @@ const GroceryShop = ({ onCheckout }: GroceryShopProps) => {
       message: `${item.name} has been added to your cart.`,
       data: { itemId: item.id, itemName: item.name }
     });
-
-    toast({
-      title: "Added to Cart",
-      description: `${item.name} has been added to your cart.`,
-    });
   };
 
   const handleAddGrocery = (newGrocery: Omit<GroceryItemType, 'id'>) => {

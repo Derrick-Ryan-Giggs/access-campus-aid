@@ -73,7 +73,7 @@ export const NotificationsProvider = ({ children }: { children: ReactNode }) => 
 
       if (error) throw error;
 
-      // Show toast notification
+      // Only show toast notification here, not in real-time subscription
       toast({
         title: notification.title,
         description: notification.message,
@@ -133,7 +133,7 @@ export const NotificationsProvider = ({ children }: { children: ReactNode }) => 
 
     fetchNotifications();
 
-    // Subscribe to real-time changes
+    // Subscribe to real-time changes - only update state, don't show toast
     const channel = supabase
       .channel('notifications-changes')
       .on(
@@ -146,13 +146,8 @@ export const NotificationsProvider = ({ children }: { children: ReactNode }) => 
         },
         (payload) => {
           const newNotification = payload.new as Notification;
+          // Only update state, don't show toast to avoid duplicates
           setNotifications(prev => [newNotification, ...prev]);
-          
-          // Show toast for new notification
-          toast({
-            title: newNotification.title,
-            description: newNotification.message,
-          });
         }
       )
       .subscribe();
@@ -160,7 +155,7 @@ export const NotificationsProvider = ({ children }: { children: ReactNode }) => 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user, toast]);
+  }, [user]);
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
