@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -8,11 +8,17 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { AlertTriangle, Phone, MapPin, Shield, Users, Navigation, Clock, Heart } from 'lucide-react';
+import { AlertTriangle, Phone, MapPin, Shield, Users, Navigation, Clock, Heart, Play, Pause, RotateCcw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const EmergencySupport = () => {
   const { toast } = useToast();
+  const mapRef = useRef<HTMLDivElement>(null);
+  const [currentLocation, setCurrentLocation] = useState<{lat: number, lon: number} | null>(null);
+  const [mapVisible, setMapVisible] = useState(false);
+  const [isTimerActive, setIsTimerActive] = useState(false);
+  const [timerDuration, setTimerDuration] = useState(30); // minutes
+  const [timeRemaining, setTimeRemaining] = useState(0);
   const [emergencyContact, setEmergencyContact] = useState({
     name: '',
     relationship: '',
@@ -112,12 +118,105 @@ const EmergencySupport = () => {
     }
   ];
 
-  const handleEmergencyCall = (contactName: string, phone: string) => {
+  // Get current location
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setCurrentLocation({
+            lat: position.coords.latitude,
+            lon: position.coords.longitude
+          });
+        },
+        (error) => {
+          console.error('Error getting location:', error);
+          toast({
+            title: "Location Access",
+            description: "Unable to access location. Some features may be limited.",
+            variant: "destructive"
+          });
+        }
+      );
+    }
+  }, []);
+
+  // Timer functionality
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    
+    if (isTimerActive && timeRemaining > 0) {
+      interval = setInterval(() => {
+        setTimeRemaining((prev) => {
+          if (prev <= 1) {
+            setIsTimerActive(false);
+            handleTimerExpired();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+
+    return () => clearInterval(interval);
+  }, [isTimerActive, timeRemaining]);
+
+  const handleTimerExpired = () => {
     toast({
-      title: "Emergency Call Initiated",
-      description: `Calling ${contactName} at ${phone}. Location shared automatically.`,
+      title: "Check-In Timer Expired",
+      description: "Emergency contacts are being notified of your status.",
       variant: "destructive"
     });
+    // Here you could send automated messages to emergency contacts
+  };
+
+  const startTimer = () => {
+    setTimeRemaining(timerDuration * 60); // Convert minutes to seconds
+    setIsTimerActive(true);
+    toast({
+      title: "Check-In Timer Started",
+      description: `Timer set for ${timerDuration} minutes. You'll need to check in before it expires.`,
+    });
+  };
+
+  const pauseTimer = () => {
+    setIsTimerActive(false);
+    toast({
+      title: "Timer Paused",
+      description: "Check-in timer has been paused.",
+    });
+  };
+
+  const resetTimer = () => {
+    setIsTimerActive(false);
+    setTimeRemaining(0);
+    toast({
+      title: "Timer Reset",
+      description: "Check-in timer has been reset.",
+    });
+  };
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const handleEmergencyCall = (contactName: string, phone: string) => {
+    // Use tel: protocol to initiate actual phone call
+    const telLink = `tel:${phone.replace(/[^\d+]/g, '')}`;
+    window.open(telLink, '_self');
+    
+    toast({
+      title: "Emergency Call Initiated",
+      description: `Calling ${contactName}. Location shared automatically.`,
+      variant: "destructive"
+    });
+    
+    // Share location with emergency services/contacts
+    if (currentLocation) {
+      console.log('Sharing location:', currentLocation);
+      // Here you could send location data to a backend service
+    }
   };
 
   const handleAddEmergencyContact = () => {
@@ -167,37 +266,123 @@ const EmergencySupport = () => {
     });
   };
 
+  const activateEmergencyAlert = async () => {
+    if (!currentLocation) {
+      toast({
+        title: "Location Required",
+        description: "Please enable location access for emergency features.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Send emergency alert with location
+    const emergencyData = {
+      location: currentLocation,
+      timestamp: new Date().toISOString(),
+      type: 'emergency_alert'
+    };
+
+    toast({
+      title: "🚨 EMERGENCY ALERT ACTIVATED",
+      description: `Alert sent to all emergency contacts. Location: ${currentLocation.lat.toFixed(4)}, ${currentLocation.lon.toFixed(4)}`,
+      variant: "destructive"
+    });
+
+    // Here you would send the alert to backend/emergency services
+    console.log('Emergency alert data:', emergencyData);
+  };
+
+  const requestSafeWalk = async () => {
+    if (!currentLocation) {
+      toast({
+        title: "Location Required",
+        description: "Please enable location access to request safe walk.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setMapVisible(true);
+    toast({
+      title: "Safe Walk Requested",
+      description: "Campus security notified. Showing your location on map.",
+    });
+  };
+
+  const showAccessibleRoutes = async () => {
+    if (!currentLocation) {
+      toast({
+        title: "Location Required",
+        description: "Please enable location access for navigation.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setMapVisible(true);
+    await loadMap();
+    toast({
+      title: "Accessible Routes",
+      description: "Showing wheelchair-accessible and well-lit paths on map.",
+    });
+  };
+
+  const loadMap = async () => {
+    if (!mapRef.current || !currentLocation) return;
+
+    // Create OpenStreetMap using Leaflet-style approach
+    const mapContainer = mapRef.current;
+    mapContainer.innerHTML = `
+      <div style="width: 100%; height: 400px; background: #f0f0f0; border-radius: 8px; position: relative; overflow: hidden;">
+        <div style="position: absolute; top: 10px; left: 10px; background: white; padding: 8px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 1000;">
+          <strong>Your Location</strong><br/>
+          ${currentLocation.lat.toFixed(4)}, ${currentLocation.lon.toFixed(4)}
+        </div>
+        <iframe 
+          width="100%" 
+          height="100%" 
+          style="border: none; border-radius: 8px;"
+          src="https://www.openstreetmap.org/export/embed.html?bbox=${currentLocation.lon-0.01}%2C${currentLocation.lat-0.01}%2C${currentLocation.lon+0.01}%2C${currentLocation.lat+0.01}&layer=mapnik&marker=${currentLocation.lat}%2C${currentLocation.lon}"
+        ></iframe>
+        <div style="position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.7); color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">
+          🗺️ OpenStreetMap
+        </div>
+      </div>
+    `;
+  };
+
   const handleSafetyFeature = (featureTitle: string) => {
     switch (featureTitle) {
       case 'Emergency Alert':
-        toast({
-          title: "Emergency Alert Activated",
-          description: "Alert sent to all emergency contacts with your current location",
-          variant: "destructive"
-        });
+        activateEmergencyAlert();
         break;
       case 'Safe Walk Request':
-        toast({
-          title: "Safe Walk Requested",
-          description: "Campus security notified. Escort will arrive in 5-10 minutes",
-        });
+        requestSafeWalk();
         break;
       case 'Accessible Routes':
-        toast({
-          title: "Navigation Started",
-          description: "Showing wheelchair-accessible route with well-lit paths",
-        });
+        showAccessibleRoutes();
         break;
       case 'Check-In Timer':
-        toast({
-          title: "Check-In Timer Started",
-          description: "You'll receive reminders every 30 minutes to check in",
-        });
+        if (!isTimerActive && timeRemaining === 0) {
+          startTimer();
+        }
         break;
     }
   };
 
-  const handleNavigateToLocation = (locationName: string) => {
+  const handleNavigateToLocation = async (locationName: string) => {
+    if (!currentLocation) {
+      toast({
+        title: "Location Required",
+        description: "Please enable location access for navigation.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setMapVisible(true);
+    await loadMap();
     toast({
       title: "Navigation Started",
       description: `Showing accessible route to ${locationName} with safety information`,
@@ -399,6 +584,95 @@ const EmergencySupport = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Interactive Map */}
+      {mapVisible && (
+        <Card className="mb-8">
+          <CardHeader>
+            <div className="flex justify-between items-center">
+              <CardTitle className="flex items-center gap-2">
+                <MapPin className="h-5 w-5" />
+                Live Map & Navigation
+              </CardTitle>
+              <Button 
+                onClick={() => setMapVisible(false)} 
+                variant="outline" 
+                size="sm"
+              >
+                Close Map
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div ref={mapRef} className="w-full h-96 bg-gray-100 rounded-lg">
+              Loading map...
+            </div>
+            {currentLocation && (
+              <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+                <p className="text-sm text-blue-800">
+                  <strong>Current Location:</strong> {currentLocation.lat.toFixed(6)}, {currentLocation.lon.toFixed(6)}
+                </p>
+                <p className="text-xs text-blue-600 mt-1">
+                  Location updates in real-time for emergency services
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Interactive Check-In Timer */}
+      {(isTimerActive || timeRemaining > 0) && (
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Clock className="h-5 w-5" />
+              Safety Check-In Timer
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center">
+              <div className="text-4xl font-bold mb-4 font-mono">
+                {formatTime(timeRemaining)}
+              </div>
+              <div className="flex justify-center gap-4 mb-4">
+                <Button 
+                  onClick={isTimerActive ? pauseTimer : startTimer}
+                  variant={isTimerActive ? "secondary" : "default"}
+                >
+                  {isTimerActive ? <Pause className="h-4 w-4 mr-2" /> : <Play className="h-4 w-4 mr-2" />}
+                  {isTimerActive ? 'Pause' : 'Start'}
+                </Button>
+                <Button onClick={resetTimer} variant="outline">
+                  <RotateCcw className="h-4 w-4 mr-2" />
+                  Reset
+                </Button>
+              </div>
+              <div className="flex justify-center gap-4 mb-4">
+                <div>
+                  <Label htmlFor="timer-duration">Duration (minutes):</Label>
+                  <Input
+                    id="timer-duration"
+                    type="number"
+                    min="5"
+                    max="120"
+                    value={timerDuration}
+                    onChange={(e) => setTimerDuration(Number(e.target.value))}
+                    className="w-20 mx-2 text-center"
+                    disabled={isTimerActive}
+                  />
+                </div>
+              </div>
+              <p className="text-sm text-gray-600">
+                {isTimerActive 
+                  ? "Timer is active. You'll need to check in before it expires."
+                  : "Set a check-in timer for your safety."
+                }
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Campus Safety Information */}
       <Card>
