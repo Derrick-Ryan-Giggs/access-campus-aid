@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { MapPin, MessageCircle, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -84,6 +83,8 @@ const LiveSupport = () => {
   };
 
   const handleSendMessage = (message: string) => {
+    if (!message.trim()) return;
+    
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
       text: message,
@@ -93,18 +94,6 @@ const LiveSupport = () => {
     };
     
     setChatMessages(prev => [...prev, userMessage]);
-    
-    // Simulate support response
-    setTimeout(() => {
-      const supportMessage: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        text: 'I understand your concern. Let me help you with that right away.',
-        sender: 'support',
-        timestamp: new Date(),
-        type: 'text'
-      };
-      setChatMessages(prev => [...prev, supportMessage]);
-    }, 1000);
   };
 
   const handleEndSession = () => {
@@ -135,6 +124,7 @@ const LiveSupport = () => {
               messages={chatMessages} 
               onSendMessage={handleSendMessage}
               onEndSession={handleEndSession}
+              supportType={activeRequest}
             />
           )}
         </div>

@@ -6,6 +6,8 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Video, Send, Mic, Camera, ScreenShare, VideoOff, MicOff } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useVoiceInput } from '@/hooks/useVoiceInput';
+import { generateSupportResponse, generateContextualResponse } from '@/utils/chatResponses';
 
 interface ChatMessage {
   id: string;
@@ -19,18 +21,26 @@ interface ChatInterfaceProps {
   messages: ChatMessage[];
   onSendMessage: (message: string) => void;
   onEndSession: () => void;
+  supportType?: string;
 }
 
-const ChatInterface = ({ messages, onSendMessage, onEndSession }: ChatInterfaceProps) => {
+const ChatInterface = ({ messages, onSendMessage, onEndSession, supportType = 'general' }: ChatInterfaceProps) => {
   const { toast } = useToast();
   const [newMessage, setNewMessage] = useState('');
-  const [isRecording, setIsRecording] = useState(false);
   const [isVideoActive, setIsVideoActive] = useState(false);
   const [isScreenSharing, setIsScreenSharing] = useState(false);
   const [isCameraOn, setIsCameraOn] = useState(false);
   const [stream, setStream] = useState<MediaStream | null>(null);
+  const [messageCount, setMessageCount] = useState(0);
   const videoRef = useRef<HTMLVideoElement>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
+
+  // Voice input functionality
+  const { isRecording, toggleRecording } = useVoiceInput({
+    onTranscription: (text: string) => {
+      setNewMessage(text);
+    }
+  });
 
   useEffect(() => {
     if (messages.length > 0) {
@@ -49,8 +59,41 @@ const ChatInterface = ({ messages, onSendMessage, onEndSession }: ChatInterfaceP
 
   const sendMessage = () => {
     if (!newMessage.trim()) return;
-    onSendMessage(newMessage);
+    
+    const userMessage = newMessage;
+    onSendMessage(userMessage);
     setNewMessage('');
+    setMessageCount(prev => prev + 1);
+
+    // Generate varied support responses
+    setTimeout(() => {
+      const contextualResponse = generateContextualResponse(userMessage);
+      const supportResponses = generateSupportResponse(supportType, messageCount + 1, userMessage);
+      
+      // Send the contextual response first
+      const contextualMessage: ChatMessage = {
+        id: (Date.now() + Math.random()).toString(),
+        text: contextualResponse.text,
+        sender: 'support',
+        timestamp: new Date(),
+        type: 'text'
+      };
+      onSendMessage(''); // Trigger parent to add support message
+      
+      // Add follow-up responses if available
+      supportResponses.forEach((response, index) => {
+        setTimeout(() => {
+          const followupMessage: ChatMessage = {
+            id: (Date.now() + Math.random() + index).toString(),
+            text: response.text,
+            sender: 'support',
+            timestamp: new Date(),
+            type: 'text'
+          };
+          onSendMessage(''); // Trigger parent to add support message
+        }, response.delay || 1000);
+      });
+    }, 800);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -58,14 +101,6 @@ const ChatInterface = ({ messages, onSendMessage, onEndSession }: ChatInterfaceP
       e.preventDefault();
       sendMessage();
     }
-  };
-
-  const toggleVoiceRecording = () => {
-    setIsRecording(!isRecording);
-    toast({
-      title: isRecording ? "Voice Recording Stopped" : "Voice Recording Started",
-      description: isRecording ? "Processing your voice message..." : "Speak now to record your message",
-    });
   };
 
   const startVideoCall = async () => {
@@ -93,6 +128,7 @@ const ChatInterface = ({ messages, onSendMessage, onEndSession }: ChatInterfaceP
         setStream(null);
         setIsVideoActive(false);
         setIsCameraOn(false);
+        setIsScreenSharing(false);
         if (videoRef.current) {
           videoRef.current.srcObject = null;
         }
@@ -135,13 +171,15 @@ const ChatInterface = ({ messages, onSendMessage, onEndSession }: ChatInterfaceP
         // Replace video track with screen share
         if (stream && videoRef.current) {
           const screenTrack = screenStream.getVideoTracks()[0];
-          const sender = stream.getVideoTracks()[0];
+          const videoTrack = stream.getVideoTracks()[0];
           
-          if (sender) {
-            stream.removeTrack(sender);
-            stream.addTrack(screenTrack);
-            videoRef.current.srcObject = stream;
+          if (videoTrack) {
+            stream.removeTrack(videoTrack);
+            videoTrack.stop();
           }
+          
+          stream.addTrack(screenTrack);
+          videoRef.current.srcObject = stream;
         }
         
         setIsScreenSharing(true);
@@ -154,19 +192,42 @@ const ChatInterface = ({ messages, onSendMessage, onEndSession }: ChatInterfaceP
         screenStream.getVideoTracks()[0].onended = () => {
           setIsScreenSharing(false);
           // Switch back to camera if it was on
-          if (isCameraOn) {
+          if (isCameraOn && !isScreenSharing) {
             startVideoCall();
           }
+          toast({
+            title: "Screen Sharing Stopped",
+            description: "Screen sharing has been disabled.",
+          });
         };
       } else {
         // Stop screen sharing and go back to camera
-        setIsScreenSharing(false);
-        if (isCameraOn) {
-          await startVideoCall();
+        if (stream) {
+          const screenTrack = stream.getVideoTracks()[0];
+          if (screenTrack) {
+            stream.removeTrack(screenTrack);
+            screenTrack.stop();
+          }
         }
+        setIsScreenSharing(false);
+        
+        if (isCameraOn) {
+          const mediaStream = await navigator.mediaDevices.getUserMedia({ 
+            video: true, 
+            audio: true 
+          });
+          const videoTrack = mediaStream.getVideoTracks()[0];
+          if (stream && videoTrack) {
+            stream.addTrack(videoTrack);
+            if (videoRef.current) {
+              videoRef.current.srcObject = stream;
+            }
+          }
+        }
+        
         toast({
           title: "Screen Sharing Stopped",
-          description: "Screen sharing has been disabled.",
+          description: "Switched back to camera view.",
         });
       }
     } catch (error) {
@@ -187,7 +248,6 @@ const ChatInterface = ({ messages, onSendMessage, onEndSession }: ChatInterfaceP
     setIsVideoActive(false);
     setIsCameraOn(false);
     setIsScreenSharing(false);
-    setIsRecording(false);
     
     toast({
       title: "Session Ended",
@@ -258,7 +318,7 @@ const ChatInterface = ({ messages, onSendMessage, onEndSession }: ChatInterfaceP
                   Screen Sharing
                 </span>
               )}
-              {!isCameraOn && (
+              {!isCameraOn && !isScreenSharing && (
                 <span className="bg-red-600 text-white px-2 py-1 rounded text-xs">
                   Camera Off
                 </span>
@@ -294,7 +354,7 @@ const ChatInterface = ({ messages, onSendMessage, onEndSession }: ChatInterfaceP
           <div className="p-4 border-t bg-white flex-shrink-0">
             <div className="flex space-x-2 items-center">
               <Input
-                placeholder="Type your message..."
+                placeholder="Type your message or use voice input..."
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 onKeyPress={handleKeyPress}
@@ -303,8 +363,12 @@ const ChatInterface = ({ messages, onSendMessage, onEndSession }: ChatInterfaceP
               <Button
                 variant="outline"
                 size="sm"
-                onClick={toggleVoiceRecording}
-                className={`w-10 h-10 p-0 flex-shrink-0 ${isRecording ? 'bg-red-100 text-red-600' : 'bg-white'}`}
+                onClick={toggleRecording}
+                className={`w-10 h-10 p-0 flex-shrink-0 ${
+                  isRecording 
+                    ? 'bg-red-500 text-white hover:bg-red-600' 
+                    : 'bg-white hover:bg-gray-50'
+                }`}
               >
                 {isRecording ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
               </Button>
@@ -312,6 +376,11 @@ const ChatInterface = ({ messages, onSendMessage, onEndSession }: ChatInterfaceP
                 <Send className="h-4 w-4" />
               </Button>
             </div>
+            {isRecording && (
+              <p className="text-sm text-gray-600 mt-2 text-center">
+                🎤 Listening... Tap microphone to stop
+              </p>
+            )}
           </div>
         </div>
       </CardContent>
