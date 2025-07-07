@@ -73,14 +73,16 @@ export const NotificationsProvider = ({ children }: { children: ReactNode }) => 
 
       if (error) throw error;
 
-      // Only show toast notification here, not in real-time subscription
+      // Add to local state immediately and show toast
+      const newNotification = data as Notification;
+      setNotifications(prev => [newNotification, ...prev]);
+      
       toast({
         title: notification.title,
         description: notification.message,
         variant: notification.type === 'success' ? 'default' : notification.type === 'warning' ? 'destructive' : 'default'
       });
 
-      setNotifications(prev => [data as Notification, ...prev]);
     } catch (error) {
       console.error('Error adding notification:', error);
     }
@@ -133,7 +135,7 @@ export const NotificationsProvider = ({ children }: { children: ReactNode }) => 
 
     fetchNotifications();
 
-    // Subscribe to real-time changes - only update state, don't show toast
+    // Subscribe to real-time changes - only for notifications from other sources
     const channel = supabase
       .channel('notifications-changes')
       .on(
@@ -146,8 +148,15 @@ export const NotificationsProvider = ({ children }: { children: ReactNode }) => 
         },
         (payload) => {
           const newNotification = payload.new as Notification;
-          // Only update state, don't show toast to avoid duplicates
-          setNotifications(prev => [newNotification, ...prev]);
+          
+          // Check if this notification already exists in our state to prevent duplicates
+          setNotifications(prev => {
+            const exists = prev.find(n => n.id === newNotification.id);
+            if (exists) {
+              return prev; // Don't add if it already exists
+            }
+            return [newNotification, ...prev];
+          });
         }
       )
       .subscribe();
