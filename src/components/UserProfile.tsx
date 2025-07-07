@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { User, X, Settings, Shield, HelpCircle, Camera } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
@@ -23,6 +24,12 @@ interface ProfileData {
   year: string;
   program: string;
   avatar_url: string;
+}
+
+interface AccessibilitySettings {
+  highContrastMode: boolean;
+  largeTextMode: boolean;
+  reducedMotion: boolean;
 }
 
 const UserProfile = ({ isOpen, onClose }: UserProfileProps) => {
@@ -46,6 +53,9 @@ const UserProfile = ({ isOpen, onClose }: UserProfileProps) => {
     emailNotifications: true,
     smsReminders: true,
     emergencyContactsAccess: true,
+  });
+
+  const [accessibilitySettings, setAccessibilitySettings] = useState<AccessibilitySettings>({
     highContrastMode: false,
     largeTextMode: false,
     reducedMotion: false
@@ -61,8 +71,14 @@ const UserProfile = ({ isOpen, onClose }: UserProfileProps) => {
   useEffect(() => {
     if (user && isOpen) {
       loadProfile();
+      loadAccessibilitySettings();
     }
   }, [user, isOpen]);
+
+  // Apply accessibility settings to document
+  useEffect(() => {
+    applyAccessibilitySettings();
+  }, [accessibilitySettings]);
 
   const loadProfile = async () => {
     try {
@@ -103,6 +119,62 @@ const UserProfile = ({ isOpen, onClose }: UserProfileProps) => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadAccessibilitySettings = () => {
+    // Load from localStorage
+    const savedSettings = localStorage.getItem('accessibilitySettings');
+    if (savedSettings) {
+      const parsed = JSON.parse(savedSettings);
+      setAccessibilitySettings(parsed);
+    }
+  };
+
+  const saveAccessibilitySettings = (newSettings: AccessibilitySettings) => {
+    localStorage.setItem('accessibilitySettings', JSON.stringify(newSettings));
+    setAccessibilitySettings(newSettings);
+    applyAccessibilitySettings(newSettings);
+  };
+
+  const applyAccessibilitySettings = (settings: AccessibilitySettings = accessibilitySettings) => {
+    const root = document.documentElement;
+    
+    // High contrast mode
+    if (settings.highContrastMode) {
+      root.style.setProperty('--background', '255 255 255');
+      root.style.setProperty('--foreground', '0 0 0');
+      root.style.setProperty('--border', '0 0 0');
+      root.style.setProperty('--primary', '0 0 0');
+      root.style.setProperty('--primary-foreground', '255 255 255');
+      root.classList.add('high-contrast');
+    } else {
+      root.style.removeProperty('--background');
+      root.style.removeProperty('--foreground');
+      root.style.removeProperty('--border');
+      root.style.removeProperty('--primary');
+      root.style.removeProperty('--primary-foreground');
+      root.classList.remove('high-contrast');
+    }
+
+    // Large text mode
+    if (settings.largeTextMode) {
+      root.style.fontSize = '18px';
+      root.classList.add('large-text');
+    } else {
+      root.style.fontSize = '';
+      root.classList.remove('large-text');
+    }
+
+    // Reduced motion
+    if (settings.reducedMotion) {
+      root.style.setProperty('--animation-duration', '0.01ms');
+      root.style.setProperty('--transition-duration', '0.01ms');
+      root.classList.add('reduced-motion');
+    } else {
+      root.style.removeProperty('--animation-duration');
+      root.style.removeProperty('--transition-duration');
+      root.classList.remove('reduced-motion');
     }
   };
 
@@ -255,6 +327,20 @@ const UserProfile = ({ isOpen, onClose }: UserProfileProps) => {
     toast({
       title: "Setting Updated",
       description: `${setting.replace(/([A-Z])/g, ' $1').toLowerCase()} has been ${settings[setting] ? 'disabled' : 'enabled'}.`,
+    });
+  };
+
+  const handleAccessibilityChange = (setting: keyof AccessibilitySettings) => {
+    const newSettings = {
+      ...accessibilitySettings,
+      [setting]: !accessibilitySettings[setting]
+    };
+    
+    saveAccessibilitySettings(newSettings);
+    
+    toast({
+      title: "Accessibility Setting Updated",
+      description: `${setting.replace(/([A-Z])/g, ' $1').toLowerCase()} has been ${accessibilitySettings[setting] ? 'disabled' : 'enabled'}.`,
     });
   };
 
@@ -436,29 +522,23 @@ const UserProfile = ({ isOpen, onClose }: UserProfileProps) => {
                 <CardContent className="space-y-3 sm:space-y-4">
                   <div className="flex items-center justify-between">
                     <Label className="text-sm">Email Notifications</Label>
-                    <input 
-                      type="checkbox" 
+                    <Switch 
                       checked={settings.emailNotifications}
-                      onChange={() => handleSettingChange('emailNotifications')}
-                      className="rounded" 
+                      onCheckedChange={() => handleSettingChange('emailNotifications')}
                     />
                   </div>
                   <div className="flex items-center justify-between">
                     <Label className="text-sm">SMS Reminders</Label>
-                    <input 
-                      type="checkbox" 
+                    <Switch 
                       checked={settings.smsReminders}
-                      onChange={() => handleSettingChange('smsReminders')}
-                      className="rounded" 
+                      onCheckedChange={() => handleSettingChange('smsReminders')}
                     />
                   </div>
                   <div className="flex items-center justify-between">
                     <Label className="text-sm">Emergency Contacts Access</Label>
-                    <input 
-                      type="checkbox" 
+                    <Switch 
                       checked={settings.emergencyContactsAccess}
-                      onChange={() => handleSettingChange('emergencyContactsAccess')}
-                      className="rounded" 
+                      onCheckedChange={() => handleSettingChange('emergencyContactsAccess')}
                     />
                   </div>
                 </CardContent>
@@ -571,6 +651,45 @@ const UserProfile = ({ isOpen, onClose }: UserProfileProps) => {
                 </CardHeader>
                 <CardContent className="space-y-3 sm:space-y-4">
                   <div>
+                    <h4 className="font-medium mb-2 text-sm">High Contrast Mode</h4>
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs sm:text-sm text-gray-600">
+                        Enhanced color contrast for better visibility
+                      </p>
+                      <Switch 
+                        checked={accessibilitySettings.highContrastMode}
+                        onCheckedChange={() => handleAccessibilityChange('highContrastMode')}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-medium mb-2 text-sm">Large Text Mode</h4>
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs sm:text-sm text-gray-600">
+                        Increase text size throughout the application
+                      </p>
+                      <Switch 
+                        checked={accessibilitySettings.largeTextMode}
+                        onCheckedChange={() => handleAccessibilityChange('largeTextMode')}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-medium mb-2 text-sm">Reduced Motion</h4>
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs sm:text-sm text-gray-600">
+                        Minimize animations and transitions
+                      </p>
+                      <Switch 
+                        checked={accessibilitySettings.reducedMotion}
+                        onCheckedChange={() => handleAccessibilityChange('reducedMotion')}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
                     <h4 className="font-medium mb-2 text-sm">Screen Reader Support</h4>
                     <p className="text-xs sm:text-sm text-gray-600 mb-3">
                       All interface elements include proper ARIA labels and semantic HTML structure for screen readers.
@@ -582,51 +701,6 @@ const UserProfile = ({ isOpen, onClose }: UserProfileProps) => {
                     <p className="text-xs sm:text-sm text-gray-600 mb-3">
                       Full keyboard navigation support with visible focus indicators and logical tab ordering.
                     </p>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-medium mb-2 text-sm">High Contrast Mode</h4>
-                    <div className="flex items-center justify-between">
-                      <p className="text-xs sm:text-sm text-gray-600">
-                        Enhanced color contrast for better visibility
-                      </p>
-                      <input 
-                        type="checkbox" 
-                        checked={settings.highContrastMode}
-                        onChange={() => handleSettingChange('highContrastMode')}
-                        className="rounded" 
-                      />
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-medium mb-2 text-sm">Large Text Mode</h4>
-                    <div className="flex items-center justify-between">
-                      <p className="text-xs sm:text-sm text-gray-600">
-                        Increase text size throughout the application
-                      </p>
-                      <input 
-                        type="checkbox" 
-                        checked={settings.largeTextMode}
-                        onChange={() => handleSettingChange('largeTextMode')}
-                        className="rounded" 
-                      />
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-medium mb-2 text-sm">Reduced Motion</h4>
-                    <div className="flex items-center justify-between">
-                      <p className="text-xs sm:text-sm text-gray-600">
-                        Minimize animations and transitions
-                      </p>
-                      <input 
-                        type="checkbox" 
-                        checked={settings.reducedMotion}
-                        onChange={() => handleSettingChange('reducedMotion')}
-                        className="rounded" 
-                      />
-                    </div>
                   </div>
                 </CardContent>
               </Card>

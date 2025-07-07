@@ -60,6 +60,10 @@
     --warning-foreground: 255 255 255;
     --warning-light: 254 243 199;
     --warning-text: 146 64 14;
+
+    /* Animation durations - can be overridden by accessibility settings */
+    --animation-duration: 0.3s;
+    --transition-duration: 0.2s;
   }
 
   .dark {
@@ -239,6 +243,29 @@
     }
   }
 
+  /* High contrast mode - when enabled via settings */
+  .high-contrast {
+    filter: contrast(200%);
+  }
+
+  .high-contrast input,
+  .high-contrast button,
+  .high-contrast .card {
+    border: 2px solid #000000 !important;
+  }
+
+  /* Large text mode */
+  .large-text {
+    font-size: 1.125rem !important;
+  }
+
+  .large-text h1 { font-size: 2.5rem !important; }
+  .large-text h2 { font-size: 2rem !important; }
+  .large-text h3 { font-size: 1.75rem !important; }
+  .large-text h4 { font-size: 1.5rem !important; }
+  .large-text .text-sm { font-size: 1rem !important; }
+  .large-text .text-xs { font-size: 0.875rem !important; }
+
   /* Reduced motion support */
   @media (prefers-reduced-motion: reduce) {
     * {
@@ -246,6 +273,19 @@
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
     }
+  }
+
+  /* Reduced motion - when enabled via settings */
+  .reduced-motion * {
+    animation-duration: var(--animation-duration, 0.01ms) !important;
+    transition-duration: var(--transition-duration, 0.01ms) !important;
+    animation-iteration-count: 1 !important;
+  }
+
+  /* Apply transition and animation durations */
+  * {
+    animation-duration: var(--animation-duration, 0.3s);
+    transition-duration: var(--transition-duration, 0.2s);
   }
 }
 
@@ -261,4 +301,17 @@
 
 .emergency-pulse {
   animation: emergency-pulse 2s infinite;
+}
+
+/* Video call styles */
+video {
+  border-radius: 0.5rem;
+}
+
+video::-webkit-media-controls {
+  display: none !important;
+}
+
+video::-webkit-media-controls-enclosure {
+  display: none !important;
 }
