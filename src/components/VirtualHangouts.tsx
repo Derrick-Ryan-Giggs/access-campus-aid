@@ -8,8 +8,9 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Calendar, Users, Video, Gamepad2, BookOpen, Music, Coffee, Clock } from 'lucide-react';
+import { Calendar, Users, Video, Gamepad2, BookOpen, Music, Coffee, Clock, Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import EntertainmentHub from './hangouts/EntertainmentHub';
 
 const VirtualHangouts = () => {
   const { toast } = useToast();
@@ -140,6 +141,10 @@ const VirtualHangouts = () => {
 
       {/* Quick Actions */}
       <div className="flex flex-wrap gap-4 mb-8 justify-center">
+        <Button size="lg" onClick={() => document.getElementById('entertainment-section')?.scrollIntoView({ behavior: 'smooth' })}>
+          <Sparkles className="h-5 w-5 mr-2" />
+          Entertainment Hub
+        </Button>
         <Dialog>
           <DialogTrigger asChild>
             <Button size="lg">
@@ -340,6 +345,11 @@ const VirtualHangouts = () => {
             </Card>
           ))}
         </div>
+      </div>
+
+      {/* Entertainment Hub */}
+      <div id="entertainment-section" className="mb-8">
+        <EntertainmentHub />
       </div>
 
       {/* Community Guidelines */}

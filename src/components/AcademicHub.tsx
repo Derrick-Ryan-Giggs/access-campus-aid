@@ -9,11 +9,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
-import { BookOpen, Calendar, Users, Upload, Plus, CheckCircle2, AlertCircle, Clock } from 'lucide-react';
+import { BookOpen, Calendar, Users, Upload, Plus, CheckCircle2, AlertCircle, Clock, Brain } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import AssignmentCard from './academic/AssignmentCard';
 import SharedNotesCard from './academic/SharedNotesCard';
 import EditAssignmentDialog from './academic/EditAssignmentDialog';
+import StudyAssistant from './academic/StudyAssistant';
 
 const AcademicHub = () => {
   const { toast } = useToast();
@@ -255,10 +256,11 @@ const AcademicHub = () => {
       </div>
 
       <Tabs defaultValue="assignments" className="space-y-4 sm:space-y-6">
-        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto">
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 h-auto">
           <TabsTrigger value="assignments" className="text-xs sm:text-sm p-2 sm:p-3">Assignment Tracker</TabsTrigger>
           <TabsTrigger value="study-groups" className="text-xs sm:text-sm p-2 sm:p-3">Study Groups</TabsTrigger>
           <TabsTrigger value="notes" className="text-xs sm:text-sm p-2 sm:p-3">Shared Notes</TabsTrigger>
+          <TabsTrigger value="assistant" className="text-xs sm:text-sm p-2 sm:p-3">AI Assistant</TabsTrigger>
           <TabsTrigger value="accommodations" className="text-xs sm:text-sm p-2 sm:p-3">Exam Accommodations</TabsTrigger>
         </TabsList>
 
@@ -469,6 +471,10 @@ const AcademicHub = () => {
               ))}
             </div>
           </div>
+        </TabsContent>
+
+        <TabsContent value="assistant">
+          <StudyAssistant />
         </TabsContent>
 
         <TabsContent value="accommodations">
