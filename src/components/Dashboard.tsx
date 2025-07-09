@@ -1,8 +1,11 @@
 
 import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { formatDistanceToNow, parseISO } from 'date-fns';
 import QuickStats from './QuickStats';
 import ContactInfo from './ContactInfo';
+import { useActivities } from '@/hooks/useActivities';
 
 type ActiveSection = 'home' | 'groceries' | 'reminders' | 'tutors' | 'checkout' | 'live-support' | 'personal-care' | 'virtual-hangouts' | 'mentorship' | 'health-wellness' | 'advocacy-legal' | 'smart-assistant' | 'emergency-support' | 'academic-hub';
 
@@ -11,12 +14,7 @@ interface DashboardProps {
 }
 
 const Dashboard = ({ onNavigate }: DashboardProps) => {
-  const recentActivities = [
-    { action: "Grocery order", status: "Delivered", time: "2 hours ago", color: "bg-green-100 text-green-800" },
-    { action: "Tutor session", status: "Scheduled", time: "Today 3:00 PM", color: "bg-blue-100 text-blue-800" },
-    { action: "Reminder set", status: "Active", time: "Yesterday", color: "bg-yellow-100 text-yellow-800" },
-    { action: "Health check", status: "Completed", time: "3 days ago", color: "bg-purple-100 text-purple-800" }
-  ];
+  const { activities, loading: activitiesLoading } = useActivities();
 
   const quickActions = [
     {
@@ -74,19 +72,42 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
       <Card className="mb-8">
         <CardContent className="p-6">
           <h2 className="text-xl font-semibold mb-4">Recent Activities</h2>
-          <div className="space-y-3">
-            {recentActivities.map((activity, index) => (
-              <div key={index} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                <div>
-                  <p className="font-medium">{activity.action}</p>
-                  <p className="text-sm text-gray-600">{activity.time}</p>
+          {activitiesLoading ? (
+            <div className="flex justify-center py-4">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+            </div>
+          ) : activities.length > 0 ? (
+            <div className="space-y-3">
+              {activities.map((activity) => (
+                <div key={activity.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                  <div>
+                    <p className="font-medium">{activity.title}</p>
+                    <p className="text-sm text-gray-600">
+                      {formatDistanceToNow(parseISO(activity.created_at), { addSuffix: true })}
+                    </p>
+                    {activity.description && (
+                      <p className="text-xs text-gray-500 mt-1">{activity.description}</p>
+                    )}
+                  </div>
+                  <div className="flex flex-col items-end gap-1">
+                    <Badge variant="secondary" className="text-xs">
+                      {activity.type.replace('_', ' ')}
+                    </Badge>
+                    <Badge 
+                      variant={activity.status === 'completed' ? 'default' : 'outline'}
+                      className="text-xs"
+                    >
+                      {activity.status}
+                    </Badge>
+                  </div>
                 </div>
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${activity.color}`}>
-                  {activity.status}
-                </span>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              <p>No recent activities</p>
+            </div>
+          )}
         </CardContent>
       </Card>
 

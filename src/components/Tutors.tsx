@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Search, User, Plus, AlertCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useActivities } from '@/hooks/useActivities';
 import AddTutorForm from './forms/AddTutorForm';
 
 interface Tutor {
@@ -113,6 +114,7 @@ const mockTutors: Tutor[] = [
 
 const Tutors = () => {
   const { toast } = useToast();
+  const { createActivity } = useActivities();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSubject, setSelectedSubject] = useState('All');
   const [showRequestForm, setShowRequestForm] = useState(false);
@@ -144,8 +146,21 @@ const Tutors = () => {
     setShowRequestForm(true);
   };
 
-  const submitRequest = () => {
+  const submitRequest = async () => {
     if (requestForm.subject && requestForm.message && selectedTutor) {
+      // Create activity record
+      await createActivity({
+        type: 'tutor_session',
+        title: `Tutor session with ${selectedTutor.name}`,
+        description: `${requestForm.subject} session scheduled for ${requestForm.preferredTime}`,
+        status: 'scheduled',
+        metadata: {
+          tutor_id: selectedTutor.id,
+          subject: requestForm.subject,
+          preferred_time: requestForm.preferredTime
+        }
+      });
+
       toast({
         title: "Help Request Sent",
         description: `Your tutoring request has been sent to ${selectedTutor.name}. They will contact you soon!`,

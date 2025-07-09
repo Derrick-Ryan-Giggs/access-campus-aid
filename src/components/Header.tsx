@@ -72,6 +72,12 @@ const Header = ({ onNavigate }: HeaderProps) => {
                 Dashboard
               </button>
               <button 
+                onClick={() => handleNavClick('orders')} 
+                className="text-gray-700 hover:text-primary transition-colors text-sm xl:text-base"
+              >
+                Orders
+              </button>
+              <button 
                 onClick={() => handleNavClick('live-support')} 
                 className="text-gray-700 hover:text-primary transition-colors text-sm xl:text-base"
               >

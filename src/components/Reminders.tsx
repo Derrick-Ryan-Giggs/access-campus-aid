@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Bell, Calendar, Clock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useActivities } from '@/hooks/useActivities';
 
 interface Reminder {
   id: number;
@@ -18,6 +19,7 @@ interface Reminder {
 
 const Reminders = () => {
   const { toast } = useToast();
+  const { createActivity } = useActivities();
   const [reminders, setReminders] = useState<Reminder[]>([
     {
       id: 1,
@@ -84,7 +86,7 @@ const Reminders = () => {
     time: ''
   });
 
-  const addReminder = () => {
+  const addReminder = async () => {
     if (newReminder.title && newReminder.date && newReminder.time) {
       const reminder: Reminder = {
         id: Date.now(),
@@ -92,6 +94,20 @@ const Reminders = () => {
         completed: false
       };
       setReminders(prev => [...prev, reminder]);
+      
+      // Create activity record
+      await createActivity({
+        type: 'reminder',
+        title: `Reminder: ${newReminder.title}`,
+        description: `${newReminder.type} reminder set for ${newReminder.date} at ${newReminder.time}`,
+        status: 'active',
+        metadata: {
+          reminder_type: newReminder.type,
+          scheduled_date: newReminder.date,
+          scheduled_time: newReminder.time
+        }
+      });
+
       setNewReminder({
         type: 'medication',
         title: '',
@@ -114,7 +130,7 @@ const Reminders = () => {
     }
   };
 
-  const toggleCompleted = (id: number) => {
+  const toggleCompleted = async (id: number) => {
     const reminder = reminders.find(r => r.id === id);
     setReminders(prev =>
       prev.map(reminder =>
@@ -125,6 +141,19 @@ const Reminders = () => {
     );
 
     if (reminder) {
+      // Create activity record for status change
+      const activityStatus = !reminder.completed ? 'completed' : 'active';
+      await createActivity({
+        type: 'reminder',
+        title: `Reminder ${!reminder.completed ? 'completed' : 'reactivated'}: ${reminder.title}`,
+        description: `${reminder.type} reminder status changed`,
+        status: activityStatus,
+        metadata: {
+          reminder_id: reminder.id,
+          reminder_type: reminder.type
+        }
+      });
+
       toast({
         title: reminder.completed ? "Reminder Reactivated" : "Reminder Completed",
         description: reminder.completed ? 

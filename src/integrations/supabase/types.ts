@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      activities: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          metadata: Json | null
+          status: string
+          title: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          status: string
+          title: string
+          type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          status?: string
+          title?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       cart_items: {
         Row: {
           created_at: string | null
@@ -108,6 +144,90 @@ export type Database = {
           name?: string
           price?: number
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      health_checks: {
+        Row: {
+          created_at: string
+          id: string
+          notes: string | null
+          provider: string
+          scheduled_date: string
+          scheduled_time: string
+          status: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          provider: string
+          scheduled_date: string
+          scheduled_time: string
+          status?: string
+          type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          provider?: string
+          scheduled_date?: string
+          scheduled_time?: string
+          status?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      legal_consultations: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          lawyer_assigned: string | null
+          priority: string | null
+          scheduled_date: string | null
+          scheduled_time: string | null
+          status: string
+          title: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          id?: string
+          lawyer_assigned?: string | null
+          priority?: string | null
+          scheduled_date?: string | null
+          scheduled_time?: string | null
+          status?: string
+          title: string
+          type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          lawyer_assigned?: string | null
+          priority?: string | null
+          scheduled_date?: string | null
+          scheduled_time?: string | null
+          status?: string
+          title?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -218,29 +338,41 @@ export type Database = {
       }
       orders: {
         Row: {
+          actual_delivery_date: string | null
           created_at: string | null
           delivery_address: string | null
+          estimated_delivery: string | null
           id: string
+          notes: string | null
           status: string | null
           total_amount: number
+          tracking_number: string | null
           updated_at: string | null
           user_id: string
         }
         Insert: {
+          actual_delivery_date?: string | null
           created_at?: string | null
           delivery_address?: string | null
+          estimated_delivery?: string | null
           id?: string
+          notes?: string | null
           status?: string | null
           total_amount: number
+          tracking_number?: string | null
           updated_at?: string | null
           user_id: string
         }
         Update: {
+          actual_delivery_date?: string | null
           created_at?: string | null
           delivery_address?: string | null
+          estimated_delivery?: string | null
           id?: string
+          notes?: string | null
           status?: string | null
           total_amount?: number
+          tracking_number?: string | null
           updated_at?: string | null
           user_id?: string
         }

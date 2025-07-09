@@ -20,8 +20,9 @@ import SmartAssistant from "@/components/SmartAssistant";
 import EmergencySupport from "@/components/EmergencySupport";
 import AcademicHub from "@/components/AcademicHub";
 import Checkout from "@/components/Checkout";
+import Orders from "@/components/Orders";
 
-type ActiveSection = 'home' | 'services' | 'dashboard' | 'groceries' | 'reminders' | 'tutors' | 'checkout' | 'live-support' | 'personal-care' | 'virtual-hangouts' | 'mentorship' | 'health-wellness' | 'advocacy-legal' | 'smart-assistant' | 'emergency-support' | 'academic-hub';
+type ActiveSection = 'home' | 'services' | 'dashboard' | 'groceries' | 'reminders' | 'tutors' | 'checkout' | 'orders' | 'live-support' | 'personal-care' | 'virtual-hangouts' | 'mentorship' | 'health-wellness' | 'advocacy-legal' | 'smart-assistant' | 'emergency-support' | 'academic-hub';
 
 const Index = () => {
   const { user, loading } = useAuth();
@@ -66,6 +67,8 @@ const Index = () => {
         return <GroceryShop />;
       case 'checkout':
         return <Checkout onBack={() => setActiveSection('groceries')} />;
+      case 'orders':
+        return <Orders />;
       case 'reminders':
         return <Reminders />;
       case 'tutors':
