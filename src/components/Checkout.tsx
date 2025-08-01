@@ -6,6 +6,9 @@ import { Label } from '@/components/ui/label';
 import { CreditCard, MapPin, User, CheckCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useNotifications } from '@/hooks/useNotifications';
+import { useActivities } from '@/hooks/useActivities';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 
 interface CheckoutItem {
   item: {
@@ -24,6 +27,8 @@ interface CheckoutProps {
 const Checkout = ({ cart = [], onBack }: CheckoutProps) => {
   const { toast } = useToast();
   const { addNotification } = useNotifications();
+  const { createActivity } = useActivities();
+  const { user } = useAuth();
   const [step, setStep] = useState<'shipping' | 'payment' | 'confirmation'>('shipping');
   const [orderPlaced, setOrderPlaced] = useState(false);
   
@@ -72,11 +77,50 @@ const Checkout = ({ cart = [], onBack }: CheckoutProps) => {
     }
     
     // Simulate payment processing
-    setTimeout(() => {
+    setTimeout(async () => {
       setOrderPlaced(true);
       setStep('confirmation');
       
       const orderNumber = `GR-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+      const deliveryAddress = `${shippingInfo.address}, ${shippingInfo.city}, ${shippingInfo.zipCode}`;
+      
+      try {
+        // Create order in database
+        if (user) {
+          const { data: order, error } = await supabase
+            .from('orders')
+            .insert([{
+              user_id: user.id,
+              total_amount: finalTotal,
+              status: 'pending',
+              delivery_address: deliveryAddress,
+              tracking_number: orderNumber,
+              estimated_delivery: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 3 days from now
+              notes: `Order for ${cart.length} items`
+            }])
+            .select()
+            .single();
+
+          if (!error && order) {
+            // Create activity for order placement
+            await createActivity({
+              type: 'grocery_order',
+              title: 'Grocery Order Placed',
+              description: `Order #${orderNumber} for $${finalTotal.toFixed(2)} has been placed`,
+              status: 'pending',
+              metadata: {
+                orderNumber,
+                total: finalTotal,
+                itemCount: cart.length,
+                items: cart.map(item => ({ name: item.item.name, quantity: item.quantity })),
+                deliveryAddress
+              }
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Error creating order:', error);
+      }
       
       // Add notification for successful order
       addNotification({
