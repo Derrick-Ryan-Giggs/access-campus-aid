@@ -176,70 +176,71 @@ const SignupForm = ({ onSwitchToLogin, onClose }: SignupFormProps) => {
 
   return (
     <Card className="w-full max-w-md mx-auto animate-fade-in bg-white border border-gray-200 shadow-lg">
-      <CardHeader className="text-center pb-6">
-        <CardTitle className="text-2xl font-bold text-gray-900 mb-2">Join EmpowerU</CardTitle>
-        <p className="text-gray-600 text-base">Create your account to get started</p>
+      <CardHeader className="text-center pb-3 md:pb-6">
+        <CardTitle className="text-xl md:text-2xl font-bold text-gray-900 mb-1 md:mb-2">Join EmpowerU</CardTitle>
+        <p className="text-gray-600 text-sm md:text-base">Create your account to get started</p>
       </CardHeader>
-      <CardContent className="space-y-5">
-        <form ref={formRef} onSubmit={handleSubmit} className="space-y-5" role="form">
-          {/* First Name */}
-          <div className="space-y-2">
-            <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
-              First Name *
-            </label>
-            <input
-              ref={errors.firstName ? firstErrorRef : undefined}
-              type="text"
-              id="firstName"
-              name="firstName"
-              value={formData.firstName}
-              onChange={handleInputChange}
-              required
-              aria-invalid={!!errors.firstName}
-              aria-describedby={errors.firstName ? 'firstName-error' : undefined}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.firstName ? 'border-red-500' : 'border-gray-300'
-              }`}
-              disabled={isSubmitting}
-            />
-            {errors.firstName && (
-              <div id="firstName-error" role="alert" className="mt-1 flex items-center text-sm text-red-600">
-                <AlertCircle className="h-4 w-4 mr-1" />
-                {errors.firstName}
-              </div>
-            )}
-          </div>
+      <CardContent className="space-y-3 md:space-y-5">
+        <form ref={formRef} onSubmit={handleSubmit} className="space-y-3 md:space-y-4" role="form">
+          {/* Name Fields - Side by side on larger screens */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+            <div className="space-y-1 md:space-y-2">
+              <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
+                First Name *
+              </label>
+              <input
+                ref={errors.firstName ? firstErrorRef : undefined}
+                type="text"
+                id="firstName"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleInputChange}
+                required
+                aria-invalid={!!errors.firstName}
+                aria-describedby={errors.firstName ? 'firstName-error' : undefined}
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  errors.firstName ? 'border-red-500' : 'border-gray-300'
+                }`}
+                disabled={isSubmitting}
+              />
+              {errors.firstName && (
+                <div id="firstName-error" role="alert" className="mt-1 flex items-center text-xs md:text-sm text-red-600">
+                  <AlertCircle className="h-3 w-3 md:h-4 md:w-4 mr-1" />
+                  {errors.firstName}
+                </div>
+              )}
+            </div>
 
-          {/* Last Name */}
-          <div className="space-y-2">
-            <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
-              Last Name *
-            </label>
-            <input
-              ref={!errors.firstName && errors.lastName ? firstErrorRef : undefined}
-              type="text"
-              id="lastName"
-              name="lastName"
-              value={formData.lastName}
-              onChange={handleInputChange}
-              required
-              aria-invalid={!!errors.lastName}
-              aria-describedby={errors.lastName ? 'lastName-error' : undefined}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.lastName ? 'border-red-500' : 'border-gray-300'
-              }`}
-              disabled={isSubmitting}
-            />
-            {errors.lastName && (
-              <div id="lastName-error" role="alert" className="mt-1 flex items-center text-sm text-red-600">
-                <AlertCircle className="h-4 w-4 mr-1" />
-                {errors.lastName}
-              </div>
-            )}
+            <div className="space-y-1 md:space-y-2">
+              <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
+                Last Name *
+              </label>
+              <input
+                ref={!errors.firstName && errors.lastName ? firstErrorRef : undefined}
+                type="text"
+                id="lastName"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleInputChange}
+                required
+                aria-invalid={!!errors.lastName}
+                aria-describedby={errors.lastName ? 'lastName-error' : undefined}
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  errors.lastName ? 'border-red-500' : 'border-gray-300'
+                }`}
+                disabled={isSubmitting}
+              />
+              {errors.lastName && (
+                <div id="lastName-error" role="alert" className="mt-1 flex items-center text-xs md:text-sm text-red-600">
+                  <AlertCircle className="h-3 w-3 md:h-4 md:w-4 mr-1" />
+                  {errors.lastName}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Email */}
-          <div className="space-y-2">
+          <div className="space-y-1 md:space-y-2">
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
               Email Address *
             </label>
@@ -259,19 +260,19 @@ const SignupForm = ({ onSwitchToLogin, onClose }: SignupFormProps) => {
               disabled={isSubmitting}
             />
             {errors.email ? (
-              <div id="email-error" role="alert" className="mt-1 flex items-center text-sm text-red-600">
-                <AlertCircle className="h-4 w-4 mr-1" />
+              <div id="email-error" role="alert" className="mt-1 flex items-center text-xs md:text-sm text-red-600">
+                <AlertCircle className="h-3 w-3 md:h-4 md:w-4 mr-1" />
                 {errors.email}
               </div>
             ) : (
-              <div id="email-help" className="mt-1 text-sm text-gray-500">
+              <div id="email-help" className="mt-1 text-xs md:text-sm text-gray-500">
                 We'll use this to send you important updates
               </div>
             )}
           </div>
 
           {/* Password */}
-          <div className="space-y-2">
+          <div className="space-y-1 md:space-y-2">
             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
               Password *
             </label>
@@ -298,23 +299,23 @@ const SignupForm = ({ onSwitchToLogin, onClose }: SignupFormProps) => {
                 className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
                 disabled={isSubmitting}
               >
-                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                {showPassword ? <EyeOff className="h-4 w-4 md:h-5 md:w-5" /> : <Eye className="h-4 w-4 md:h-5 md:w-5" />}
               </button>
             </div>
             {errors.password ? (
-              <div id="password-error" role="alert" className="mt-1 flex items-center text-sm text-red-600">
-                <AlertCircle className="h-4 w-4 mr-1" />
+              <div id="password-error" role="alert" className="mt-1 flex items-center text-xs md:text-sm text-red-600">
+                <AlertCircle className="h-3 w-3 md:h-4 md:w-4 mr-1" />
                 {errors.password}
               </div>
             ) : (
-              <div id="password-help" className="mt-1 text-sm text-gray-500">
+              <div id="password-help" className="mt-1 text-xs md:text-sm text-gray-500">
                 Must be at least 8 characters with uppercase, lowercase, and numbers
               </div>
             )}
           </div>
 
           {/* Confirm Password */}
-          <div className="space-y-2">
+          <div className="space-y-1 md:space-y-2">
             <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
               Confirm Password *
             </label>
@@ -341,19 +342,19 @@ const SignupForm = ({ onSwitchToLogin, onClose }: SignupFormProps) => {
                 className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
                 disabled={isSubmitting}
               >
-                {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                {showConfirmPassword ? <EyeOff className="h-4 w-4 md:h-5 md:w-5" /> : <Eye className="h-4 w-4 md:h-5 md:w-5" />}
               </button>
             </div>
             {errors.confirmPassword && (
-              <div id="confirmPassword-error" role="alert" className="mt-1 flex items-center text-sm text-red-600">
-                <AlertCircle className="h-4 w-4 mr-1" />
+              <div id="confirmPassword-error" role="alert" className="mt-1 flex items-center text-xs md:text-sm text-red-600">
+                <AlertCircle className="h-3 w-3 md:h-4 md:w-4 mr-1" />
                 {errors.confirmPassword}
               </div>
             )}
           </div>
 
           {/* Terms Agreement */}
-          <div className="space-y-2">
+          <div className="space-y-1 md:space-y-2">
             <div className="flex items-start">
               <input
                 ref={!errors.firstName && !errors.lastName && !errors.email && !errors.password && !errors.confirmPassword && errors.agreeToTerms ? firstErrorRef : undefined}
@@ -365,10 +366,10 @@ const SignupForm = ({ onSwitchToLogin, onClose }: SignupFormProps) => {
                 required
                 aria-invalid={!!errors.agreeToTerms}
                 aria-describedby={errors.agreeToTerms ? 'agreeToTerms-error' : undefined}
-                className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded flex-shrink-0"
                 disabled={isSubmitting}
               />
-              <label htmlFor="agreeToTerms" className="ml-2 block text-sm text-gray-700">
+              <label htmlFor="agreeToTerms" className="ml-2 block text-xs md:text-sm text-gray-700">
                 I agree to the{' '}
                 <a href="#" className="text-blue-600 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 rounded">
                   Terms and Conditions
@@ -381,15 +382,15 @@ const SignupForm = ({ onSwitchToLogin, onClose }: SignupFormProps) => {
               </label>
             </div>
             {errors.agreeToTerms && (
-              <div id="agreeToTerms-error" role="alert" className="mt-1 flex items-center text-sm text-red-600">
-                <AlertCircle className="h-4 w-4 mr-1" />
+              <div id="agreeToTerms-error" role="alert" className="mt-1 flex items-center text-xs md:text-sm text-red-600">
+                <AlertCircle className="h-3 w-3 md:h-4 md:w-4 mr-1" />
                 {errors.agreeToTerms}
               </div>
             )}
           </div>
 
           {/* Newsletter Subscription */}
-          <div className="space-y-2">
+          <div className="space-y-1 md:space-y-2">
             <div className="flex items-start">
               <input
                 type="checkbox"
@@ -397,10 +398,10 @@ const SignupForm = ({ onSwitchToLogin, onClose }: SignupFormProps) => {
                 name="newsletter"
                 checked={formData.newsletter}
                 onChange={handleInputChange}
-                className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded flex-shrink-0"
                 disabled={isSubmitting}
               />
-              <label htmlFor="newsletter" className="ml-2 block text-sm text-gray-700">
+              <label htmlFor="newsletter" className="ml-2 block text-xs md:text-sm text-gray-700">
                 Subscribe to our newsletter for updates and special offers
               </label>
             </div>
