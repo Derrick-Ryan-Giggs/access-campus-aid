@@ -107,12 +107,21 @@ const ChatInterface = ({ messages, onSendMessage, onEndSession, supportType = 'g
     try {
       if (!isVideoActive) {
         const mediaStream = await navigator.mediaDevices.getUserMedia({ 
-          video: true, 
-          audio: true 
+          video: { 
+            facingMode: 'user',
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
+          }, 
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true
+          }
         });
         setStream(mediaStream);
         if (videoRef.current) {
           videoRef.current.srcObject = mediaStream;
+          videoRef.current.play();
         }
         setIsVideoActive(true);
         setIsCameraOn(true);
@@ -138,9 +147,10 @@ const ChatInterface = ({ messages, onSendMessage, onEndSession, supportType = 'g
         });
       }
     } catch (error) {
+      console.error('Camera error:', error);
       toast({
-        title: "Camera Access Denied",
-        description: "Please allow camera access to start video calling.",
+        title: "Camera Access Issue",
+        description: "Please ensure camera permissions are granted and try again.",
         variant: "destructive"
       });
     }
@@ -163,8 +173,21 @@ const ChatInterface = ({ messages, onSendMessage, onEndSession, supportType = 'g
   const shareScreen = async () => {
     try {
       if (!isScreenSharing) {
+        // Check if getDisplayMedia is available (not supported on mobile browsers)
+        if (!navigator.mediaDevices.getDisplayMedia) {
+          toast({
+            title: "Screen Share Not Supported",
+            description: "Screen sharing is not available on this device. Try using a desktop browser.",
+            variant: "destructive"
+          });
+          return;
+        }
+
         const screenStream = await navigator.mediaDevices.getDisplayMedia({ 
-          video: true,
+          video: {
+            width: { ideal: 1920 },
+            height: { ideal: 1080 }
+          },
           audio: true 
         });
         
@@ -180,6 +203,7 @@ const ChatInterface = ({ messages, onSendMessage, onEndSession, supportType = 'g
           
           stream.addTrack(screenTrack);
           videoRef.current.srcObject = stream;
+          videoRef.current.play();
         }
         
         setIsScreenSharing(true);
@@ -192,8 +216,8 @@ const ChatInterface = ({ messages, onSendMessage, onEndSession, supportType = 'g
         screenStream.getVideoTracks()[0].onended = () => {
           setIsScreenSharing(false);
           // Switch back to camera if it was on
-          if (isCameraOn && !isScreenSharing) {
-            startVideoCall();
+          if (isCameraOn) {
+            restartCameraAfterScreenShare();
           }
           toast({
             title: "Screen Sharing Stopped",
@@ -212,17 +236,7 @@ const ChatInterface = ({ messages, onSendMessage, onEndSession, supportType = 'g
         setIsScreenSharing(false);
         
         if (isCameraOn) {
-          const mediaStream = await navigator.mediaDevices.getUserMedia({ 
-            video: true, 
-            audio: true 
-          });
-          const videoTrack = mediaStream.getVideoTracks()[0];
-          if (stream && videoTrack) {
-            stream.addTrack(videoTrack);
-            if (videoRef.current) {
-              videoRef.current.srcObject = stream;
-            }
-          }
+          await restartCameraAfterScreenShare();
         }
         
         toast({
@@ -231,11 +245,37 @@ const ChatInterface = ({ messages, onSendMessage, onEndSession, supportType = 'g
         });
       }
     } catch (error) {
+      console.error('Screen share error:', error);
       toast({
         title: "Screen Share Failed",
-        description: "Please allow screen sharing access or try again.",
+        description: "Screen sharing access denied or not supported on this device.",
         variant: "destructive"
       });
+    }
+  };
+
+  const restartCameraAfterScreenShare = async () => {
+    try {
+      const mediaStream = await navigator.mediaDevices.getUserMedia({ 
+        video: { 
+          facingMode: 'user',
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        }, 
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true
+        }
+      });
+      const videoTrack = mediaStream.getVideoTracks()[0];
+      if (stream && videoTrack && videoRef.current) {
+        stream.addTrack(videoTrack);
+        videoRef.current.srcObject = stream;
+        videoRef.current.play();
+      }
+    } catch (error) {
+      console.error('Camera restart error:', error);
     }
   };
 

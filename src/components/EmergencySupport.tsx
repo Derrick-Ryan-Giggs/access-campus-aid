@@ -688,13 +688,13 @@ const EmergencySupport = () => {
               <div key={index} className="p-4 border rounded-lg">
                 <div className="flex justify-between items-start mb-2">
                   <h4 className="font-semibold">{location.name}</h4>
-                  <div className="flex">
-                    {[...Array(5)].map((_, i) => (
-                      <Heart 
-                        key={i} 
-                        className={`h-4 w-4 ${i < location.safetyRating ? 'text-red-500 fill-current' : 'text-gray-300'}`} 
-                      />
-                    ))}
+                   <div className="flex">
+                     {[...Array(5)].map((_, i) => (
+                       <Shield 
+                         key={i} 
+                         className={`h-4 w-4 ${i < location.safetyRating ? 'text-green-500 fill-current' : 'text-gray-300'}`} 
+                       />
+                     ))}
                   </div>
                 </div>
                 <p className="text-sm text-gray-600 mb-2">{location.accessibility}</p>

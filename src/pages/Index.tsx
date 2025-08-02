@@ -28,6 +28,7 @@ const Index = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState<ActiveSection>('home');
+  const [navigationStack, setNavigationStack] = useState<ActiveSection[]>(['home']);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -38,11 +39,34 @@ const Index = () => {
   const handleNavigate = (section: ActiveSection | string) => {
     const validSection = section as ActiveSection;
     setActiveSection(validSection);
+    
+    // Update navigation stack
+    setNavigationStack(prev => {
+      // Don't add to stack if it's the same as current section
+      if (prev[prev.length - 1] === validSection) return prev;
+      // Add to stack
+      return [...prev, validSection];
+    });
+    
     console.log('Navigating to:', section);
+  };
+
+  const handleBackNavigation = () => {
+    if (navigationStack.length > 1) {
+      const newStack = [...navigationStack];
+      newStack.pop(); // Remove current section
+      const previousSection = newStack[newStack.length - 1];
+      setNavigationStack(newStack);
+      setActiveSection(previousSection);
+    } else {
+      setActiveSection('home');
+      setNavigationStack(['home']);
+    }
   };
 
   const handleBackToHome = () => {
     setActiveSection('home');
+    setNavigationStack(['home']);
   };
 
   if (loading) {
@@ -109,12 +133,20 @@ const Index = () => {
         {renderActiveSection()}
       </main>
       {activeSection !== 'home' && (
-        <div className="fixed bottom-4 left-4 z-50">
+        <div className="fixed bottom-4 left-4 z-50 flex gap-2">
+          {navigationStack.length > 1 && (
+            <button
+              onClick={handleBackNavigation}
+              className="bg-secondary hover:bg-secondary/90 text-secondary-foreground px-4 py-2 rounded-lg shadow-lg flex items-center gap-2"
+            >
+              ← Back
+            </button>
+          )}
           <button
             onClick={handleBackToHome}
             className="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2"
           >
-            ← Back to Home
+            🏠 Home
           </button>
         </div>
       )}

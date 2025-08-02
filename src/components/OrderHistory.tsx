@@ -6,9 +6,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Package, Truck, CheckCircle, XCircle, Clock, MapPin } from 'lucide-react';
 import { useOrders } from '@/hooks/useOrders';
 import { format, parseISO } from 'date-fns';
+import { useToast } from '@/hooks/use-toast';
 
 const OrderHistory = () => {
   const { orders, loading, updateOrderStatus } = useOrders();
+  const { toast } = useToast();
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -33,7 +35,6 @@ const OrderHistory = () => {
   const ordersByStatus = {
     all: orders,
     pending: orders.filter(o => o.status === 'pending'),
-    shipped: orders.filter(o => o.status === 'shipped'),
     delivered: orders.filter(o => o.status === 'delivered'),
     cancelled: orders.filter(o => o.status === 'cancelled')
   };
@@ -54,10 +55,9 @@ const OrderHistory = () => {
       </div>
 
       <Tabs defaultValue="all" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="all">All ({ordersByStatus.all.length})</TabsTrigger>
           <TabsTrigger value="pending">Pending ({ordersByStatus.pending.length})</TabsTrigger>
-          <TabsTrigger value="shipped">Shipped ({ordersByStatus.shipped.length})</TabsTrigger>
           <TabsTrigger value="delivered">Delivered ({ordersByStatus.delivered.length})</TabsTrigger>
           <TabsTrigger value="cancelled">Cancelled ({ordersByStatus.cancelled.length})</TabsTrigger>
         </TabsList>
@@ -66,25 +66,25 @@ const OrderHistory = () => {
           <TabsContent key={status} value={status} className="space-y-4">
             {orderList.length > 0 ? (
               orderList.map((order) => (
-                <Card key={order.id} className="hover:shadow-md transition-shadow">
-                  <CardHeader className="pb-3">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <CardTitle className="text-lg">Order #{order.id.slice(0, 8)}</CardTitle>
-                        <p className="text-sm text-gray-600 mt-1">
-                          Placed on {format(parseISO(order.created_at), 'PPP')}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {getStatusIcon(order.status)}
-                        <Badge className={getStatusColor(order.status)}>
-                          {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                        </Badge>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                 <Card key={order.id} className="hover:shadow-md transition-shadow">
+                   <CardHeader className="pb-3">
+                     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
+                       <div className="flex-1 min-w-0">
+                         <CardTitle className="text-base sm:text-lg truncate">Order #{order.id.slice(0, 8)}</CardTitle>
+                         <p className="text-xs sm:text-sm text-gray-600 mt-1">
+                           Placed on {format(parseISO(order.created_at), 'MMM d, yyyy')}
+                         </p>
+                       </div>
+                       <div className="flex items-center gap-2 flex-shrink-0">
+                         {getStatusIcon(order.status)}
+                         <Badge className={`${getStatusColor(order.status)} text-xs`}>
+                           {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                         </Badge>
+                       </div>
+                     </div>
+                   </CardHeader>
+                   <CardContent className="space-y-3 sm:space-y-4">
+                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 text-sm">
                       <div>
                         <p className="font-medium text-gray-900">Total Amount</p>
                         <p className="text-gray-600">${order.total_amount}</p>
@@ -120,13 +120,43 @@ const OrderHistory = () => {
                       </div>
                     )}
 
-                    <div className="flex gap-2 pt-4 border-t">
-                      <Button variant="outline" size="sm">
+                    <div className="flex flex-col sm:flex-row gap-2 pt-4 border-t">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => {
+                          toast({
+                            title: "Order Details",
+                            description: `Viewing details for order #${order.id.slice(0, 8)}`,
+                          });
+                        }}
+                        className="flex-1"
+                      >
                         View Details
                       </Button>
-                      <Button variant="outline" size="sm">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => {
+                          toast({
+                            title: "Reorder Started",
+                            description: "Adding items from this order to your cart",
+                          });
+                        }}
+                        className="flex-1"
+                      >
                         Reorder
                       </Button>
+                      {order.status === 'pending' && (
+                        <Button 
+                          variant="destructive" 
+                          size="sm"
+                          onClick={() => updateOrderStatus(order.id, 'cancelled')}
+                          className="flex-1"
+                        >
+                          Cancel Order
+                        </Button>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
