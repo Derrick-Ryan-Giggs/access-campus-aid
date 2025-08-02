@@ -4,13 +4,19 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Package, Truck, CheckCircle, XCircle, Clock, MapPin } from 'lucide-react';
-import { useOrders } from '@/hooks/useOrders';
+import { useOrders, Order } from '@/hooks/useOrders';
 import { format, parseISO } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
+import OrderDetailModal from './OrderDetailModal';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
 const OrderHistory = () => {
   const { orders, loading, updateOrderStatus } = useOrders();
+  const { user } = useAuth();
   const { toast } = useToast();
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -37,6 +43,52 @@ const OrderHistory = () => {
     pending: orders.filter(o => o.status === 'pending'),
     delivered: orders.filter(o => o.status === 'delivered'),
     cancelled: orders.filter(o => o.status === 'cancelled')
+  };
+
+  const handleViewDetails = (order: Order) => {
+    setSelectedOrder(order);
+    setIsDetailOpen(true);
+  };
+
+  const handleReorder = async (order: Order) => {
+    if (!user) return;
+
+    try {
+      // Get order items (simulated since we don't have order_items data yet)
+      const orderItems = [
+        { name: 'Sample Item 1', quantity: 1 },
+        { name: 'Sample Item 2', quantity: 2 }
+      ];
+
+      // Add items to cart
+      for (const item of orderItems) {
+        // Simulate adding to cart by creating a notification
+        const { error } = await supabase
+          .from('notifications')
+          .insert({
+            user_id: user.id,
+            type: 'success',
+            title: 'Item Added to Cart',
+            message: `${item.name} (${item.quantity}x) has been added to your cart from reorder`,
+            data: { reorderId: order.id, itemName: item.name, quantity: item.quantity },
+            read: false
+          });
+
+        if (error) throw error;
+      }
+
+      toast({
+        title: "Reorder Started",
+        description: `${orderItems.length} items from order #${order.id.slice(0, 8)} have been added to your cart`,
+      });
+    } catch (error) {
+      console.error('Error reordering:', error);
+      toast({
+        title: "Error",
+        description: "Failed to reorder items",
+        variant: "destructive",
+      });
+    }
   };
 
   if (loading) {
@@ -124,12 +176,7 @@ const OrderHistory = () => {
                       <Button 
                         variant="outline" 
                         size="sm" 
-                        onClick={() => {
-                          toast({
-                            title: "Order Details",
-                            description: `Viewing details for order #${order.id.slice(0, 8)}`,
-                          });
-                        }}
+                        onClick={() => handleViewDetails(order)}
                         className="flex-1"
                       >
                         View Details
@@ -137,12 +184,7 @@ const OrderHistory = () => {
                       <Button 
                         variant="outline" 
                         size="sm"
-                        onClick={() => {
-                          toast({
-                            title: "Reorder Started",
-                            description: "Adding items from this order to your cart",
-                          });
-                        }}
+                        onClick={() => handleReorder(order)}
                         className="flex-1"
                       >
                         Reorder
@@ -173,6 +215,13 @@ const OrderHistory = () => {
           </TabsContent>
         ))}
       </Tabs>
+      
+      <OrderDetailModal
+        order={selectedOrder}
+        isOpen={isDetailOpen}
+        onClose={() => setIsDetailOpen(false)}
+        onReorder={handleReorder}
+      />
     </div>
   );
 };

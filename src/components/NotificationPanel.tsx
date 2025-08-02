@@ -1,9 +1,11 @@
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Bell, X, Check, AlertCircle, Info } from 'lucide-react';
-import { useNotifications } from '@/hooks/useNotifications';
+import { Bell, X, Check, AlertCircle, Info, Trash2 } from 'lucide-react';
+import { useNotifications, Notification } from '@/hooks/useNotifications';
 import { formatDistanceToNow } from 'date-fns';
+import NotificationDetail from './NotificationDetail';
+import { useState } from 'react';
 
 interface NotificationPanelProps {
   isOpen: boolean;
@@ -11,7 +13,9 @@ interface NotificationPanelProps {
 }
 
 const NotificationPanel = ({ isOpen, onClose }: NotificationPanelProps) => {
-  const { notifications, unreadCount, markAsRead, markAllAsRead, loading } = useNotifications();
+  const { notifications, unreadCount, markAsRead, markAllAsRead, deleteNotification, loading } = useNotifications();
+  const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
 
   const getIcon = (type: string) => {
     switch (type) {
@@ -29,6 +33,19 @@ const NotificationPanel = ({ isOpen, onClose }: NotificationPanelProps) => {
       case 'emergency': return 'border-l-red-400';
       default: return 'border-l-blue-400';
     }
+  };
+
+  const handleNotificationClick = (notification: Notification) => {
+    setSelectedNotification(notification);
+    setIsDetailOpen(true);
+    if (!notification.read) {
+      markAsRead(notification.id);
+    }
+  };
+
+  const handleDeleteNotification = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    deleteNotification(id);
   };
 
   if (!isOpen) return null;
@@ -90,7 +107,7 @@ const NotificationPanel = ({ isOpen, onClose }: NotificationPanelProps) => {
                   className={`cursor-pointer transition-all hover:shadow-md border-l-4 ${getBorderColor(notification.type)} ${
                     !notification.read ? 'bg-blue-50' : ''
                   } touch-manipulation`}
-                  onClick={() => markAsRead(notification.id)}
+                  onClick={() => handleNotificationClick(notification)}
                 >
                   <CardContent className="p-3">
                     <div className="flex items-start gap-3">
@@ -102,10 +119,20 @@ const NotificationPanel = ({ isOpen, onClose }: NotificationPanelProps) => {
                             <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                           )}
                         </div>
-                        <p className="text-sm text-gray-600 mb-2">{notification.message}</p>
-                        <p className="text-xs text-gray-400">
-                          {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
-                        </p>
+                        <p className="text-sm text-gray-600 mb-2 line-clamp-2">{notification.message}</p>
+                        <div className="flex items-center justify-between">
+                          <p className="text-xs text-gray-400">
+                            {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
+                          </p>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) => handleDeleteNotification(notification.id, e)}
+                            className="h-6 w-6 p-0 text-gray-400 hover:text-red-600"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </CardContent>
@@ -120,6 +147,13 @@ const NotificationPanel = ({ isOpen, onClose }: NotificationPanelProps) => {
           )}
         </div>
       </div>
+      
+      <NotificationDetail
+        notification={selectedNotification}
+        isOpen={isDetailOpen}
+        onClose={() => setIsDetailOpen(false)}
+        onDelete={deleteNotification}
+      />
     </div>
   );
 };

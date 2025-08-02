@@ -21,6 +21,7 @@ interface NotificationsContextType {
   addNotification: (notification: Omit<Notification, 'id' | 'user_id' | 'created_at' | 'read'>) => void;
   markAsRead: (id: string) => void;
   markAllAsRead: () => void;
+  deleteNotification: (id: string) => void;
   loading: boolean;
 }
 
@@ -129,6 +130,22 @@ export const NotificationsProvider = ({ children }: { children: ReactNode }) => 
     }
   };
 
+  // Delete notification
+  const deleteNotification = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setNotifications(prev => prev.filter(notif => notif.id !== id));
+    } catch (error) {
+      console.error('Error deleting notification:', error);
+    }
+  };
+
   // Set up real-time subscription
   useEffect(() => {
     if (!user) return;
@@ -175,6 +192,7 @@ export const NotificationsProvider = ({ children }: { children: ReactNode }) => 
       addNotification,
       markAsRead,
       markAllAsRead,
+      deleteNotification,
       loading
     }}>
       {children}
