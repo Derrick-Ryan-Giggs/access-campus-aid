@@ -65,28 +65,28 @@ const EmergencySupport = () => {
       title: 'Emergency Alert',
       description: 'One-touch emergency notification with location sharing',
       icon: AlertTriangle,
-      color: 'bg-red-500',
+      color: 'bg-destructive',
       action: 'Activate'
     },
     {
       title: 'Safe Walk Request',
       description: 'Request campus escort or buddy system support',
       icon: Users,
-      color: 'bg-blue-500',
+      color: 'bg-primary',
       action: 'Request'
     },
     {
       title: 'Accessible Routes',
       description: 'Navigation with accessibility-optimized paths',
       icon: Navigation,
-      color: 'bg-green-500',
+      color: 'bg-secondary',
       action: 'Navigate'
     },
     {
       title: 'Check-In Timer',
       description: 'Automatic safety check-ins with contacts',
       icon: Clock,
-      color: 'bg-yellow-500',
+      color: 'bg-accent',
       action: 'Start'
     }
   ];
@@ -284,7 +284,7 @@ const EmergencySupport = () => {
     };
 
     toast({
-      title: "🚨 EMERGENCY ALERT ACTIVATED",
+      title: "EMERGENCY ALERT ACTIVATED",
       description: `Alert sent to all emergency contacts. Location: ${currentLocation.lat.toFixed(4)}, ${currentLocation.lon.toFixed(4)}`,
       variant: "destructive"
     });
@@ -346,7 +346,7 @@ const EmergencySupport = () => {
           src="https://www.openstreetmap.org/export/embed.html?bbox=${currentLocation.lon-0.01}%2C${currentLocation.lat-0.01}%2C${currentLocation.lon+0.01}%2C${currentLocation.lat+0.01}&layer=mapnik&marker=${currentLocation.lat}%2C${currentLocation.lon}"
         ></iframe>
         <div style="position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.7); color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">
-          🗺️ OpenStreetMap
+          OpenStreetMap
         </div>
       </div>
     `;
@@ -392,11 +392,11 @@ const EmergencySupport = () => {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4 flex items-center justify-center gap-3">
+        <h1 className="text-3xl font-bold text-foreground mb-4 flex items-center justify-center gap-3">
           <Shield className="h-8 w-8 text-primary" />
           Emergency & Safety Support
         </h1>
-        <p className="text-lg text-gray-600">
+        <p className="text-lg text-muted-foreground">
           Comprehensive safety features designed for accessibility and peace of mind
         </p>
       </div>
@@ -409,8 +409,8 @@ const EmergencySupport = () => {
               <div className={`w-16 h-16 ${feature.color} rounded-full mx-auto mb-4 flex items-center justify-center`}>
                 <feature.icon className="h-8 w-8 text-white" />
               </div>
-              <h3 className="font-semibold mb-2">{feature.title}</h3>
-              <p className="text-sm text-gray-600 mb-4">{feature.description}</p>
+              <h3 className="font-semibold mb-2 text-foreground">{feature.title}</h3>
+              <p className="text-sm text-muted-foreground mb-4">{feature.description}</p>
               <Button 
                 onClick={() => handleSafetyFeature(feature.title)}
                 className="w-full"
@@ -506,9 +506,9 @@ const EmergencySupport = () => {
               {emergencyContacts.map((contact) => (
                 <div key={contact.id} className="flex items-center justify-between p-3 border rounded-lg">
                   <div className="flex-1">
-                    <h4 className="font-semibold">{contact.name}</h4>
-                    <p className="text-sm text-gray-600">{contact.relationship}</p>
-                    <p className="text-sm text-gray-500">{contact.phone}</p>
+                    <h4 className="font-semibold text-foreground">{contact.name}</h4>
+                    <p className="text-sm text-muted-foreground">{contact.relationship}</p>
+                    <p className="text-sm text-muted-foreground">{contact.phone}</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <Badge variant={contact.available ? "default" : "secondary"}>
@@ -608,11 +608,11 @@ const EmergencySupport = () => {
               Loading map...
             </div>
             {currentLocation && (
-              <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-                <p className="text-sm text-blue-800">
+              <div className="mt-4 p-3 bg-accent/20 rounded-lg">
+                <p className="text-sm text-foreground">
                   <strong>Current Location:</strong> {currentLocation.lat.toFixed(6)}, {currentLocation.lon.toFixed(6)}
                 </p>
-                <p className="text-xs text-blue-600 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   Location updates in real-time for emergency services
                 </p>
               </div>
@@ -663,7 +663,7 @@ const EmergencySupport = () => {
                   />
                 </div>
               </div>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-muted-foreground">
                 {isTimerActive 
                   ? "Timer is active. You'll need to check in before it expires."
                   : "Set a check-in timer for your safety."
@@ -687,17 +687,17 @@ const EmergencySupport = () => {
             {campusLocations.map((location, index) => (
               <div key={index} className="p-4 border rounded-lg">
                 <div className="flex justify-between items-start mb-2">
-                  <h4 className="font-semibold">{location.name}</h4>
+                  <h4 className="font-semibold text-foreground">{location.name}</h4>
                    <div className="flex">
                      {[...Array(5)].map((_, i) => (
                        <Shield 
                          key={i} 
-                         className={`h-4 w-4 ${i < location.safetyRating ? 'text-green-500 fill-current' : 'text-gray-300'}`} 
+                         className={`h-4 w-4 ${i < location.safetyRating ? 'text-primary fill-current' : 'text-muted-foreground'}`} 
                        />
                      ))}
                   </div>
                 </div>
-                <p className="text-sm text-gray-600 mb-2">{location.accessibility}</p>
+                <p className="text-sm text-muted-foreground mb-2">{location.accessibility}</p>
                 <div className="flex justify-between items-center">
                   <Badge variant="outline">Emergency Phone: {location.emergencyPhone}</Badge>
                   <Button 

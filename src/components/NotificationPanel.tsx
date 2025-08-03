@@ -128,7 +128,8 @@ const NotificationPanel = ({ isOpen, onClose }: NotificationPanelProps) => {
                             variant="ghost"
                             size="sm"
                             onClick={(e) => handleDeleteNotification(notification.id, e)}
-                            className="h-8 w-8 p-0 text-gray-400 hover:text-red-600 touch-manipulation"
+                            className="h-8 w-8 p-0 text-gray-400 hover:text-red-600 touch-manipulation min-h-8 min-w-8"
+                            onTouchStart={(e) => e.stopPropagation()}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
