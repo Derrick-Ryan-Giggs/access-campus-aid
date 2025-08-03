@@ -54,33 +54,42 @@ const OrderHistory = () => {
     if (!user) return;
 
     try {
-      // Get order items (simulated since we don't have order_items data yet)
-      const orderItems = [
-        { name: 'Sample Item 1', quantity: 1 },
-        { name: 'Sample Item 2', quantity: 2 }
-      ];
+      // Get actual order items from the database
+      const { data: orderItems, error: itemsError } = await supabase
+        .from('order_items')
+        .select(`
+          *,
+          grocery_item:grocery_items(name, price, category)
+        `)
+        .eq('order_id', order.id);
 
-      // Add items to cart
-      for (const item of orderItems) {
-        // Simulate adding to cart by creating a notification
-        const { error } = await supabase
-          .from('notifications')
-          .insert({
-            user_id: user.id,
-            type: 'success',
-            title: 'Item Added to Cart',
-            message: `${item.name} (${item.quantity}x) has been added to your cart from reorder`,
-            data: { reorderId: order.id, itemName: item.name, quantity: item.quantity },
-            read: false
-          });
+      if (itemsError) throw itemsError;
 
-        if (error) throw error;
+      if (orderItems && orderItems.length > 0) {
+        // Add items to cart
+        for (const item of orderItems) {
+          const { error } = await supabase
+            .from('cart_items')
+            .insert({
+              user_id: user.id,
+              grocery_item_id: item.grocery_item_id,
+              quantity: item.quantity
+            });
+
+          if (error) throw error;
+        }
+
+        toast({
+          title: "Reorder Successful",
+          description: `${orderItems.length} items from order #${order.id.slice(0, 8)} added to cart`,
+        });
+      } else {
+        toast({
+          title: "No Items Found",
+          description: "This order has no items to reorder",
+          variant: "destructive",
+        });
       }
-
-      toast({
-        title: "Reorder Started",
-        description: `${orderItems.length} items from order #${order.id.slice(0, 8)} have been added to your cart`,
-      });
     } catch (error) {
       console.error('Error reordering:', error);
       toast({
@@ -173,14 +182,14 @@ const OrderHistory = () => {
                     )}
 
                     <div className="flex flex-col sm:flex-row gap-2 pt-4 border-t">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={() => handleViewDetails(order)}
-                        className="flex-1"
-                      >
-                        View Details
-                      </Button>
+                       <Button 
+                         variant="outline" 
+                         size="sm" 
+                         onClick={() => window.location.href = `/order/${order.id}`}
+                         className="flex-1"
+                       >
+                         View Details
+                       </Button>
                       <Button 
                         variant="outline" 
                         size="sm"

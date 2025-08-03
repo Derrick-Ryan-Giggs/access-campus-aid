@@ -1,5 +1,6 @@
 
 import { Card, CardContent } from '@/components/ui/card';
+import { Star } from 'lucide-react';
 
 const HeroSection = () => {
   return (
@@ -13,7 +14,7 @@ const HeroSection = () => {
       </p>
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 sm:p-6 max-w-2xl mx-auto">
         <div className="flex items-center justify-center mb-4">
-          <span className="text-xl sm:text-2xl mr-2">🌟</span>
+          <Star className="h-5 w-5 sm:h-6 sm:w-6 mr-2 text-blue-600" />
           <h2 className="text-base sm:text-lg font-semibold text-blue-900">Accessibility First</h2>
         </div>
         <p className="text-sm sm:text-base text-blue-800">

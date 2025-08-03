@@ -2,6 +2,7 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
+// These are public keys and safe to include in client-side code
 const SUPABASE_URL = "https://fvhdagwzfkwhfcdknnyy.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ2aGRhZ3d6Zmt3aGZjZGtubnl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEwOTk3NTAsImV4cCI6MjA2NjY3NTc1MH0.g15VWGlodfrMjJf2hs-1jpSfChTZQiGc9D3HDp8eE1g";
 
