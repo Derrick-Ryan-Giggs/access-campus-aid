@@ -124,15 +124,23 @@ const NotificationPanel = ({ isOpen, onClose }: NotificationPanelProps) => {
                           <p className="text-xs text-gray-400">
                             {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
                           </p>
-                          <Button
+                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={(e) => handleDeleteNotification(notification.id, e)}
-                            className="h-10 w-10 p-0 text-gray-400 hover:text-red-600 touch-manipulation min-h-10 min-w-10 active:bg-red-50"
-                            onTouchStart={(e) => e.stopPropagation()}
-                            onTouchEnd={(e) => e.stopPropagation()}
+                            className="h-12 w-12 p-0 text-gray-400 hover:text-red-600 touch-manipulation min-h-12 min-w-12 active:bg-red-50 active:scale-95 transition-all duration-150"
+                            onTouchStart={(e) => {
+                              e.stopPropagation();
+                              e.currentTarget.style.transform = 'scale(0.95)';
+                              e.currentTarget.style.backgroundColor = 'rgb(254 242 242)';
+                            }}
+                            onTouchEnd={(e) => {
+                              e.stopPropagation();
+                              e.currentTarget.style.transform = '';
+                              e.currentTarget.style.backgroundColor = '';
+                            }}
                           >
-                            <Trash2 className="h-5 w-5" />
+                            <Trash2 className="h-6 w-6" />
                           </Button>
                         </div>
                       </div>

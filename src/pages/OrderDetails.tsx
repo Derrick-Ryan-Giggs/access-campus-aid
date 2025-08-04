@@ -139,11 +139,11 @@ const OrderDetails = () => {
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => navigate(-1)}
+          onClick={() => navigate('/orders')}
           className="flex items-center gap-2"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back
+          Back to Orders
         </Button>
         <h1 className="text-2xl font-bold">Order #{order.id.slice(0, 8)}</h1>
       </div>

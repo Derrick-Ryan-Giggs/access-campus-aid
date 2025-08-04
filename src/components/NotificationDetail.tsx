@@ -68,12 +68,17 @@ const NotificationDetail = ({ notification, isOpen, onClose, onDelete }: Notific
             <p className="text-sm text-gray-600 leading-relaxed">{notification.message}</p>
           </div>
           
-          {notification.data && (
+          {notification.data && typeof notification.data === 'object' && Object.keys(notification.data).length > 0 && (
             <div className="bg-gray-50 p-3 rounded-lg">
               <h4 className="text-sm font-medium mb-2">Additional Details:</h4>
-              <pre className="text-xs text-gray-600 whitespace-pre-wrap">
-                {JSON.stringify(notification.data, null, 2)}
-              </pre>
+              <div className="text-sm text-gray-600 space-y-1">
+                {Object.entries(notification.data).map(([key, value]) => (
+                  <div key={key} className="flex justify-between items-start gap-2">
+                    <span className="font-medium capitalize">{key.replace(/_/g, ' ')}:</span>
+                    <span className="text-right break-words">{String(value)}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
           
