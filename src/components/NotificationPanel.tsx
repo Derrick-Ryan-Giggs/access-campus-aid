@@ -128,10 +128,11 @@ const NotificationPanel = ({ isOpen, onClose }: NotificationPanelProps) => {
                             variant="ghost"
                             size="sm"
                             onClick={(e) => handleDeleteNotification(notification.id, e)}
-                            className="h-8 w-8 p-0 text-gray-400 hover:text-red-600 touch-manipulation min-h-8 min-w-8"
+                            className="h-10 w-10 p-0 text-gray-400 hover:text-red-600 touch-manipulation min-h-10 min-w-10 active:bg-red-50"
                             onTouchStart={(e) => e.stopPropagation()}
+                            onTouchEnd={(e) => e.stopPropagation()}
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <Trash2 className="h-5 w-5" />
                           </Button>
                         </div>
                       </div>

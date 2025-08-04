@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Bell, Calendar, Clock } from 'lucide-react';
+import { Bell, Calendar, Clock, Heart, BookOpen, FileText, Users } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useActivities } from '@/hooks/useActivities';
 
@@ -177,12 +177,12 @@ const Reminders = () => {
 
   const getTypeIcon = (type: string) => {
     switch (type) {
-      case 'medication': return '💊';
-      case 'appointment': return '🏥';
-      case 'academic': return '📚';
-      case 'exam': return '📝';
-      case 'meeting': return '👨‍🏫';
-      default: return '📅';
+      case 'medication': return <Heart className="h-4 w-4" />;
+      case 'appointment': return <Calendar className="h-4 w-4" />;
+      case 'academic': return <BookOpen className="h-4 w-4" />;
+      case 'exam': return <FileText className="h-4 w-4" />;
+      case 'meeting': return <Users className="h-4 w-4" />;
+      default: return <Calendar className="h-4 w-4" />;
     }
   };
 

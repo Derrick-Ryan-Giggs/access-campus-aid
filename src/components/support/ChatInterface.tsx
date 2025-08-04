@@ -417,8 +417,9 @@ const ChatInterface = ({ messages, onSendMessage, onEndSession, supportType = 'g
               </Button>
             </div>
             {isRecording && (
-              <p className="text-sm text-gray-600 mt-2 text-center">
-                🎤 Listening... Tap microphone to stop
+              <p className="text-sm text-muted-foreground mt-2 text-center flex items-center justify-center gap-2">
+                <Mic className="h-4 w-4 animate-pulse text-destructive" />
+                Listening... Tap microphone to stop
               </p>
             )}
           </div>

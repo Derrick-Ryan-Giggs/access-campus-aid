@@ -1,5 +1,6 @@
 
 import { Card, CardContent } from '@/components/ui/card';
+import { Brain, AlertTriangle, BookOpen, ShoppingCart, Clock, GraduationCap, Video, Home, Gamepad2, UserCheck, Heart, Scale } from 'lucide-react';
 import FeatureCard from './FeatureCard';
 
 type ActiveSection = 'home' | 'groceries' | 'reminders' | 'tutors' | 'checkout' | 'live-support' | 'personal-care' | 'virtual-hangouts' | 'mentorship' | 'health-wellness' | 'advocacy-legal' | 'smart-assistant' | 'emergency-support' | 'academic-hub';
@@ -13,84 +14,84 @@ const Services = ({ onNavigate }: ServicesProps) => {
     {
       title: "Smart Personal Assistant",
       description: "AI-powered task prioritization, voice commands, and personalized recommendations designed for accessibility needs.",
-      icon: "🧠",
+      icon: <Brain className="h-10 w-10 text-primary" />,
       buttonText: "Open Assistant",
       onClick: () => onNavigate('smart-assistant')
     },
     {
       title: "Emergency & Safety",
       description: "Comprehensive safety features including emergency contacts, buddy system, and campus navigation assistance.",
-      icon: "🚨",
+      icon: <AlertTriangle className="h-10 w-10 text-primary" />,
       buttonText: "Safety Features",
       onClick: () => onNavigate('emergency-support')
     },
     {
       title: "Academic Integration Hub",
       description: "Assignment tracking, study groups, shared notes, and exam accommodations all in one accessible platform.",
-      icon: "📚",
+      icon: <BookOpen className="h-10 w-10 text-primary" />,
       buttonText: "Academic Hub",
       onClick: () => onNavigate('academic-hub')
     },
     {
       title: "Grocery Shopping",
       description: "Order groceries online with easy-to-use interface designed for accessibility. Browse categories, search items, and get essentials delivered.",
-      icon: "🛒",
+      icon: <ShoppingCart className="h-10 w-10 text-primary" />,
       buttonText: "Start Shopping",
       onClick: () => onNavigate('groceries')
     },
     {
       title: "Reminders",
       description: "Never miss important medications, appointments, or academic deadlines. Set up personalized reminders with notifications.",
-      icon: "⏰",
+      icon: <Clock className="h-10 w-10 text-primary" />,
       buttonText: "Manage Reminders",
       onClick: () => onNavigate('reminders')
     },
     {
       title: "Find Tutors",
       description: "Connect with qualified tutors for academic support. Search by subject and schedule sessions that work for you.",
-      icon: "👨‍🎓",
+      icon: <GraduationCap className="h-10 w-10 text-primary" />,
       buttonText: "Browse Tutors",
       onClick: () => onNavigate('tutors')
     },
     {
       title: "Live Support",
       description: "Real-time assistance for navigating campus and accessing support services through video or chat.",
-      icon: "🎥",
+      icon: <Video className="h-10 w-10 text-primary" />,
       buttonText: "Get Live Help",
       onClick: () => onNavigate('live-support')
     },
     {
       title: "Personal Care Services",
       description: "Professional assistance with daily living tasks including laundry, cleaning, and meal preparation.",
-      icon: "🏠",
+      icon: <Home className="h-10 w-10 text-primary" />,
       buttonText: "Browse Services",
       onClick: () => onNavigate('personal-care')
     },
     {
       title: "Virtual Hangouts",
       description: "Join accessible online events, gaming sessions, book clubs, and social activities with fellow students.",
-      icon: "🎮",
+      icon: <Gamepad2 className="h-10 w-10 text-primary" />,
       buttonText: "Join Community",
       onClick: () => onNavigate('virtual-hangouts')
     },
     {
       title: "Mentorship Program",
       description: "Connect with disabled alumni and professionals for career guidance and personal development.",
-      icon: "🤝",
+      icon: <UserCheck className="h-10 w-10 text-primary" />,
       buttonText: "Find Mentors",
       onClick: () => onNavigate('mentorship')
     },
     {
       title: "Health & Wellness",
       description: "Access telehealth services, fitness programs, and mental health support tailored for disabled students.",
-      icon: "🏥",
+      icon: <Heart className="h-10 w-10 text-primary" />,
       buttonText: "Health Services",
       onClick: () => onNavigate('health-wellness')
     },
     {
       title: "Advocacy & Legal",
       description: "Get legal assistance, accommodation templates, and support for disability rights and accessibility issues.",
-      icon: "⚖️",
+      icon: <Scale className="h-10 w-10 text-primary" />,
       buttonText: "Legal Resources",
       onClick: () => onNavigate('advocacy-legal')
     }

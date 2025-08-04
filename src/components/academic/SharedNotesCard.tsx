@@ -2,6 +2,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Download, BookOpen, FileText, Eye, Star } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface SharedNote {
@@ -60,8 +61,8 @@ const SharedNotesCard = ({ note }: SharedNotesCardProps) => {
                 {note.downloads} downloads
               </Badge>
               {note.rating > 0 && (
-                <Badge variant="outline" className="text-xs">
-                  ⭐ {note.rating}
+                <Badge variant="outline" className="text-xs flex items-center gap-1">
+                  <Star className="h-3 w-3 fill-current" /> {note.rating}
                 </Badge>
               )}
             </div>

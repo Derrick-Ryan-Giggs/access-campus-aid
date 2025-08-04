@@ -26,14 +26,8 @@ const EmergencySupport = () => {
     email: '',
     notes: ''
   });
-  const [buddyRequest, setBuddyRequest] = useState({
-    destination: '',
-    time: '',
-    date: '',
-    notes: ''
-  });
 
-  const emergencyContacts = [
+  const [emergencyContacts, setEmergencyContacts] = useState([
     {
       id: 1,
       name: 'Sarah Johnson',
@@ -58,7 +52,14 @@ const EmergencySupport = () => {
       email: 'crisis@university.edu',
       available: true
     }
-  ];
+  ]);
+  const [buddyRequest, setBuddyRequest] = useState({
+    destination: '',
+    time: '',
+    date: '',
+    notes: ''
+  });
+
 
   const safetyFeatures = [
     {
@@ -87,7 +88,7 @@ const EmergencySupport = () => {
       description: 'Automatic safety check-ins with contacts',
       icon: Clock,
       color: 'bg-accent',
-      action: 'Start'
+      action: isTimerActive ? 'Active' : 'Start'
     }
   ];
 
@@ -229,6 +230,17 @@ const EmergencySupport = () => {
       return;
     }
 
+    const newContact = {
+      id: Date.now(),
+      name: emergencyContact.name,
+      relationship: emergencyContact.relationship || 'Contact',
+      phone: emergencyContact.phone,
+      email: emergencyContact.email,
+      available: true
+    };
+
+    setEmergencyContacts(prev => [...prev, newContact]);
+
     toast({
       title: "Emergency Contact Added",
       description: `${emergencyContact.name} has been added to your emergency contacts`,
@@ -253,9 +265,18 @@ const EmergencySupport = () => {
       return;
     }
 
+    if (!currentLocation) {
+      toast({
+        title: "Location Required",
+        description: "Please enable location access for buddy system functionality.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     toast({
       title: "Buddy Request Sent",
-      description: `Looking for a safety buddy for ${buddyRequest.destination} on ${buddyRequest.date} at ${buddyRequest.time}`,
+      description: `Looking for a safety buddy for ${buddyRequest.destination} on ${buddyRequest.date} at ${buddyRequest.time}. Your location will be shared with matched buddy.`,
     });
 
     setBuddyRequest({
@@ -393,7 +414,7 @@ const EmergencySupport = () => {
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-foreground mb-4 flex items-center justify-center gap-3">
-          <Shield className="h-8 w-8 text-primary" />
+          <AlertTriangle className="h-8 w-8 text-primary" />
           Emergency & Safety Support
         </h1>
         <p className="text-lg text-muted-foreground">
@@ -407,17 +428,21 @@ const EmergencySupport = () => {
           <Card key={index} className="hover:shadow-md transition-shadow">
             <CardContent className="p-6 text-center">
               <div className={`w-16 h-16 ${feature.color} rounded-full mx-auto mb-4 flex items-center justify-center`}>
-                <feature.icon className="h-8 w-8 text-white" />
+                <feature.icon className={`h-8 w-8 ${feature.title === 'Check-In Timer' ? 'text-foreground' : 'text-primary-foreground'}`} />
               </div>
               <h3 className="font-semibold mb-2 text-foreground">{feature.title}</h3>
               <p className="text-sm text-muted-foreground mb-4">{feature.description}</p>
-              <Button 
-                onClick={() => handleSafetyFeature(feature.title)}
-                className="w-full"
-                variant={feature.title === 'Emergency Alert' ? 'destructive' : 'default'}
-              >
-                {feature.action}
-              </Button>
+                <Button 
+                  onClick={() => handleSafetyFeature(feature.title)}
+                  className="w-full"
+                  variant={feature.title === 'Emergency Alert' ? 'destructive' : 'default'}
+                  disabled={feature.title === 'Check-In Timer' && isTimerActive}
+                >
+                  {feature.title === 'Check-In Timer' && timeRemaining > 0 ? 
+                    formatTime(timeRemaining) : 
+                    feature.action
+                  }
+                </Button>
             </CardContent>
           </Card>
         ))}
@@ -688,13 +713,14 @@ const EmergencySupport = () => {
               <div key={index} className="p-4 border rounded-lg">
                 <div className="flex justify-between items-start mb-2">
                   <h4 className="font-semibold text-foreground">{location.name}</h4>
-                   <div className="flex">
+                   <div className="flex items-center gap-1">
                      {[...Array(5)].map((_, i) => (
-                       <Shield 
+                       <Heart 
                          key={i} 
                          className={`h-4 w-4 ${i < location.safetyRating ? 'text-primary fill-current' : 'text-muted-foreground'}`} 
                        />
                      ))}
+                     <span className="ml-1 text-sm text-muted-foreground">({location.safetyRating}/5)</span>
                   </div>
                 </div>
                 <p className="text-sm text-muted-foreground mb-2">{location.accessibility}</p>

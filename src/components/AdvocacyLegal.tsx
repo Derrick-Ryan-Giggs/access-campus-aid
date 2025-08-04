@@ -176,8 +176,11 @@ const AdvocacyLegal = () => {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">Advocacy & Legal Assistance</h1>
-        <p className="text-lg text-gray-600">
+        <h1 className="text-3xl font-bold text-foreground mb-4 flex items-center justify-center gap-3">
+          <Scale className="h-8 w-8 text-primary" />
+          Advocacy & Legal Assistance
+        </h1>
+        <p className="text-lg text-muted-foreground">
           Know your rights and get the support you need to advocate for accessibility
         </p>
       </div>

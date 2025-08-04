@@ -83,7 +83,7 @@ const SmartAssistant = () => {
     }
   ];
 
-  const scheduleInsights = [
+  const [scheduleInsights, setScheduleInsights] = useState([
     {
       time: '9:00 AM',
       activity: 'Peak Energy - Study Time',
@@ -102,7 +102,7 @@ const SmartAssistant = () => {
       reason: 'Best time for virtual hangouts',
       type: 'suggestion'
     }
-  ];
+  ]);
 
   const handleVoiceCommand = () => {
     if (!isListening) {
@@ -174,6 +174,17 @@ const SmartAssistant = () => {
 
   const handleTaskComplete = (taskId: number, taskTitle: string) => {
     setPrioritizedTasks(prioritizedTasks.filter(task => task.id !== taskId));
+    
+    // Update schedule insights based on task completion
+    const newInsight = {
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      activity: `Task Completed: ${taskTitle}`,
+      reason: 'Productive time - similar tasks recommended for this hour',
+      type: 'optimal'
+    };
+    
+    setScheduleInsights(prev => [newInsight, ...prev.slice(0, 2)]);
+    
     toast({
       title: "Task Completed!",
       description: `"${taskTitle}" marked as complete. AI updating your productivity insights.`,
@@ -224,12 +235,30 @@ const SmartAssistant = () => {
   const handleRecommendationAction = (action: string, title: string) => {
     switch (action) {
       case 'Book Session':
+        // Add activity for tutor booking
+        const tutorInsight = {
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          activity: 'Tutor Session Scheduled',
+          reason: 'Learning support scheduled - study preparation recommended',
+          type: 'reminder'
+        };
+        setScheduleInsights(prev => [tutorInsight, ...prev.slice(0, 2)]);
+        
         toast({
           title: "Booking Session",
           description: `Redirecting to book a session with ${title}`,
         });
         break;
       case 'Join Event':
+        // Add activity for event joining
+        const eventInsight = {
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          activity: 'Social Event Joined',
+          reason: 'Social engagement scheduled - wellness balance improved',
+          type: 'suggestion'
+        };
+        setScheduleInsights(prev => [eventInsight, ...prev.slice(0, 2)]);
+        
         toast({
           title: "Joining Event",
           description: `You've been registered for ${title}`,
