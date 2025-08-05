@@ -127,7 +127,7 @@ const OrderDetails = () => {
         <div className="text-center py-8">
           <h2 className="text-xl font-semibold mb-2">Order Not Found</h2>
           <p className="text-muted-foreground mb-4">The order you're looking for doesn't exist.</p>
-          <Button onClick={() => navigate('/orders')}>Back to Orders</Button>
+          <Button onClick={() => navigate('/?tab=orders')}>Back to Orders</Button>
         </div>
       </div>
     );
@@ -139,7 +139,7 @@ const OrderDetails = () => {
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => navigate('/orders')}
+          onClick={() => navigate('/?tab=orders')}
           className="flex items-center gap-2"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -303,7 +303,7 @@ const OrderDetails = () => {
           <div className="flex gap-4">
             <Button
               variant="outline"
-              onClick={() => navigate('/orders')}
+              onClick={() => navigate('/?tab=orders')}
               className="flex-1"
             >
               Back to Orders
