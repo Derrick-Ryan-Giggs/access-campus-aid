@@ -89,6 +89,33 @@ export function useActivities() {
     }
   };
 
+  const deleteActivity = async (id: string) => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from('activities')
+        .delete()
+        .eq('id', id)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+      setActivities(prev => prev.filter(a => a.id !== id));
+      
+      toast({
+        title: "Activity Deleted",
+        description: "Activity removed successfully",
+      });
+    } catch (error) {
+      console.error('Error deleting activity:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete activity",
+        variant: "destructive",
+      });
+    }
+  };
+
   useEffect(() => {
     fetchActivities();
   }, [user]);
@@ -98,6 +125,7 @@ export function useActivities() {
     loading,
     createActivity,
     updateActivity,
+    deleteActivity,
     refetch: fetchActivities
   };
 }

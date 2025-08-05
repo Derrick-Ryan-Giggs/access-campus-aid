@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Bell, X, Check, AlertCircle, Info, Trash2 } from 'lucide-react';
 import { useNotifications, Notification } from '@/hooks/useNotifications';
 import { formatDistanceToNow } from 'date-fns';
-import NotificationDetail from './NotificationDetail';
 import { useState } from 'react';
 
 interface NotificationPanelProps {
@@ -14,8 +13,6 @@ interface NotificationPanelProps {
 
 const NotificationPanel = ({ isOpen, onClose }: NotificationPanelProps) => {
   const { notifications, unreadCount, markAsRead, markAllAsRead, deleteNotification, loading } = useNotifications();
-  const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
-  const [isDetailOpen, setIsDetailOpen] = useState(false);
 
   const getIcon = (type: string) => {
     switch (type) {
@@ -36,8 +33,7 @@ const NotificationPanel = ({ isOpen, onClose }: NotificationPanelProps) => {
   };
 
   const handleNotificationClick = (notification: Notification) => {
-    setSelectedNotification(notification);
-    setIsDetailOpen(true);
+    // Just mark as read, don't open detail view
     if (!notification.read) {
       markAsRead(notification.id);
     }
@@ -157,13 +153,6 @@ const NotificationPanel = ({ isOpen, onClose }: NotificationPanelProps) => {
           )}
         </div>
       </div>
-      
-      <NotificationDetail
-        notification={selectedNotification}
-        isOpen={isDetailOpen}
-        onClose={() => setIsDetailOpen(false)}
-        onDelete={deleteNotification}
-      />
     </div>
   );
 };

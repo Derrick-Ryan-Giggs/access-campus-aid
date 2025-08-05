@@ -136,15 +136,6 @@ const OrderDetails = () => {
   return (
     <div className="container mx-auto p-4 space-y-6">
       <div className="flex items-center gap-4">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => navigate('/?tab=orders')}
-          className="flex items-center gap-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Orders
-        </Button>
         <h1 className="text-2xl font-bold">Order #{order.id.slice(0, 8)}</h1>
       </div>
 

@@ -180,7 +180,11 @@ const Orders = () => {
                           Mark as Delivered
                         </Button>
                       )}
-                      <Button variant="outline" size="sm">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => window.location.href = `/order/${order.id}`}
+                      >
                         View Details
                       </Button>
                       <Button variant="outline" size="sm">

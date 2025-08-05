@@ -6,6 +6,8 @@ import { formatDistanceToNow, parseISO } from 'date-fns';
 import QuickStats from './QuickStats';
 import ContactInfo from './ContactInfo';
 import { useActivities } from '@/hooks/useActivities';
+import { Trash2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 type ActiveSection = 'home' | 'groceries' | 'reminders' | 'tutors' | 'checkout' | 'live-support' | 'personal-care' | 'virtual-hangouts' | 'mentorship' | 'health-wellness' | 'advocacy-legal' | 'smart-assistant' | 'emergency-support' | 'academic-hub';
 
@@ -14,7 +16,7 @@ interface DashboardProps {
 }
 
 const Dashboard = ({ onNavigate }: DashboardProps) => {
-  const { activities, loading: activitiesLoading } = useActivities();
+  const { activities, loading: activitiesLoading, deleteActivity } = useActivities();
 
   const quickActions = [
     {
@@ -80,7 +82,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
             <div className="space-y-3">
               {activities.map((activity) => (
                 <div key={activity.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <div>
+                  <div className="flex-1">
                     <p className="font-medium">{activity.title}</p>
                     <p className="text-sm text-gray-600">
                       {formatDistanceToNow(parseISO(activity.created_at), { addSuffix: true })}
@@ -89,16 +91,26 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
                       <p className="text-xs text-gray-500 mt-1">{activity.description}</p>
                     )}
                   </div>
-                  <div className="flex flex-col items-end gap-1">
-                    <Badge variant="secondary" className="text-xs">
-                      {activity.type.replace('_', ' ')}
-                    </Badge>
-                    <Badge 
-                      variant={activity.status === 'completed' ? 'default' : 'outline'}
-                      className="text-xs"
+                  <div className="flex items-center gap-2">
+                    <div className="flex flex-col items-end gap-1">
+                      <Badge variant="secondary" className="text-xs">
+                        {activity.type.replace('_', ' ')}
+                      </Badge>
+                      <Badge 
+                        variant={activity.status === 'completed' ? 'default' : 'outline'}
+                        className="text-xs"
+                      >
+                        {activity.status}
+                      </Badge>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => deleteActivity(activity.id)}
+                      className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
                     >
-                      {activity.status}
-                    </Badge>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
               ))}
