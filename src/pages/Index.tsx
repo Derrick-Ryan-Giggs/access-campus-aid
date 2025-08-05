@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
@@ -27,6 +27,7 @@ type ActiveSection = 'home' | 'services' | 'dashboard' | 'groceries' | 'reminder
 const Index = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [activeSection, setActiveSection] = useState<ActiveSection>('home');
   const [navigationStack, setNavigationStack] = useState<ActiveSection[]>(['home']);
 
@@ -35,6 +36,23 @@ const Index = () => {
       navigate('/auth');
     }
   }, [user, loading, navigate]);
+
+  useEffect(() => {
+    // Handle navigation state or URL parameters
+    const state = location.state as { activeTab?: string } | null;
+    const urlParams = new URLSearchParams(location.search);
+    const tabFromUrl = urlParams.get('tab');
+    
+    if (state?.activeTab) {
+      const validSection = state.activeTab as ActiveSection;
+      setActiveSection(validSection);
+      setNavigationStack(prev => [...prev.filter(s => s !== validSection), validSection]);
+    } else if (tabFromUrl) {
+      const validSection = tabFromUrl as ActiveSection;
+      setActiveSection(validSection);
+      setNavigationStack(prev => [...prev.filter(s => s !== validSection), validSection]);
+    }
+  }, [location]);
 
   const handleNavigate = (section: ActiveSection | string) => {
     const validSection = section as ActiveSection;
