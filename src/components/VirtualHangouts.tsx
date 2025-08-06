@@ -25,52 +25,72 @@ const VirtualHangouts = () => {
     accessibilityFeatures: []
   });
   
-  const upcomingEvents = [
-    {
-      id: 1,
-      title: 'Gaming Night - Accessible Games',
-      type: 'Gaming',
-      icon: Gamepad2,
-      time: 'Today 7:00 PM',
-      participants: 12,
-      maxParticipants: 15,
-      description: 'Join us for accessible gaming with adaptive controllers and screen readers',
-      accessibility: ['Screen Reader Friendly', 'Closed Captions', 'Voice Commands']
-    },
-    {
-      id: 2,
-      title: 'Book Club - "Nothing About Us Without Us"',
-      type: 'Book Club',
-      icon: BookOpen,
-      time: 'Tomorrow 6:00 PM',
-      participants: 8,
-      maxParticipants: 12,
-      description: 'Monthly discussion of disability rights literature',
-      accessibility: ['Audio Books Available', 'Large Print Options', 'Sign Language Interpreter']
-    },
-    {
-      id: 3,
-      title: 'Virtual Coffee Chat',
-      type: 'Social',
-      icon: Coffee,
-      time: 'Friday 3:00 PM',
-      participants: 15,
-      maxParticipants: 20,
-      description: 'Casual conversation and peer support in a relaxed setting',
-      accessibility: ['All Levels Welcome', 'Text Chat Option', 'Quiet Background']
-    },
-    {
-      id: 4,
-      title: 'Music Listening Party',
-      type: 'Music',
-      icon: Music,
-      time: 'Saturday 8:00 PM',
-      participants: 6,
-      maxParticipants: 10,
-      description: 'Share and discover new music together with audio descriptions',
-      accessibility: ['Audio Focus', 'No Flashing Lights', 'Volume Control']
-    }
-  ];
+  const [selectedEventType, setSelectedEventType] = useState<string | null>(null);
+  
+  const getEventsForType = (type: string | null) => {
+    const allEvents = [
+      {
+        id: 1,
+        title: 'Gaming Night - Accessible Games',
+        type: 'Gaming',
+        icon: Gamepad2,
+        time: 'Today 7:00 PM',
+        participants: 12,
+        maxParticipants: 15,
+        description: 'Join us for accessible gaming with adaptive controllers and screen readers',
+        accessibility: ['Screen Reader Friendly', 'Closed Captions', 'Voice Commands']
+      },
+      {
+        id: 2,
+        title: 'Book Club - "Nothing About Us Without Us"',
+        type: 'Book Club',
+        icon: BookOpen,
+        time: 'Tomorrow 6:00 PM',
+        participants: 8,
+        maxParticipants: 12,
+        description: 'Monthly discussion of disability rights literature',
+        accessibility: ['Audio Books Available', 'Large Print Options', 'Sign Language Interpreter']
+      },
+      {
+        id: 3,
+        title: 'Virtual Coffee Chat',
+        type: 'Social',
+        icon: Coffee,
+        time: 'Friday 3:00 PM',
+        participants: 15,
+        maxParticipants: 20,
+        description: 'Casual conversation and peer support in a relaxed setting',
+        accessibility: ['All Levels Welcome', 'Text Chat Option', 'Quiet Background']
+      },
+      {
+        id: 4,
+        title: 'Music Listening Party',
+        type: 'Music',
+        icon: Music,
+        time: 'Saturday 8:00 PM',
+        participants: 6,
+        maxParticipants: 10,
+        description: 'Share and discover new music together with audio descriptions',
+        accessibility: ['Audio Focus', 'No Flashing Lights', 'Volume Control']
+      },
+      {
+        id: 5,
+        title: 'Study Group - Physics',
+        type: 'Study Group',
+        icon: BookOpen,
+        time: 'Sunday 2:00 PM',
+        participants: 7,
+        maxParticipants: 12,
+        description: 'Collaborative physics study session with accessible materials',
+        accessibility: ['Screen Reader Compatible', 'Large Text', 'Audio Explanations']
+      }
+    ];
+    
+    if (!type) return allEvents;
+    return allEvents.filter(event => event.type === type);
+  };
+  
+  const upcomingEvents = getEventsForType(selectedEventType);
 
   const eventTypes = [
     { name: 'Gaming', color: 'bg-blue-500', count: 8 },
@@ -278,13 +298,22 @@ const VirtualHangouts = () => {
       {/* Event Categories */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
         {eventTypes.map(({ name, color, count }) => (
-          <Card key={name} className="text-center hover:shadow-md transition-shadow cursor-pointer">
+          <Card 
+            key={name} 
+            className={`text-center hover:shadow-md transition-shadow cursor-pointer ${
+              selectedEventType === name ? 'ring-2 ring-primary' : ''
+            }`}
+            onClick={() => setSelectedEventType(selectedEventType === name ? null : name)}
+          >
             <CardContent className="p-4">
               <div className={`w-12 h-12 ${color} rounded-full mx-auto mb-3 flex items-center justify-center`}>
                 <span className="text-white font-bold">{count}</span>
               </div>
               <h3 className="font-semibold text-sm">{name}</h3>
               <p className="text-xs text-gray-600">{count} events this week</p>
+              {selectedEventType === name && (
+                <p className="text-xs text-primary mt-1">Showing {name.toLowerCase()} events</p>
+              )}
             </CardContent>
           </Card>
         ))}

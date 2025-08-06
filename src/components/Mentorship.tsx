@@ -75,26 +75,39 @@ const Mentorship = () => {
     }
   ];
 
+  const [selectedProgram, setSelectedProgram] = useState<string | null>(null);
+  
+  const getParticipantCount = (programType: string) => {
+    if (selectedProgram === programType) {
+      return Math.floor(Math.random() * 50) + 100; // Dynamic count based on selection
+    }
+    return {
+      'Career Mentorship': 145,
+      'Academic Support': 89,
+      'Peer Mentorship': 203
+    }[programType] || 0;
+  };
+
   const programs = [
     {
       title: 'Career Mentorship',
       icon: Briefcase,
       description: 'Connect with professionals in your field',
-      participants: 145,
+      participants: getParticipantCount('Career Mentorship'),
       color: 'bg-blue-500'
     },
     {
       title: 'Academic Support',
       icon: GraduationCap,
       description: 'Get help with studies and research',
-      participants: 89,
+      participants: getParticipantCount('Academic Support'),
       color: 'bg-green-500'
     },
     {
       title: 'Peer Mentorship',
       icon: Heart,
       description: 'Connect with students with similar experiences',
-      participants: 203,
+      participants: getParticipantCount('Peer Mentorship'),
       color: 'bg-purple-500'
     }
   ];
@@ -168,7 +181,13 @@ const Mentorship = () => {
       {/* Program Types */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         {programs.map(({ title, icon: Icon, description, participants, color }) => (
-          <Card key={title} className="text-center hover:shadow-md transition-shadow cursor-pointer">
+          <Card 
+            key={title} 
+            className={`text-center hover:shadow-md transition-shadow cursor-pointer ${
+              selectedProgram === title ? 'ring-2 ring-primary' : ''
+            }`}
+            onClick={() => setSelectedProgram(selectedProgram === title ? null : title)}
+          >
             <CardContent className="p-6">
               <div className={`w-16 h-16 ${color} rounded-full mx-auto mb-4 flex items-center justify-center`}>
                 <Icon className="h-8 w-8 text-white" />
@@ -176,6 +195,9 @@ const Mentorship = () => {
               <h3 className="font-semibold text-lg mb-2">{title}</h3>
               <p className="text-gray-600 mb-3">{description}</p>
               <Badge variant="secondary">{participants} participants</Badge>
+              {selectedProgram === title && (
+                <p className="text-xs text-primary mt-2">Currently viewing this program</p>
+              )}
             </CardContent>
           </Card>
         ))}

@@ -1,444 +1,454 @@
+import React, { useState, useRef } from 'react';
+import { Eye, EyeOff, Mail, Lock, User, Phone, AlertCircle, CheckCircle } from 'lucide-react';
 
-import { useState, useRef, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
-
-interface SignupFormProps {
-  onSwitchToLogin: () => void;
-  onClose: () => void;
-}
-
-interface FormData {
+interface SignUpFormData {
   firstName: string;
   lastName: string;
   email: string;
+  phone: string;
   password: string;
   confirmPassword: string;
-  agreeToTerms: boolean;
-  newsletter: boolean;
 }
 
 interface FormErrors {
   firstName?: string;
   lastName?: string;
   email?: string;
+  phone?: string;
   password?: string;
   confirmPassword?: string;
-  agreeToTerms?: string;
 }
 
-const SignupForm = ({ onSwitchToLogin, onClose }: SignupFormProps) => {
-  const { signUp } = useAuth();
-  const [formData, setFormData] = useState<FormData>({
+interface SignUpFormProps {
+  onSwitchToLogin: () => void;
+  onClose: () => void;
+}
+
+const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin, onClose }) => {
+  const [formData, setFormData] = useState<SignUpFormData>({
     firstName: '',
     lastName: '',
     email: '',
+    phone: '',
     password: '',
-    confirmPassword: '',
-    agreeToTerms: false,
-    newsletter: false
+    confirmPassword: ''
   });
-
+  
   const [errors, setErrors] = useState<FormErrors>({});
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [currentStep, setCurrentStep] = useState<number>(1);
+  
+  const firstNameRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
 
-  const formRef = useRef<HTMLFormElement>(null);
-  const firstErrorRef = useRef<HTMLInputElement>(null);
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
-  // Focus management for errors
-  useEffect(() => {
-    if (Object.keys(errors).length > 0 && firstErrorRef.current) {
-      firstErrorRef.current.focus();
-    }
-  }, [errors]);
+  const validatePhone = (phone: string): boolean => {
+    const phoneRegex = /^\+?[\d\s\-\(\)]{10,}$/;
+    return phoneRegex.test(phone);
+  };
 
-  const validateForm = (): boolean => {
+  const validateStep = (step: number): boolean => {
     const newErrors: FormErrors = {};
 
-    // First name validation
-    if (!formData.firstName.trim()) {
-      newErrors.firstName = 'First name is required';
-    } else if (formData.firstName.trim().length < 2) {
-      newErrors.firstName = 'First name must be at least 2 characters';
-    }
-
-    // Last name validation
-    if (!formData.lastName.trim()) {
-      newErrors.lastName = 'Last name is required';
-    } else if (formData.lastName.trim().length < 2) {
-      newErrors.lastName = 'Last name must be at least 2 characters';
-    }
-
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!emailRegex.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
-    }
-
-    // Password validation
-    if (!formData.password) {
-      newErrors.password = 'Password is required';
-    } else if (formData.password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters';
-    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
-      newErrors.password = 'Password must contain at least one uppercase letter, one lowercase letter, and one number';
-    }
-
-    // Confirm password validation
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword = 'Please confirm your password';
-    } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
-    }
-
-    // Terms agreement validation
-    if (!formData.agreeToTerms) {
-      newErrors.agreeToTerms = 'You must agree to the terms and conditions';
+    if (step === 1) {
+      if (!formData.firstName.trim()) {
+        newErrors.firstName = 'First name required';
+      }
+      if (!formData.lastName.trim()) {
+        newErrors.lastName = 'Last name required';
+      }
+      if (!formData.email.trim()) {
+        newErrors.email = 'Email required';
+      } else if (!validateEmail(formData.email)) {
+        newErrors.email = 'Invalid email format';
+      }
+      if (!formData.phone.trim()) {
+        newErrors.phone = 'Phone number required';
+      } else if (!validatePhone(formData.phone)) {
+        newErrors.phone = 'Invalid phone format';
+      }
+    } else if (step === 2) {
+      if (!formData.password.trim()) {
+        newErrors.password = 'Password required';
+      } else if (formData.password.length < 8) {
+        newErrors.password = 'Min 8 characters';
+      }
+      if (!formData.confirmPassword.trim()) {
+        newErrors.confirmPassword = 'Confirm password required';
+      } else if (formData.password !== formData.confirmPassword) {
+        newErrors.confirmPassword = 'Passwords do not match';
+      }
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
+  const handleInputChange = (field: keyof SignUpFormData, value: string): void => {
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [field]: value
     }));
 
-    // Clear error when user starts typing
-    if (errors[name as keyof FormErrors]) {
+    if (errors[field]) {
       setErrors(prev => ({
         ...prev,
-        [name]: undefined
+        [field]: undefined
       }));
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
+  const handleNext = (): void => {
+    if (validateStep(currentStep)) {
+      setCurrentStep(2);
     }
+  };
 
-    setIsSubmitting(true);
+  const handleBack = (): void => {
+    setCurrentStep(1);
+    setErrors({});
+  };
+
+  const handleSubmit = async (): Promise<void> => {
+    if (!validateStep(2)) return;
+
+    setIsLoading(true);
     
     try {
-      const fullName = `${formData.firstName} ${formData.lastName}`;
-      const { error } = await signUp(formData.email, formData.password, fullName);
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      alert('Account created successfully! (This is a demo)');
       
-      if (!error) {
-        setSubmitSuccess(true);
-      }
+      // Reset form
+      setFormData({
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: '',
+        password: '',
+        confirmPassword: ''
+      });
+      setCurrentStep(1);
+      setShowPassword(false);
+      setShowConfirmPassword(false);
     } catch (error) {
-      console.error('Submission error:', error);
+      console.error('Sign up failed:', error);
+      alert('Sign up failed. Please try again.');
     } finally {
-      setIsSubmitting(false);
+      setIsLoading(false);
     }
   };
 
-  const togglePasswordVisibility = (field: 'password' | 'confirmPassword') => {
-    if (field === 'password') {
-      setShowPassword(!showPassword);
-    } else {
-      setShowConfirmPassword(!showConfirmPassword);
+  const handleKeyDown = (e: React.KeyboardEvent, callback: () => void): void => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      callback();
     }
   };
 
-  if (submitSuccess) {
-    return (
-      <Card className="w-full max-w-md mx-auto animate-fade-in bg-white border border-gray-200 shadow-lg">
-        <CardContent className="p-6">
-          <div className="text-center">
-            <CheckCircle className="mx-auto h-12 w-12 text-green-500 mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Account Created Successfully!</h2>
-            <p className="text-gray-600 mb-4">Welcome! Please check your email to verify your account.</p>
-            <Button
-              onClick={onSwitchToLogin}
-              className="w-full bg-secondary hover:bg-secondary-700"
-            >
-              Go to Sign In
-            </Button>
+  const renderStepIndicator = (): JSX.Element => (
+    <div className="flex items-center justify-center mb-6">
+      <div className="flex items-center space-x-4">
+        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+          currentStep >= 1 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'
+        }`}>
+          {currentStep > 1 ? <CheckCircle className="w-4 h-4" /> : '1'}
+        </div>
+        <div className={`w-12 h-0.5 ${currentStep >= 2 ? 'bg-blue-600' : 'bg-gray-200'}`} />
+        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+          currentStep >= 2 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'
+        }`}>
+          2
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderStep1 = (): JSX.Element => (
+    <div className="space-y-4">
+      <h2 className="text-xl font-semibold text-gray-900 text-center mb-4">
+        Personal Information
+      </h2>
+      
+      {/* Name Fields Row */}
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
+            First Name
+          </label>
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <User className="h-4 w-4 text-gray-400" />
+            </div>
+            <input
+              ref={firstNameRef}
+              type="text"
+              id="firstName"
+              value={formData.firstName}
+              onChange={(e) => handleInputChange('firstName', e.target.value)}
+              className={`w-full h-10 pl-9 pr-3 border rounded-lg text-sm bg-gray-50 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white hover:bg-white ${
+                errors.firstName ? 'border-red-500 bg-red-50' : 'border-gray-300'
+              }`}
+              placeholder="John"
+            />
           </div>
-        </CardContent>
-      </Card>
-    );
-  }
+          {errors.firstName && (
+            <p className="text-xs text-red-600 mt-1">{errors.firstName}</p>
+          )}
+        </div>
+
+        <div>
+          <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
+            Last Name
+          </label>
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <User className="h-4 w-4 text-gray-400" />
+            </div>
+            <input
+              type="text"
+              id="lastName"
+              value={formData.lastName}
+              onChange={(e) => handleInputChange('lastName', e.target.value)}
+              className={`w-full h-10 pl-9 pr-3 border rounded-lg text-sm bg-gray-50 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white hover:bg-white ${
+                errors.lastName ? 'border-red-500 bg-red-50' : 'border-gray-300'
+              }`}
+              placeholder="Doe"
+            />
+          </div>
+          {errors.lastName && (
+            <p className="text-xs text-red-600 mt-1">{errors.lastName}</p>
+          )}
+        </div>
+      </div>
+
+      {/* Email Field */}
+      <div>
+        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+          Email Address
+        </label>
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <Mail className="h-4 w-4 text-gray-400" />
+          </div>
+          <input
+            ref={emailRef}
+            type="email"
+            id="email"
+            value={formData.email}
+            onChange={(e) => handleInputChange('email', e.target.value)}
+            className={`w-full h-10 pl-9 pr-3 border rounded-lg text-sm bg-gray-50 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white hover:bg-white ${
+              errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300'
+            }`}
+            placeholder="john@example.com"
+          />
+        </div>
+        {errors.email && (
+          <p className="text-xs text-red-600 mt-1">{errors.email}</p>
+        )}
+      </div>
+
+      {/* Phone Field */}
+      <div>
+        <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+          Phone Number
+        </label>
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <Phone className="h-4 w-4 text-gray-400" />
+          </div>
+          <input
+            type="tel"
+            id="phone"
+            value={formData.phone}
+            onChange={(e) => handleInputChange('phone', e.target.value)}
+            className={`w-full h-10 pl-9 pr-3 border rounded-lg text-sm bg-gray-50 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white hover:bg-white ${
+              errors.phone ? 'border-red-500 bg-red-50' : 'border-gray-300'
+            }`}
+            placeholder="+1 (555) 123-4567"
+          />
+        </div>
+        {errors.phone && (
+          <p className="text-xs text-red-600 mt-1">{errors.phone}</p>
+        )}
+      </div>
+    </div>
+  );
+
+  const renderStep2 = (): JSX.Element => (
+    <div className="space-y-4">
+      <h2 className="text-xl font-semibold text-gray-900 text-center mb-4">
+        Create Password
+      </h2>
+      
+      {/* Password Field */}
+      <div>
+        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+          Password
+        </label>
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <Lock className="h-4 w-4 text-gray-400" />
+          </div>
+          <input
+            ref={passwordRef}
+            type={showPassword ? 'text' : 'password'}
+            id="password"
+            value={formData.password}
+            onChange={(e) => handleInputChange('password', e.target.value)}
+            className={`w-full h-10 pl-9 pr-9 border rounded-lg text-sm bg-gray-50 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white hover:bg-white ${
+              errors.password ? 'border-red-500 bg-red-50' : 'border-gray-300'
+            }`}
+            placeholder="••••••••"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+          >
+            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          </button>
+        </div>
+        {errors.password && (
+          <p className="text-xs text-red-600 mt-1">{errors.password}</p>
+        )}
+      </div>
+
+      {/* Confirm Password Field */}
+      <div>
+        <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+          Confirm Password
+        </label>
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <Lock className="h-4 w-4 text-gray-400" />
+          </div>
+          <input
+            type={showConfirmPassword ? 'text' : 'password'}
+            id="confirmPassword"
+            value={formData.confirmPassword}
+            onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+            className={`w-full h-10 pl-9 pr-9 border rounded-lg text-sm bg-gray-50 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white hover:bg-white ${
+              errors.confirmPassword ? 'border-red-500 bg-red-50' : 'border-gray-300'
+            }`}
+            placeholder="••••••••"
+          />
+          <button
+            type="button"
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+          >
+            {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          </button>
+        </div>
+        {errors.confirmPassword && (
+          <p className="text-xs text-red-600 mt-1">{errors.confirmPassword}</p>
+        )}
+      </div>
+
+      {/* Password Requirements */}
+      <div className="bg-blue-50 p-3 rounded-lg">
+        <p className="text-xs text-blue-800 font-medium mb-1">Password must contain:</p>
+        <ul className="text-xs text-blue-700 space-y-0.5">
+          <li className="flex items-center">
+            <div className={`w-1.5 h-1.5 rounded-full mr-2 ${
+              formData.password.length >= 8 ? 'bg-green-500' : 'bg-gray-300'
+            }`} />
+            At least 8 characters
+          </li>
+          <li className="flex items-center">
+            <div className={`w-1.5 h-1.5 rounded-full mr-2 ${
+              /[A-Z]/.test(formData.password) ? 'bg-green-500' : 'bg-gray-300'
+            }`} />
+            One uppercase letter
+          </li>
+          <li className="flex items-center">
+            <div className={`w-1.5 h-1.5 rounded-full mr-2 ${
+              /[0-9]/.test(formData.password) ? 'bg-green-500' : 'bg-gray-300'
+            }`} />
+            One number
+          </li>
+        </ul>
+      </div>
+    </div>
+  );
 
   return (
-    <Card className="w-full max-w-md mx-auto animate-fade-in bg-white border border-gray-200 shadow-lg">
-      <CardHeader className="text-center pb-3 md:pb-6">
-        <CardTitle className="text-xl md:text-2xl font-bold text-gray-900 mb-1 md:mb-2">Join EmpowerU</CardTitle>
-        <p className="text-gray-600 text-sm md:text-base">Create your account to get started</p>
-      </CardHeader>
-      <CardContent className="space-y-3 md:space-y-5">
-        <form ref={formRef} onSubmit={handleSubmit} className="space-y-3 md:space-y-4" role="form">
-          {/* Name Fields - Side by side on larger screens */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-            <div className="space-y-1 md:space-y-2">
-              <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
-                First Name *
-              </label>
-              <input
-                ref={errors.firstName ? firstErrorRef : undefined}
-                type="text"
-                id="firstName"
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleInputChange}
-                required
-                aria-invalid={!!errors.firstName}
-                aria-describedby={errors.firstName ? 'firstName-error' : undefined}
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  errors.firstName ? 'border-red-500' : 'border-gray-300'
-                }`}
-                disabled={isSubmitting}
-              />
-              {errors.firstName && (
-                <div id="firstName-error" role="alert" className="mt-1 flex items-center text-xs md:text-sm text-red-600">
-                  <AlertCircle className="h-3 w-3 md:h-4 md:w-4 mr-1" />
-                  {errors.firstName}
-                </div>
-              )}
-            </div>
-
-            <div className="space-y-1 md:space-y-2">
-              <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
-                Last Name *
-              </label>
-              <input
-                ref={!errors.firstName && errors.lastName ? firstErrorRef : undefined}
-                type="text"
-                id="lastName"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleInputChange}
-                required
-                aria-invalid={!!errors.lastName}
-                aria-describedby={errors.lastName ? 'lastName-error' : undefined}
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  errors.lastName ? 'border-red-500' : 'border-gray-300'
-                }`}
-                disabled={isSubmitting}
-              />
-              {errors.lastName && (
-                <div id="lastName-error" role="alert" className="mt-1 flex items-center text-xs md:text-sm text-red-600">
-                  <AlertCircle className="h-3 w-3 md:h-4 md:w-4 mr-1" />
-                  {errors.lastName}
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Email */}
-          <div className="space-y-1 md:space-y-2">
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              Email Address *
-            </label>
-            <input
-              ref={!errors.firstName && !errors.lastName && errors.email ? firstErrorRef : undefined}
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              required
-              aria-invalid={!!errors.email}
-              aria-describedby={errors.email ? 'email-error' : 'email-help'}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.email ? 'border-red-500' : 'border-gray-300'
-              }`}
-              disabled={isSubmitting}
-            />
-            {errors.email ? (
-              <div id="email-error" role="alert" className="mt-1 flex items-center text-xs md:text-sm text-red-600">
-                <AlertCircle className="h-3 w-3 md:h-4 md:w-4 mr-1" />
-                {errors.email}
-              </div>
-            ) : (
-              <div id="email-help" className="mt-1 text-xs md:text-sm text-gray-500">
-                We'll use this to send you important updates
-              </div>
-            )}
-          </div>
-
-          {/* Password */}
-          <div className="space-y-1 md:space-y-2">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-              Password *
-            </label>
-            <div className="relative">
-              <input
-                ref={!errors.firstName && !errors.lastName && !errors.email && errors.password ? firstErrorRef : undefined}
-                type={showPassword ? 'text' : 'password'}
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleInputChange}
-                required
-                aria-invalid={!!errors.password}
-                aria-describedby={errors.password ? 'password-error' : 'password-help'}
-                className={`w-full px-3 py-2 pr-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  errors.password ? 'border-red-500' : 'border-gray-300'
-                }`}
-                disabled={isSubmitting}
-              />
-              <button
-                type="button"
-                onClick={() => togglePasswordVisibility('password')}
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
-                disabled={isSubmitting}
-              >
-                {showPassword ? <EyeOff className="h-4 w-4 md:h-5 md:w-5" /> : <Eye className="h-4 w-4 md:h-5 md:w-5" />}
-              </button>
-            </div>
-            {errors.password ? (
-              <div id="password-error" role="alert" className="mt-1 flex items-center text-xs md:text-sm text-red-600">
-                <AlertCircle className="h-3 w-3 md:h-4 md:w-4 mr-1" />
-                {errors.password}
-              </div>
-            ) : (
-              <div id="password-help" className="mt-1 text-xs md:text-sm text-gray-500">
-                Must be at least 8 characters with uppercase, lowercase, and numbers
-              </div>
-            )}
-          </div>
-
-          {/* Confirm Password */}
-          <div className="space-y-1 md:space-y-2">
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-              Confirm Password *
-            </label>
-            <div className="relative">
-              <input
-                ref={!errors.firstName && !errors.lastName && !errors.email && !errors.password && errors.confirmPassword ? firstErrorRef : undefined}
-                type={showConfirmPassword ? 'text' : 'password'}
-                id="confirmPassword"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleInputChange}
-                required
-                aria-invalid={!!errors.confirmPassword}
-                aria-describedby={errors.confirmPassword ? 'confirmPassword-error' : undefined}
-                className={`w-full px-3 py-2 pr-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
-                }`}
-                disabled={isSubmitting}
-              />
-              <button
-                type="button"
-                onClick={() => togglePasswordVisibility('confirmPassword')}
-                aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
-                disabled={isSubmitting}
-              >
-                {showConfirmPassword ? <EyeOff className="h-4 w-4 md:h-5 md:w-5" /> : <Eye className="h-4 w-4 md:h-5 md:w-5" />}
-              </button>
-            </div>
-            {errors.confirmPassword && (
-              <div id="confirmPassword-error" role="alert" className="mt-1 flex items-center text-xs md:text-sm text-red-600">
-                <AlertCircle className="h-3 w-3 md:h-4 md:w-4 mr-1" />
-                {errors.confirmPassword}
-              </div>
-            )}
-          </div>
-
-          {/* Terms Agreement */}
-          <div className="space-y-1 md:space-y-2">
-            <div className="flex items-start">
-              <input
-                ref={!errors.firstName && !errors.lastName && !errors.email && !errors.password && !errors.confirmPassword && errors.agreeToTerms ? firstErrorRef : undefined}
-                type="checkbox"
-                id="agreeToTerms"
-                name="agreeToTerms"
-                checked={formData.agreeToTerms}
-                onChange={handleInputChange}
-                required
-                aria-invalid={!!errors.agreeToTerms}
-                aria-describedby={errors.agreeToTerms ? 'agreeToTerms-error' : undefined}
-                className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded flex-shrink-0"
-                disabled={isSubmitting}
-              />
-              <label htmlFor="agreeToTerms" className="ml-2 block text-xs md:text-sm text-gray-700">
-                I agree to the{' '}
-                <a href="#" className="text-blue-600 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 rounded">
-                  Terms and Conditions
-                </a>{' '}
-                and{' '}
-                <a href="#" className="text-blue-600 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 rounded">
-                  Privacy Policy
-                </a>
-                *
-              </label>
-            </div>
-            {errors.agreeToTerms && (
-              <div id="agreeToTerms-error" role="alert" className="mt-1 flex items-center text-xs md:text-sm text-red-600">
-                <AlertCircle className="h-3 w-3 md:h-4 md:w-4 mr-1" />
-                {errors.agreeToTerms}
-              </div>
-            )}
-          </div>
-
-          {/* Newsletter Subscription */}
-          <div className="space-y-1 md:space-y-2">
-            <div className="flex items-start">
-              <input
-                type="checkbox"
-                id="newsletter"
-                name="newsletter"
-                checked={formData.newsletter}
-                onChange={handleInputChange}
-                className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded flex-shrink-0"
-                disabled={isSubmitting}
-              />
-              <label htmlFor="newsletter" className="ml-2 block text-xs md:text-sm text-gray-700">
-                Subscribe to our newsletter for updates and special offers
-              </label>
-            </div>
-          </div>
-          
-          <Button
-            type="submit"
-            className="w-full h-12 bg-secondary text-white hover:bg-secondary-700 text-base font-semibold focus:ring-2 focus:ring-secondary focus:ring-offset-2 transition-all duration-200"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? (
-              <div className="flex items-center space-x-2">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                <span>Creating Account...</span>
-              </div>
-            ) : (
-              "Create Account"
-            )}
-          </Button>
-        </form>
-        
-        <div className="text-center pt-4 border-t border-gray-200">
-          <p className="text-gray-600">
-            Already have an account?{' '}
-            <Button
-              variant="link"
-              onClick={onSwitchToLogin}
-              className="text-primary hover:text-primary-700 p-0 h-auto font-semibold underline"
-              disabled={isSubmitting}
-            >
-              Sign in here
-            </Button>
-          </p>
+    <div className="min-h-screen bg-gray-50 py-4 px-4 flex items-center justify-center">
+      <div className="w-full max-w-sm bg-white rounded-xl shadow-lg p-6">
+        <div className="text-center mb-6">
+          <h1 className="text-2xl font-bold text-gray-900 mb-1">Join EmpowerU</h1>
+          <p className="text-sm text-gray-600">Create your account in 2 easy steps</p>
         </div>
-      </CardContent>
-    </Card>
+        
+        {renderStepIndicator()}
+
+        {currentStep === 1 ? renderStep1() : renderStep2()}
+
+        {/* Action Buttons */}
+        <div className="mt-6 space-y-3">
+          {currentStep === 1 ? (
+            <div
+              onClick={handleNext}
+              onKeyDown={(e) => handleKeyDown(e, handleNext)}
+              role="button"
+              tabIndex={0}
+              className="w-full h-10 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-medium rounded-lg cursor-pointer transition-all hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500/50 flex items-center justify-center text-sm"
+            >
+              Continue
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <div
+                onClick={handleSubmit}
+                onKeyDown={(e) => handleKeyDown(e, handleSubmit)}
+                role="button"
+                tabIndex={0}
+                className={`w-full h-10 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-medium rounded-lg cursor-pointer transition-all hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500/50 flex items-center justify-center text-sm ${
+                  isLoading ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
+              >
+                {isLoading ? (
+                  <div className="flex items-center">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Creating Account...
+                  </div>
+                ) : (
+                  'Create Account'
+                )}
+              </div>
+              
+              <div
+                onClick={handleBack}
+                onKeyDown={(e) => handleKeyDown(e, handleBack)}
+                role="button"
+                tabIndex={0}
+                className="w-full h-10 bg-gray-100 text-gray-700 font-medium rounded-lg cursor-pointer transition-all hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500/50 flex items-center justify-center text-sm"
+              >
+                Back
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="mt-4 text-center text-sm text-gray-600">
+          Already have an account?{' '}
+          <button 
+            className="text-blue-600 hover:text-blue-700 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/50 rounded"
+            onClick={onSwitchToLogin}
+          >
+            Sign in
+          </button>
+        </div>
+      </div>
+    </div>
   );
 };
 
-export default SignupForm;
+export default SignUpForm;

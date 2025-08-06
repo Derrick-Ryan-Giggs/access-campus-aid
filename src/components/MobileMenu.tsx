@@ -114,7 +114,7 @@ const MobileMenu = ({
 
               {/* User Actions Section */}
               <div className="border-t pt-4 mb-6">
-                <h3 className="text-sm font-semibold text-gray-500 mb-3 px-2">Account & Notifications</h3>
+                <h3 className="text-sm font-semibold text-gray-500 mb-3 px-2">Account</h3>
                 <div className="space-y-2">
                   <Button
                     variant="ghost"
@@ -123,20 +123,6 @@ const MobileMenu = ({
                   >
                     <LogOut className="h-5 w-5 mr-3" />
                     <span className="font-medium">{user ? 'Sign Out' : 'Sign In'}</span>
-                  </Button>
-                  
-                  <Button
-                    variant="ghost"
-                    onClick={handleNotificationClick}
-                    className="w-full justify-start text-left p-4 h-auto hover:bg-gray-100 text-gray-700 relative touch-manipulation"
-                  >
-                    <Bell className="h-5 w-5 mr-3" />
-                    <span className="font-medium">Notifications</span>
-                    {unreadCount > 0 && (
-                      <span className="absolute right-4 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                        {unreadCount > 99 ? '99+' : unreadCount}
-                      </span>
-                    )}
                   </Button>
                   
                   <Button

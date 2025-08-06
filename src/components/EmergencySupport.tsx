@@ -711,18 +711,18 @@ const EmergencySupport = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {campusLocations.map((location, index) => (
               <div key={index} className="p-4 border rounded-lg">
-                <div className="flex justify-between items-start mb-2">
-                  <h4 className="font-semibold text-foreground">{location.name}</h4>
-                   <div className="flex items-center gap-1">
-                     {[...Array(5)].map((_, i) => (
-                       <Heart 
-                         key={i} 
-                         className={`h-4 w-4 ${i < location.safetyRating ? 'text-primary fill-current' : 'text-muted-foreground'}`} 
-                       />
-                     ))}
-                     <span className="ml-1 text-sm text-muted-foreground">({location.safetyRating}/5)</span>
-                  </div>
-                </div>
+                 <div className="flex justify-between items-start mb-2">
+                   <h4 className="font-semibold text-foreground">{location.name}</h4>
+                    <div className="flex items-center gap-1">
+                      {[...Array(5)].map((_, i) => (
+                        <div 
+                          key={i} 
+                          className={`h-3 w-3 rounded-full ${i < location.safetyRating ? 'bg-primary' : 'bg-muted-foreground/30'}`} 
+                        />
+                      ))}
+                      <span className="ml-1 text-sm text-muted-foreground">({location.safetyRating}/5)</span>
+                   </div>
+                 </div>
                 <p className="text-sm text-muted-foreground mb-2">{location.accessibility}</p>
                 <div className="flex justify-between items-center">
                   <Badge variant="outline">Emergency Phone: {location.emergencyPhone}</Badge>

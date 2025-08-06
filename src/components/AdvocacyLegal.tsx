@@ -180,9 +180,6 @@ const AdvocacyLegal = () => {
           <Scale className="h-8 w-8 text-primary" />
           Advocacy & Legal Assistance
         </h1>
-        <p className="text-lg text-muted-foreground">
-          Know your rights and get the support you need to advocate for accessibility
-        </p>
       </div>
 
       {/* Quick Actions - Using new AdvocacyLegalCards */}
