@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Eye, EyeOff, Mail, Lock, User, Phone, AlertCircle, CheckCircle } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 interface SignUpFormData {
   firstName: string;
@@ -25,6 +26,7 @@ interface SignUpFormProps {
 }
 
 const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin, onClose }) => {
+  const { signUp } = useAuth();
   const [formData, setFormData] = useState<SignUpFormData>({
     firstName: '',
     lastName: '',
@@ -122,24 +124,29 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin, onClose }) => 
     setIsLoading(true);
     
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      alert('Account created successfully! (This is a demo)');
-      
-      // Reset form
-      setFormData({
-        firstName: '',
-        lastName: '',
-        email: '',
-        phone: '',
-        password: '',
-        confirmPassword: ''
-      });
-      setCurrentStep(1);
-      setShowPassword(false);
-      setShowConfirmPassword(false);
+      const { error } = await signUp(
+        formData.email, 
+        formData.password, 
+        `${formData.firstName} ${formData.lastName}`
+      );
+
+      if (!error) {
+        // Reset form
+        setFormData({
+          firstName: '',
+          lastName: '',
+          email: '',
+          phone: '',
+          password: '',
+          confirmPassword: ''
+        });
+        setCurrentStep(1);
+        setShowPassword(false);
+        setShowConfirmPassword(false);
+        onClose();
+      }
     } catch (error) {
       console.error('Sign up failed:', error);
-      alert('Sign up failed. Please try again.');
     } finally {
       setIsLoading(false);
     }

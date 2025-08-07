@@ -413,9 +413,19 @@ const EmergencySupport = () => {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-foreground mb-4 flex items-center justify-center gap-3">
-          <AlertTriangle className="h-8 w-8 text-primary" />
-          Emergency & Safety Support
+        <h1 className="flex items-center gap-3 sm:gap-4 text-xl sm:text-2xl md:text-3xl font-bold text-red-600 leading-none justify-center">
+          <svg 
+            className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 flex-shrink-0 text-red-600" 
+            viewBox="0 0 24 24" 
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 16L10.91 9.74L2 9L10.91 8.26L12 2Z" />
+            <circle cx="12" cy="20" r="2" />
+          </svg>
+          <span className="min-w-0 flex-1">
+            Emergency & Safety Support
+          </span>
         </h1>
         <p className="text-lg text-muted-foreground">
           Comprehensive safety features designed for accessibility and peace of mind
@@ -710,19 +720,10 @@ const EmergencySupport = () => {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {campusLocations.map((location, index) => (
-              <div key={index} className="p-4 border rounded-lg">
-                 <div className="flex justify-between items-start mb-2">
-                   <h4 className="font-semibold text-foreground">{location.name}</h4>
-                    <div className="flex items-center gap-1">
-                      {[...Array(5)].map((_, i) => (
-                        <div 
-                          key={i} 
-                          className={`h-3 w-3 rounded-full ${i < location.safetyRating ? 'bg-primary' : 'bg-muted-foreground/30'}`} 
-                        />
-                      ))}
-                      <span className="ml-1 text-sm text-muted-foreground">({location.safetyRating}/5)</span>
-                   </div>
-                 </div>
+                 <div key={index} className="p-4 border rounded-lg">
+                  <div className="flex justify-between items-start mb-2">
+                    <h4 className="font-semibold text-foreground">{location.name}</h4>
+                  </div>
                 <p className="text-sm text-muted-foreground mb-2">{location.accessibility}</p>
                 <div className="flex justify-between items-center">
                   <Badge variant="outline">Emergency Phone: {location.emergencyPhone}</Badge>
